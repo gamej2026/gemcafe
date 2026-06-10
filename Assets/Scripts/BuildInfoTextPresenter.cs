@@ -32,6 +32,6 @@ public class BuildInfoTextPresenter : MonoBehaviour
             return;
         }
 
-        targetText.text = buildInfoAsset.text;
+        targetText.text = "info : " + buildInfoAsset.text;
     }
 }
