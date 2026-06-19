@@ -1,0 +1,12 @@
+{
+  "name": "GemCafe.Editor",
+  "rootNamespace": "GemCafe.EditorTools",
+  "references": [
+    "GemCafe"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "autoReferenced": true
+}

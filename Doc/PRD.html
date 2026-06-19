@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>젬카페(GemCafe) — 제품 요구사항 명세서 (PRD)</title>
+<style>
+  :root {
+    --bg: #0f1115;
+    --surface: #171a21;
+    --surface-2: #1f232c;
+    --border: #2b313c;
+    --text: #e6e9ef;
+    --muted: #9aa3b2;
+    --accent: #7c9cff;
+    --accent-2: #ffb86b;
+    --green: #5fd28b;
+    --red: #ff6b6b;
+    --yellow: #ffd166;
+    --sidebar-w: 280px;
+    --maxw: 1000px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+    line-height: 1.7;
+    font-size: 16px;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* Layout */
+  .layout { display: flex; }
+  nav.toc {
+    position: sticky;
+    top: 0;
+    align-self: flex-start;
+    width: var(--sidebar-w);
+    height: 100vh;
+    overflow-y: auto;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 24px 18px;
+    flex-shrink: 0;
+  }
+  nav.toc h2 {
+    font-size: 13px;
+    letter-spacing: .08em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin: 0 0 12px;
+  }
+  nav.toc ol { list-style: none; margin: 0; padding: 0; counter-reset: toc; }
+  nav.toc li { margin: 2px 0; }
+  nav.toc a {
+    display: block;
+    padding: 5px 10px;
+    border-radius: 6px;
+    color: var(--muted);
+    font-size: 14px;
+  }
+  nav.toc a:hover { background: var(--surface-2); color: var(--text); text-decoration: none; }
+  nav.toc .sub { margin-left: 12px; font-size: 13px; }
+
+  main {
+    flex: 1;
+    max-width: var(--maxw);
+    margin: 0 auto;
+    padding: 40px 48px 120px;
+  }
+
+  /* Header */
+  header.doc {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 24px;
+    margin-bottom: 32px;
+  }
+  header.doc .eyebrow { color: var(--accent-2); font-weight: 600; letter-spacing: .04em; }
+  header.doc h1 { font-size: 34px; margin: 6px 0 8px; }
+  header.doc p.lede { color: var(--muted); font-size: 17px; margin: 0; }
+  .meta-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-top: 20px;
+  }
+  .meta-grid .cell {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+  }
+  .meta-grid .k { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+  .meta-grid .v { font-weight: 600; }
+
+  /* Sections */
+  section { margin: 0 0 48px; scroll-margin-top: 20px; }
+  section > h2 {
+    font-size: 24px;
+    border-left: 4px solid var(--accent);
+    padding-left: 12px;
+    margin: 0 0 18px;
+  }
+  section h3 { font-size: 18px; margin: 28px 0 10px; color: #fff; }
+  section h4 { font-size: 15px; margin: 18px 0 6px; color: var(--accent-2); }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin: 14px 0;
+  }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 760px){ .grid-2 { grid-template-columns: 1fr; } }
+
+  ul, ol { padding-left: 22px; }
+  li { margin: 4px 0; }
+
+  /* Tables */
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { background: var(--surface-2); color: var(--text); font-weight: 600; }
+  tr:hover td { background: rgba(124,156,255,.05); }
+  td code, p code, li code { background: var(--surface-2); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+
+  /* Badges */
+  .badge { display: inline-block; padding: 1px 9px; border-radius: 999px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+  .p-must { background: rgba(255,107,107,.15); color: #ff9a9a; border: 1px solid rgba(255,107,107,.4); }
+  .p-should { background: rgba(255,209,102,.15); color: var(--yellow); border: 1px solid rgba(255,209,102,.4); }
+  .p-could { background: rgba(95,210,139,.15); color: var(--green); border: 1px solid rgba(95,210,139,.4); }
+  .tag { display:inline-block; background: var(--surface-2); border:1px solid var(--border); border-radius:6px; padding:1px 8px; font-size:12px; color: var(--muted); margin-right:4px; }
+
+  /* Flow diagram */
+  .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 14px 0; }
+  .flow .step {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .flow .arrow { color: var(--accent); font-weight: 700; }
+
+  /* Layout mock (ascii-ish box) */
+  .mock {
+    background: #0b0d11;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+    font-size: 12.5px;
+    color: var(--muted);
+    white-space: pre;
+    overflow-x: auto;
+    line-height: 1.45;
+  }
+
+  .note {
+    border-left: 4px solid var(--accent-2);
+    background: rgba(255,184,107,.07);
+    padding: 12px 16px;
+    border-radius: 0 8px 8px 0;
+    margin: 14px 0;
+  }
+  .note.warn { border-color: var(--red); background: rgba(255,107,107,.07); }
+  .note .label { font-weight: 700; color: var(--accent-2); font-size: 13px; }
+  .note.warn .label { color: var(--red); }
+
+  .quote {
+    font-style: italic;
+    color: #cdd4e0;
+    border-left: 3px solid var(--border);
+    padding-left: 12px;
+    margin: 8px 0;
+  }
+  footer.doc { border-top: 1px solid var(--border); padding-top: 18px; color: var(--muted); font-size: 13px; }
+  .legend { display:flex; gap:14px; flex-wrap:wrap; margin: 8px 0 0; font-size:13px; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="layout">
+  <nav class="toc">
+    <h2>목차</h2>
+    <ol>
+      <li><a href="#overview">1. 문서 개요</a></li>
+      <li><a href="#concept">2. 게임 개요 &amp; 목표</a></li>
+      <li><a href="#flow">3. 전체 게임 흐름</a></li>
+      <li><a href="#story">4. 내러티브 / 스토리</a></li>
+      <li><a href="#screens">5. 화면별 상세 명세</a>
+        <ol class="sub">
+          <li><a href="#sc-lobby">5.1 로비</a></li>
+          <li><a href="#sc-stage1">5.2 카페로 가는 길</a></li>
+          <li><a href="#sc-enter">5.3 카페 진입</a></li>
+          <li><a href="#sc-tutorial">5.4 튜토리얼</a></li>
+          <li><a href="#sc-main">5.5 본게임 / 음료 제조</a></li>
+          <li><a href="#sc-finish">5.6 완료 애니메이션</a></li>
+        </ol>
+      </li>
+      <li><a href="#systems">6. 핵심 시스템</a></li>
+      <li><a href="#requirements">7. 요구사항 명세</a></li>
+      <li><a href="#data">8. 데이터 모델</a></li>
+      <li><a href="#open">9. 미정 / 추가 논의</a></li>
+    </ol>
+  </nav>
+
+  <main>
+    <header class="doc">
+      <div class="eyebrow">PRODUCT REQUIREMENTS DOCUMENT</div>
+      <h1>젬카페 (GemCafe)</h1>
+      <p class="lede">지옥 삼도천(三途川) 앞 카페에서 음료를 제조하며 뱃삯을 버는 내러티브형 드래그&amp;드롭 제조 게임</p>
+      <div class="meta-grid">
+        <div class="cell"><div class="k">버전</div><div class="v">v0.1 (초안)</div></div>
+        <div class="cell"><div class="k">최종 수정</div><div class="v">2026-06-20</div></div>
+        <div class="cell"><div class="k">엔진</div><div class="v">Unity 6000.3.18f1</div></div>
+        <div class="cell"><div class="k">렌더</div><div class="v">URP 17.5 · 2D</div></div>
+        <div class="cell"><div class="k">플랫폼</div><div class="v">PC (키보드+마우스)</div></div>
+        <div class="cell"><div class="k">출처</div><div class="v">젬카페 UI 기획서 (21p)</div></div>
+      </div>
+    </header>
+
+    <!-- 1. 개요 -->
+    <section id="overview">
+      <h2>1. 문서 개요</h2>
+      <p>본 문서는 첨부 기획서 <strong>「젬카페 UI」(21페이지)</strong>를 구현 가능한 제품 요구사항으로 정리한 PRD이다. 게임의 흐름, 화면별 UI/UX, 핵심 시스템, 데이터 모델, 미결 사항을 포함한다.</p>
+      <div class="card">
+        <h4>대상 독자</h4>
+        <ul>
+          <li><strong>기획</strong> — 의도/규칙 합의 및 미결 항목 확정</li>
+          <li><strong>클라이언트 개발</strong> — 화면/시스템 구현 범위 파악</li>
+          <li><strong>아트/사운드</strong> — 필요 에셋(캐릭터, 배경, 효과음 등) 식별</li>
+        </ul>
+        <h4>용어</h4>
+        <ul>
+          <li><strong>삼도천</strong> — 이승과 저승 사이의 강. 게임의 시작 배경.</li>
+          <li><strong>인내심(Patience)</strong> — 손님별 제한시간 역할의 게이지.</li>
+          <li><strong>사발 / 막자</strong> — 재료를 담는 그릇 / 빻고 섞는 막대 도구.</li>
+          <li><strong>트레이</strong> — 재료를 보관·선택하는 패널.</li>
+        </ul>
+      </div>
+      <p class="legend">
+        우선순위 표기:
+        <span class="badge p-must">MUST</span> 필수
+        <span class="badge p-should">SHOULD</span> 권장
+        <span class="badge p-could">COULD</span> 선택
+      </p>
+    </section>
+
+    <!-- 2. 컨셉 -->
+    <section id="concept">
+      <h2>2. 게임 개요 &amp; 목표</h2>
+      <div class="grid-2">
+        <div class="card">
+          <h4>컨셉</h4>
+          <p>기억을 잃은 주인공이 삼도천 앞에서 깨어나, 강을 건널 뱃삯이 없어 강변 카페에 취업한다. <strong>배 출발까지 3일</strong> 동안 손님에게 음료를 제조해 주며 뱃삯을 모으는 것이 목표.</p>
+        </div>
+        <div class="card">
+          <h4>장르 / 핵심 루프</h4>
+          <p>비주얼노벨 + 드래그&amp;드롭 제조 시뮬레이션.</p>
+          <div class="flow">
+            <span class="step">손님 등장</span><span class="arrow">→</span>
+            <span class="step">주문 대화</span><span class="arrow">→</span>
+            <span class="step">재료 제조</span><span class="arrow">→</span>
+            <span class="step">막자로 믹스</span><span class="arrow">→</span>
+            <span class="step">평가</span>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h4>플레이어 목표 / 실패 조건</h4>
+        <ul>
+          <li><strong>목표</strong> — 3일간 손님 주문을 정확히 제조하여 뱃삯 확보.</li>
+          <li><strong>긴장 요소</strong> — 손님별 <em>인내심(제한시간)</em>과 <em>목숨 3개</em>.</li>
+          <li><strong>실패</strong> — 인내심이 모두 소진되면 해당 손님 실패 처리(목숨 차감).</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 3. 흐름 -->
+    <section id="flow">
+      <h2>3. 전체 게임 흐름</h2>
+      <div class="flow">
+        <span class="step">로비</span><span class="arrow">→</span>
+        <span class="step">인트로 스토리</span><span class="arrow">→</span>
+        <span class="step">S1 카페로 가는 길<br>(이동·대화)</span><span class="arrow">→</span>
+        <span class="step">카페 진입<br>(취업)</span><span class="arrow">→</span>
+        <span class="step">튜토리얼</span><span class="arrow">→</span>
+        <span class="step">본게임<br>(손님·제조)</span><span class="arrow">→</span>
+        <span class="step">완료 애니메이션</span>
+      </div>
+      <p class="note"><span class="label">참고</span> 본게임은 손님 단위로 반복되며, 3일(일자 단위)로 묶인다. 일자/진행도 관리 방식은 <a href="#open">9장 미정 사항</a> 참고.</p>
+    </section>
+
+    <!-- 4. 스토리 -->
+    <section id="story">
+      <h2>4. 내러티브 / 스토리</h2>
+      <h3>4.1 인트로</h3>
+      <div class="card">
+        <ol>
+          <li>주인공이 기억을 잃은 채 삼도천 앞에서 깨어남.</li>
+          <li>삼도천을 따라 걷다 강을 바라보며 — <span class="quote">"맨몸으로 건너고 싶지 않아…"</span></li>
+          <li>멀리서 <strong>돌쇠</strong>가 부름 → 돌쇠 방향으로 이동.</li>
+          <li>돌쇠와 대화 — <span class="quote">"배 타고 싶으면 돈 줘."</span></li>
+          <li>대화 중 <strong>마님</strong>이 카페에서 나오며 끼어듦 — <span class="quote">"야! 돌쇠가 먼저 말을 걸었다고? 일단 이리 와봐."</span></li>
+        </ol>
+      </div>
+      <h3>4.2 카페 진입</h3>
+      <div class="card">
+        <ul>
+          <li>마님과 대화 후 <strong>카페에 취업</strong>.</li>
+          <li>독백 — <span class="quote">"전생에 무직백수 청년이던 내가 지옥에선 한방에 취업?"</span> · <span class="quote">"잠시 잊고 있던 기억이 떠오른 것 같다…"</span></li>
+          <li>동기 부여 — <span class="quote">"배 출발까지 3일, 뱃삯을 벌어보자!"</span></li>
+          <li>수락 대사 — <span class="quote">"까짓꺼 한번 해보죠."</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 5. 화면 -->
+    <section id="screens">
+      <h2>5. 화면별 상세 명세</h2>
+
+      <!-- 로비 -->
+      <h3 id="sc-lobby">5.1 로비</h3>
+      <div class="grid-2">
+        <div class="card">
+          <h4>구성 요소</h4>
+          <ul>
+            <li>상단 중앙: <strong>게임 이름</strong> 타이틀</li>
+            <li>중앙 메뉴: <strong>새 게임 / 이어하기 / 설정 / 게임 종료</strong></li>
+          </ul>
+          <h4>동작</h4>
+          <ul>
+            <li>새 게임 → 인트로 스토리 진입</li>
+            <li>이어하기 → 저장된 진행도 로드</li>
+            <li>설정 → 설정 팝업</li>
+            <li>게임 종료 → 애플리케이션 종료</li>
+          </ul>
+        </div>
+        <div class="mock">┌────────────────────────────┐
+│          [ 게임 이름 ]         │
+│                            │
+│        ┌──────────────┐    │
+│        │   새 게임      │    │
+│        │   이어하기     │    │
+│        │   설정        │    │
+│        │   게임 종료    │    │
+│        └──────────────┘    │
+└────────────────────────────┘</div>
+      </div>
+
+      <!-- 스테이지1 -->
+      <h3 id="sc-stage1">5.2 S1 — 카페로 가는 길</h3>
+      <h4>이동 &amp; 상호작용</h4>
+      <div class="grid-2">
+        <div class="card">
+          <ul>
+            <li>주인공 <strong>횡(좌우) 이동</strong> — <code>←</code>/<code>→</code> 또는 <code>A</code>/<code>D</code>.</li>
+            <li>배경에 <strong>강(삼도천)</strong> 요소 배치.</li>
+            <li>멀리서 부르는 연출은 <strong>말풍선만</strong> 표시(대화창 X).</li>
+            <li>NPC 근접 시 <strong>NPC 테두리 발광</strong> + 화면 상단에 <strong>상호작용 키 안내</strong> 표시.</li>
+            <li>상호작용 키 — <code>F</code>.</li>
+          </ul>
+        </div>
+        <div class="mock">┌────────────────────────────┐
+│                  (멀리서 호출)  │
+│                   💬 말풍선     │
+│  ┌─────┐          ╔═════╗   │
+│  │주인공 │   (강)   ║ NPC ║◄ F │
+│  └─────┘          ╚═════╝   │
+│  ←/→ 또는 A/D 이동            │
+└────────────────────────────┘</div>
+      </div>
+
+      <h4>대화 (비주얼노벨)</h4>
+      <div class="card">
+        <ul>
+          <li>좌측 <strong>주인공</strong>, 우측 <strong>대화 상대</strong> 스탠딩 배치.</li>
+          <li><strong>화자 강조</strong> — 비화자 측을 약간 어둡게 처리, 배경에 딤(dim).</li>
+          <li>대화창 우측 하단 <strong>「다음」</strong> 버튼으로 진행.</li>
+          <li><strong>끼어들기 연출</strong> — 마님의 말풍선 "야!"를 별도 표시, 말풍선 뒤로 딤 처리.</li>
+          <li><strong>카메라 이동</strong> — 마님 "너 일로 와봐" 시 카페(오른쪽)로 카메라 이동.</li>
+          <li><strong>따라가기</strong> — 주인공이 마님을 따라 카페로 들어가는 이동 애니메이션.</li>
+        </ul>
+      </div>
+
+      <!-- 카페 진입 -->
+      <h3 id="sc-enter">5.3 카페 진입 (대화)</h3>
+      <div class="card">
+        <p>카페 내부에서 마님과 대화 → 취업 확정. 화면 구성은 5.2의 비주얼노벨 대화 규칙(화자 강조·딤·다음 버튼)을 동일하게 따른다.</p>
+      </div>
+
+      <!-- 튜토리얼 -->
+      <h3 id="sc-tutorial">5.4 튜토리얼</h3>
+      <div class="note"><span class="label">선택 사항</span> 튜토리얼을 넣는다면 <strong>카페 진입 직후, 본게임 직전</strong> 타이밍에 배치. 제조 조작(트레이→사발 드래그, 막자 믹스)을 안내. <span class="badge p-could">COULD</span></div>
+
+      <!-- 본게임 -->
+      <h3 id="sc-main">5.5 본게임 — 손님 응대 &amp; 음료 제조</h3>
+
+      <h4>A. 손님 등장 &amp; 주문 대화</h4>
+      <div class="grid-2">
+        <div class="card">
+          <ul>
+            <li>입장 효과음 <strong>"딸랑~"</strong> + 손님 이미지 <strong>페이드 인</strong>.</li>
+            <li>중앙 <strong>대화 상대</strong>, 하단 <strong>바텐더 테이블</strong>.</li>
+            <li>좌상단 <strong>목숨 3개</strong> 표시.</li>
+            <li>대화는 <strong>말풍선</strong>으로 표현.</li>
+          </ul>
+        </div>
+        <div class="mock">┌────────────────────────────┐
+│ [♥♥♥]        딸랑~ (페이드인)  │
+│          ┌────────┐         │
+│          │ 대화상대 │         │
+│          └────────┘         │
+│   ╭──────[ 말풍선 ]──────╮    │
+│════════ 바텐더 테이블 ════════│
+└────────────────────────────┘</div>
+      </div>
+
+      <h4>B. 제조 화면 진입</h4>
+      <div class="card">
+        <ul>
+          <li>오른쪽에서 화면이 <strong>왼쪽으로 슬라이드(←)</strong> 되어 제조 화면 등장.</li>
+          <li>우측: <strong>테이블(완전 탑뷰)</strong> → <strong>트레이(←로 열림)</strong> + <strong>테이블 위 사발</strong>.</li>
+          <li>좌측 패널 유지: 목숨 3개, <strong>인내심 게이지</strong>, 대화 상대.</li>
+          <li>좌하단 버튼: <strong>대화 다시 보기 · 레시피 참고 · 설정</strong>.</li>
+        </ul>
+      </div>
+      <div class="mock">┌──────────────┬───────────────┐
+│ [♥♥♥]        │               │
+│ ▭ 인내심 게이지 │   트레이 (←로 열림) │
+│  ┌────────┐  │               │
+│  │ 대화상대  │  ├───────────────┤
+│  └────────┘  │               │
+│ ┌──┐┌──┐┌──┐ │  테이블 위 사발     │
+│ │다 ││레 ││설││               │
+│ │시 ││시 ││정││  (완전 탑뷰)       │
+│ └──┘└──┘└──┘ │               │
+└──────────────┴───────────────┘</div>
+
+      <h4>C. 재료 투입 (드래그 &amp; 드롭)</h4>
+      <div class="card">
+        <ul>
+          <li>트레이의 재료를 <strong>드래그&amp;드롭</strong>으로 사발에 투입.</li>
+          <li>드래그 중에는 <strong>마우스 포인터에 재료가 부착</strong>되어 따라다님.</li>
+          <li>드롭 시 <strong>포인터가 사발 영역 안</strong>이면 사발에 넣은 것으로 인식.</li>
+        </ul>
+      </div>
+
+      <h4>D. 좌하단 버튼 팝업</h4>
+      <div class="card">
+        <ul>
+          <li>버튼 상호작용 시 해당 <strong>팝업 열람</strong>, 팝업 뒤로 <strong>딤</strong> 처리.</li>
+          <li>대화 다시 보기 / 레시피 참고 / 설정 각각의 팝업.</li>
+          <li><strong>시간(인내심) 규칙</strong> — <a href="#systems">6장 인내심 시스템</a> 참고.</li>
+        </ul>
+      </div>
+
+      <h4>E. 제조 완료 (막자 믹스)</h4>
+      <div class="card">
+        <ul>
+          <li>재료를 다 넣은 경우, 사발 옆 <strong>막자(막대기)</strong>를 사발에 <strong>드래그&amp;드롭</strong>.</li>
+          <li>→ 완료 애니메이션으로 전환.</li>
+        </ul>
+      </div>
+
+      <!-- 완료 -->
+      <h3 id="sc-finish">5.6 완료 애니메이션</h3>
+      <div class="card">
+        <p>막자로 <strong>사발 내 내용물을 믹스</strong>하는 애니메이션 재생 → 음료 완성 → 손님 평가/결과 처리.</p>
+        <p class="note"><span class="label">미정</span> 완성 결과 판정(정답 레시피 일치 여부)과 보상/뱃삯 가산 로직은 9장 참고.</p>
+      </div>
+    </section>
+
+    <!-- 6. 시스템 -->
+    <section id="systems">
+      <h2>6. 핵심 시스템</h2>
+
+      <h3>6.1 이동 &amp; 상호작용</h3>
+      <table>
+        <thead><tr><th>항목</th><th>규칙</th></tr></thead>
+        <tbody>
+          <tr><td>이동</td><td>횡 이동만. <code>←</code>/<code>→</code> 또는 <code>A</code>/<code>D</code>.</td></tr>
+          <tr><td>근접 피드백</td><td>상호작용 가능 NPC 테두리 발광 + 상단 키 안내.</td></tr>
+          <tr><td>상호작용</td><td><code>F</code> 키.</td></tr>
+          <tr><td>원거리 호출</td><td>대화창 없이 말풍선만 표시.</td></tr>
+        </tbody>
+      </table>
+
+      <h3>6.2 대화 (비주얼노벨)</h3>
+      <table>
+        <thead><tr><th>항목</th><th>규칙</th></tr></thead>
+        <tbody>
+          <tr><td>배치</td><td>좌=주인공, 우=대화 상대 스탠딩.</td></tr>
+          <tr><td>화자 강조</td><td>비화자 측 디밍 + 배경 딤.</td></tr>
+          <tr><td>진행</td><td>「다음」 버튼.</td></tr>
+          <tr><td>끼어들기</td><td>별도 말풍선 + 뒤 배경 딤.</td></tr>
+          <tr><td>연출</td><td>카메라 이동, 따라가기 이동 애니메이션 지원.</td></tr>
+        </tbody>
+      </table>
+
+      <h3>6.3 음료 제조 (드래그 &amp; 드롭)</h3>
+      <table>
+        <thead><tr><th>단계</th><th>규칙</th></tr></thead>
+        <tbody>
+          <tr><td>트레이 열기</td><td>← 방향 슬라이드로 트레이 노출.</td></tr>
+          <tr><td>재료 드래그</td><td>포인터에 재료 부착, 함께 이동.</td></tr>
+          <tr><td>드롭 판정</td><td>포인터가 사발 영역 내부면 투입 인식.</td></tr>
+          <tr><td>믹스</td><td>막자를 사발에 드롭 → 완료 애니메이션.</td></tr>
+        </tbody>
+      </table>
+
+      <h3>6.4 인내심 시스템 (제한시간)</h3>
+      <div class="card">
+        <ul>
+          <li><strong>역할</strong> — 제한시간. 손님별로 <strong>서로 다른 인내심</strong> 보유.</li>
+          <li>시간이 흐름에 따라 <strong>감소</strong>.</li>
+          <li><strong>설정 팝업에서만</strong> 시간이 흐르지 않음(일시정지).</li>
+          <li>대화 다시 보기 / 레시피 참고 팝업에서는 <strong>시간이 흐름</strong>. <span class="badge p-should">변동 가능</span></li>
+          <li>인내심이 모두 소진되면 <strong>실패 처리</strong>.</li>
+        </ul>
+        <div class="mock">팝업별 시간 흐름
+─────────────────────────
+설정              ⏸ 정지
+대화 다시 보기     ▶ 흐름 (변동 가능)
+레시피 참고       ▶ 흐름 (변동 가능)
+일반 제조 중       ▶ 흐름</div>
+      </div>
+
+      <h3>6.5 목숨 시스템</h3>
+      <div class="card">
+        <ul>
+          <li>화면 좌상단에 <strong>목숨 3개</strong> 표시.</li>
+          <li>실패(인내심 소진 등) 시 차감되는 것으로 추정 — <span class="badge p-should">규칙 확정 필요</span>.</li>
+          <li>0이 되면 게임오버 처리(추정) — 9장 참고.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 7. 요구사항 -->
+    <section id="requirements">
+      <h2>7. 요구사항 명세</h2>
+      <p>각 요구사항은 화면/시스템 명세에서 도출. 우선순위는 MoSCoW 기준.</p>
+      <table>
+        <thead>
+          <tr><th style="width:88px">ID</th><th>요구사항</th><th style="width:96px">우선순위</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>FR-001</code></td><td>로비: 게임 이름 + 새 게임/이어하기/설정/게임 종료 메뉴 제공</td><td><span class="badge p-must">MUST</span></td></tr>
+          <tr><td><code>FR-002</code></td><td>이어하기를 위한 진행도 저장/로드</td><td><span class="badge p-should">SHOULD</span></td></tr>
+          <tr><td><code>FR-003</code></td><td>주인공 횡 이동(←/→, A/D)</td><td><span class="badge p-must">MUST</span></td></tr>
+          <tr><td><code>FR-004</code></td><td>NPC 근접 시 테두리 발광 + 상단 상호작용 키 안내</td><td><span class="badge p-must">MUST</span></td></tr>
+          <tr><td><code>FR-005</code></td><td>F 키 상호작용으로 대화 시작</td><td><span class="badge p-must">MUST</span></td></tr>
+          <tr><td><code>FR-006</code></td><td>원거리 호출 시 말풍선만 표시</td><td><span class="badge p-should">SHOULD</span></td></tr>
+          <tr><td><code>FR-007</code></td><td>비주얼노벨 대화: 좌/우 스탠딩, 비화자 디밍 + 배경 딤, 「다음」 진행</td><td><span class="badge p-must">MUST</span></td></tr>
+          <tr><td><code>FR-008</code></td><td>끼어들기 말풍선 + 뒤 배경 딤 연출</td><td><span class="badge p-should">SHOULD</span></td></tr>
+          <tr><td><code>FR-009</code></td><td>카메라 이동 / 따라가기 이동 애니메이션</td><td><span class="badge p-should">SHOULD</span></td></tr>
+          <tr><td><code>FR-010</code></td><td>튜토리얼(카페 진입 직후 타이밍)</td><td><span class="badge p-could">COULD</span></td></tr>
+          <tr><td><code>FR-011</code></td><td>손님 등장: "딸랑~" SFX + 이미지 페이드 인</td><td><span class="badge p-must">MUST</span></td></tr>
+          <tr><td><code>FR-012</code></td><td>손님 주문 대화: 말풍선 표현</td><td><span class="badge p-must">MUST</span></td></tr>
+          <tr><td><code>FR-013</code></td><td>좌상단 목숨 3개 UI</td><td><span class="badge p-must">MUST</span></td></tr>
+          <tr><td><code>FR-014</code></td><td>제조 화면: 오른쪽→왼쪽 슬라이드 전환</td><td><span class="badge p-should">SHOULD</span></td></tr>
+          <tr><td><code>FR-015</code></td><td>테이블 탑뷰 + 트레이(←로 열림) + 사발 배치</td><td><span class="badge p-must">MUST</span></td></tr>
+          <tr><td><code>FR-016</code></td><td>트레이→사발 재료 드래그&amp;드롭(포인터 부착, 사발 영역 드롭 판정)</td><td><span class="badge p-must">MUST</span></td></tr>
+          <tr><td><code>FR-017</code></td><td>좌하단 버튼: 대화 다시 보기 / 레시피 참고 / 설정 (팝업 + 딤)</td><td><span class="badge p-must">MUST</span></td></tr>
+          <tr><td><code>FR-018</code></td><td>인내심 게이지: 손님별 상이, 시간 감소, 설정 팝업에서만 정지</td><td><span class="badge p-must">MUST</span></td></tr>
+          <tr><td><code>FR-019</code></td><td>인내심 소진 시 실패 처리</td><td><span class="badge p-must">MUST</span></td></tr>
+          <tr><td><code>FR-020</code></td><td>막자를 사발에 드롭하여 제조 완료</td><td><span class="badge p-must">MUST</span></td></tr>
+          <tr><td><code>FR-021</code></td><td>완료 애니메이션(막자 믹스) 재생</td><td><span class="badge p-should">SHOULD</span></td></tr>
+          <tr><td><code>FR-022</code></td><td>레시피 정답 판정 및 결과/보상 처리</td><td><span class="badge p-should">SHOULD</span></td></tr>
+          <tr><td><code>FR-023</code></td><td>3일(일자) 진행 및 뱃삯 누적 관리</td><td><span class="badge p-should">SHOULD</span></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 8. 데이터 -->
+    <section id="data">
+      <h2>8. 데이터 모델 (제안)</h2>
+      <p class="note"><span class="label">참고</span> 기획서에 구체 수치/목록이 없어, 확장 가능한 스키마와 예시 1건을 제안한다. 실제 값은 기획 확정 후 채운다.</p>
+
+      <h3>8.1 재료 (Ingredient)</h3>
+      <table>
+        <thead><tr><th>필드</th><th>타입</th><th>설명</th></tr></thead>
+        <tbody>
+          <tr><td><code>id</code></td><td>string</td><td>고유 식별자</td></tr>
+          <tr><td><code>displayName</code></td><td>string</td><td>표시 이름</td></tr>
+          <tr><td><code>icon</code></td><td>Sprite</td><td>트레이/드래그용 이미지</td></tr>
+          <tr><td><code>category</code></td><td>enum</td><td>분류(예: 베이스/시럽/토핑) — 미정</td></tr>
+        </tbody>
+      </table>
+
+      <h3>8.2 레시피 (Recipe)</h3>
+      <table>
+        <thead><tr><th>필드</th><th>타입</th><th>설명</th></tr></thead>
+        <tbody>
+          <tr><td><code>id</code></td><td>string</td><td>고유 식별자</td></tr>
+          <tr><td><code>name</code></td><td>string</td><td>음료 이름</td></tr>
+          <tr><td><code>ingredients</code></td><td>Ingredient[]</td><td>필요 재료 목록(순서 영향 여부 미정)</td></tr>
+          <tr><td><code>tolerance</code></td><td>enum/int</td><td>정답 허용 기준(정확/부분 점수) — 미정</td></tr>
+        </tbody>
+      </table>
+
+      <h3>8.3 손님 (Customer)</h3>
+      <table>
+        <thead><tr><th>필드</th><th>타입</th><th>설명</th></tr></thead>
+        <tbody>
+          <tr><td><code>id</code></td><td>string</td><td>고유 식별자</td></tr>
+          <tr><td><code>portrait</code></td><td>Sprite</td><td>대화 상대 이미지</td></tr>
+          <tr><td><code>orderDialogue</code></td><td>Line[]</td><td>주문 대사(말풍선)</td></tr>
+          <tr><td><code>targetRecipe</code></td><td>Recipe</td><td>요구 음료</td></tr>
+          <tr><td><code>patience</code></td><td>float (sec)</td><td>인내심(제한시간), 손님별 상이</td></tr>
+          <tr><td><code>day</code></td><td>int (1~3)</td><td>등장 일자</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 9. 미정 -->
+    <section id="open">
+      <h2>9. 미정 / 추가 논의 사항</h2>
+      <div class="note warn">
+        <span class="label">확정 필요</span>
+        <ol>
+          <li><strong>레시피/재료/손님 실제 데이터</strong> — 종류, 수치, 정답 판정 기준.</li>
+          <li><strong>제조 정답 판정 로직</strong> — 재료 조합 일치 방식, 순서/수량 영향 여부, 부분 점수 유무.</li>
+          <li><strong>목숨 시스템 규칙</strong> — 차감 조건, 0일 때 처리(게임오버/일자 실패).</li>
+          <li><strong>3일(일자) 진행 구조</strong> — 일자당 손님 수, 뱃삯 목표치, 일자 전환 연출.</li>
+          <li><strong>인내심 팝업 규칙</strong> — 대화 다시 보기/레시피 팝업에서 시간 흐름 여부(기획서상 "변동 가능").</li>
+          <li><strong>완료 후 결과 화면</strong> — 평가/보상/실패 피드백 UI.</li>
+          <li><strong>튜토리얼 포함 여부</strong> 및 범위.</li>
+          <li><strong>저장/이어하기</strong> 저장 단위(일자/손님) 정의.</li>
+        </ol>
+      </div>
+    </section>
+
+    <footer class="doc">
+      젬카페(GemCafe) PRD · v0.1 초안 · 출처: 「젬카페 UI」 기획서(21p) · 본 문서는 기획서 기반 추정을 포함하며, 미정 항목은 9장에 명시됨.
+    </footer>
+  </main>
+</div>
+</body>
+</html>

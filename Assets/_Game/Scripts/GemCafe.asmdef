@@ -1,0 +1,11 @@
+{
+  "name": "GemCafe",
+  "rootNamespace": "GemCafe",
+  "references": [],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "autoReferenced": true,
+  "overrideReferences": false,
+  "noEngineReferences": false
+}

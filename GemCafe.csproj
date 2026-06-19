@@ -16,9 +16,9 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <EnableDefaultItems>false</EnableDefaultItems>
     <LangVersion>9.0</LangVersion>
-    <RootNamespace></RootNamespace>
+    <RootNamespace>GemCafe</RootNamespace>
     <OutputType>Library</OutputType>
-    <AssemblyName>Assembly-CSharp</AssemblyName>
+    <AssemblyName>GemCafe</AssemblyName>
     <TargetFramework>netstandard2.1</TargetFramework>
     <BaseDirectory>.</BaseDirectory>
   </PropertyGroup>
@@ -48,12 +48,50 @@
     <Analyzer Include="D:\Program Files\Unity\Hub\Editor\6000.3.18f1\Editor\Data\Tools\BuildPipeline\Unity.SourceGenerators\Unity.UIToolkit.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\BuildInfoTextPresenter.cs" />
-    <Compile Include="Assets\Scripts\RotateCube.cs" />
-    <Compile Include="Assets\Scripts\MoveBoxOnTouch.cs" />
+    <Compile Include="Assets\_Game\Scripts\UI\LobbyMenu.cs" />
+    <Compile Include="Assets\_Game\Scripts\Data\RecipeSO.cs" />
+    <Compile Include="Assets\_Game\Scripts\UI\HUD.cs" />
+    <Compile Include="Assets\_Game\Scripts\Core\ServiceSubState.cs" />
+    <Compile Include="Assets\_Game\Scripts\Customer\DayManager.cs" />
+    <Compile Include="Assets\_Game\Scripts\Crafting\TrayController.cs" />
+    <Compile Include="Assets\_Game\Scripts\Customer\LivesSystem.cs" />
+    <Compile Include="Assets\_Game\Scripts\Data\IngredientSO.cs" />
+    <Compile Include="Assets\_Game\Scripts\UI\PopupManager.cs" />
+    <Compile Include="Assets\_Game\Scripts\Customer\CustomerSpawner.cs" />
+    <Compile Include="Assets\_Game\Scripts\Core\EventBus.cs" />
+    <Compile Include="Assets\_Game\Scripts\Customer\PatienceTimer.cs" />
+    <Compile Include="Assets\_Game\Scripts\UI\ScreenTransition.cs" />
+    <Compile Include="Assets\_Game\Scripts\Core\SceneRouter.cs" />
+    <Compile Include="Assets\_Game\Scripts\Dialogue\DialogueView.cs" />
+    <Compile Include="Assets\_Game\Scripts\UI\Popup.cs" />
+    <Compile Include="Assets\_Game\Scripts\Data\IngredientCategory.cs" />
+    <Compile Include="Assets\_Game\Scripts\UI\ResultToast.cs" />
+    <Compile Include="Assets\_Game\Scripts\Dialogue\BargeInBubble.cs" />
+    <Compile Include="Assets\_Game\Scripts\Dialogue\SpeakerView.cs" />
+    <Compile Include="Assets\_Game\Scripts\Core\SaveData.cs" />
+    <Compile Include="Assets\_Game\Scripts\Player\Interactable.cs" />
+    <Compile Include="Assets\_Game\Scripts\Core\GameManager.cs" />
+    <Compile Include="Assets\_Game\Scripts\Crafting\PestleMixer.cs" />
+    <Compile Include="Assets\_Game\Scripts\Dialogue\DialogueRunner.cs" />
+    <Compile Include="Assets\_Game\Scripts\Crafting\RecipeEvaluator.cs" />
+    <Compile Include="Assets\_Game\Scripts\Player\Interactor.cs" />
+    <Compile Include="Assets\_Game\Scripts\Core\AudioManager.cs" />
+    <Compile Include="Assets\_Game\Scripts\Core\GameStateMachine.cs" />
+    <Compile Include="Assets\_Game\Scripts\Crafting\MixAnimation.cs" />
+    <Compile Include="Assets\_Game\Scripts\Crafting\DraggableIngredient.cs" />
+    <Compile Include="Assets\_Game\Scripts\Crafting\BowlReceiver.cs" />
+    <Compile Include="Assets\_Game\Scripts\Data\DialogueLine.cs" />
+    <Compile Include="Assets\_Game\Scripts\Data\CustomerSO.cs" />
+    <Compile Include="Assets\_Game\Scripts\Player\PlayerMover.cs" />
+    <Compile Include="Assets\_Game\Scripts\Core\GameState.cs" />
+    <Compile Include="Assets\_Game\Scripts\Crafting\CraftingController.cs" />
+    <Compile Include="Assets\_Game\Scripts\Player\CameraFollow.cs" />
+    <Compile Include="Assets\_Game\Scripts\UI\PopupType.cs" />
+    <Compile Include="Assets\_Game\Scripts\Core\SaveSystem.cs" />
+    <Compile Include="Assets\_Game\Scripts\Core\GameConfig.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\Resources\BuildInfo.txt" />
+    <None Include="Assets\_Game\Scripts\GemCafe.asmdef" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
@@ -474,6 +512,18 @@
     </Reference>
     <Reference Include="UnityEditor.XRModule">
       <HintPath>D:\Program Files\Unity\Hub\Editor\6000.3.18f1\Editor\Data\Managed\UnityEngine\UnityEditor.XRModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEditor.Graphs">
+      <HintPath>D:\Program Files\Unity\Hub\Editor\6000.3.18f1\Editor\Data\Managed\UnityEditor.Graphs.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEditor.WebGL.Extensions">
+      <HintPath>D:\Program Files\Unity\Hub\Editor\6000.3.18f1\Editor\Data\PlaybackEngines\WebGLSupport\UnityEditor.WebGL.Extensions.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEditor.WindowsStandalone.Extensions">
+      <HintPath>D:\Program Files\Unity\Hub\Editor\6000.3.18f1\Editor\Data\PlaybackEngines\WindowsStandaloneSupport\UnityEditor.WindowsStandalone.Extensions.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Unity.Collections.LowLevel.ILSupport">
@@ -988,140 +1038,12 @@
       <HintPath>D:\Program Files\Unity\Hub\Editor\6000.3.18f1\Editor\Data\NetStandard\compat\2.1.0\shims\netfx\System.Xml.Serialization.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Unity.RenderPipelines.Core.Runtime">
-      <HintPath>Library\ScriptAssemblies\Unity.RenderPipelines.Core.Runtime.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Unity.RenderPipelines.Core.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.RenderPipelines.Core.Editor.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Unity.TextMeshPro.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.TextMeshPro.Editor.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEditor.UI.Analytics">
-      <HintPath>Library\ScriptAssemblies\UnityEditor.UI.Analytics.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Unity.TextMeshPro">
-      <HintPath>Library\ScriptAssemblies\Unity.TextMeshPro.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Unity.VisualStudio.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.VisualStudio.Editor.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityCliConnector.TestRunner">
-      <HintPath>Library\ScriptAssemblies\UnityCliConnector.TestRunner.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Unity.Rendering.LightTransport.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.Rendering.LightTransport.Editor.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Unity.RenderPipelines.Core.ShaderLibrary">
-      <HintPath>Library\ScriptAssemblies\Unity.RenderPipelines.Core.ShaderLibrary.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Unity.Collections">
-      <HintPath>Library\ScriptAssemblies\Unity.Collections.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Unity.RenderPipelines.GPUDriven.Runtime">
-      <HintPath>Library\ScriptAssemblies\Unity.RenderPipelines.GPUDriven.Runtime.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Unity.Mathematics">
-      <HintPath>Library\ScriptAssemblies\Unity.Mathematics.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Unity.RenderPipelines.Universal.Shaders">
-      <HintPath>Library\ScriptAssemblies\Unity.RenderPipelines.Universal.Shaders.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine.UI">
-      <HintPath>Library\ScriptAssemblies\UnityEngine.UI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Unity.RenderPipelines.Universal.2D.Editor.Overrides">
-      <HintPath>Library\ScriptAssemblies\Unity.RenderPipelines.Universal.2D.Editor.Overrides.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Unity.RenderPipelines.Universal.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.RenderPipelines.Universal.Editor.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="PPv2URPConverters">
-      <HintPath>Library\ScriptAssemblies\PPv2URPConverters.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Unity.Burst">
-      <HintPath>Library\ScriptAssemblies\Unity.Burst.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Unity.InternalAPIEngineBridge.004">
-      <HintPath>Library\ScriptAssemblies\Unity.InternalAPIEngineBridge.004.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Unity.RenderPipelines.Core.Runtime.Shared">
-      <HintPath>Library\ScriptAssemblies\Unity.RenderPipelines.Core.Runtime.Shared.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Unity.Searcher.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.Searcher.Editor.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Unity.RenderPipelines.Universal.2D.Runtime">
-      <HintPath>Library\ScriptAssemblies\Unity.RenderPipelines.Universal.2D.Runtime.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Unity.RenderPipelines.Universal.Runtime">
-      <HintPath>Library\ScriptAssemblies\Unity.RenderPipelines.Universal.Runtime.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Unity.Burst.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.Burst.Editor.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Unity.Mathematics.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.Mathematics.Editor.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Unity.RenderPipelines.Universal.Config.Runtime">
-      <HintPath>Library\ScriptAssemblies\Unity.RenderPipelines.Universal.Config.Runtime.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Unity.RenderPipeline.Universal.ShaderLibrary">
-      <HintPath>Library\ScriptAssemblies\Unity.RenderPipeline.Universal.ShaderLibrary.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Unity.UnifiedRayTracing.Runtime">
-      <HintPath>Library\ScriptAssemblies\Unity.UnifiedRayTracing.Runtime.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Unity.Collections.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.Collections.Editor.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Unity.ShaderGraph.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.ShaderGraph.Editor.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityCliConnector.Editor">
-      <HintPath>Library\ScriptAssemblies\UnityCliConnector.Editor.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Unity.RenderPipelines.Core.Editor.Shared">
-      <HintPath>Library\ScriptAssemblies\Unity.RenderPipelines.Core.Editor.Shared.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="UnityEditor.UI">
       <HintPath>Library\ScriptAssemblies\UnityEditor.UI.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Unity.RenderPipelines.ShaderGraph.ShaderGraphLibrary">
-      <HintPath>Library\ScriptAssemblies\Unity.RenderPipelines.ShaderGraph.ShaderGraphLibrary.dll</HintPath>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>Library\ScriptAssemblies\UnityEngine.UI.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>

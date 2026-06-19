@@ -8,4 +8,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/SampleScene.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
+  - enabled: 1
+    path: Assets/_Game/Scenes/Cafe.unity
+    guid: 494fd93aff00bf144861c6b9833939b0
   m_configObjects: {}
+  m_UseUCBPForAssetBundles: 0

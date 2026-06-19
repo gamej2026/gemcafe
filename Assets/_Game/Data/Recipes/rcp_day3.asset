@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb421dfac65379a45ab421fb51b3e2a6, type: 3}
+  m_Name: rcp_day3
+  m_EditorClassIdentifier: GemCafe::GemCafe.Data.RecipeSO
+  id: rcp_day3
+  drinkName: "3\uC77C\uCC28 \uC74C\uB8CC"
+  ingredients:
+  - {fileID: 11400000, guid: ba01a62c7b71dc542bd5c7a8439ec87e, type: 2}
+  - {fileID: 11400000, guid: 584f7336aa07ae045a7ce0546c8b4cd7, type: 2}

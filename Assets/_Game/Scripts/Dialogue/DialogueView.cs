@@ -1,0 +1,142 @@
+using System;
+using System.Collections;
+using UnityEngine;
+using UnityEngine.UI;
+
+namespace GemCafe.Dialogue
+{
+    public class DialogueView : MonoBehaviour
+    {
+        [SerializeField] private CanvasGroup root;
+        [SerializeField] private Text speakerNameText;
+        [SerializeField] private Text bodyText;
+        [SerializeField] private Button nextButton;
+
+        private Coroutine _typingCoroutine;
+        private string _fullBodyText = string.Empty;
+        private Action _onTypingComplete;
+
+        public bool IsTyping { get; private set; }
+
+        public void Show(bool visible)
+        {
+            if (root == null)
+            {
+                return;
+            }
+
+            root.alpha = visible ? 1f : 0f;
+            root.interactable = visible;
+            root.blocksRaycasts = visible;
+        }
+
+        public void SetLine(string speakerName, string body, float typingCps, Action onComplete = null)
+        {
+            if (_typingCoroutine != null)
+            {
+                StopCoroutine(_typingCoroutine);
+                _typingCoroutine = null;
+            }
+
+            _fullBodyText = body ?? string.Empty;
+            _onTypingComplete = onComplete;
+
+            if (speakerNameText != null)
+            {
+                speakerNameText.text = speakerName ?? string.Empty;
+            }
+
+            if (typingCps <= 0f)
+            {
+                if (bodyText != null)
+                {
+                    bodyText.text = _fullBodyText;
+                }
+
+                IsTyping = false;
+                var callback = _onTypingComplete;
+                _onTypingComplete = null;
+                callback?.Invoke();
+                return;
+            }
+
+            if (bodyText != null)
+            {
+                bodyText.text = string.Empty;
+            }
+
+            _typingCoroutine = StartCoroutine(TypeRoutine(_fullBodyText, typingCps));
+        }
+
+        public void CompleteTyping()
+        {
+            if (_typingCoroutine != null)
+            {
+                StopCoroutine(_typingCoroutine);
+                _typingCoroutine = null;
+            }
+
+            if (bodyText != null)
+            {
+                bodyText.text = _fullBodyText;
+            }
+
+            IsTyping = false;
+
+            var callback = _onTypingComplete;
+            _onTypingComplete = null;
+            callback?.Invoke();
+        }
+
+        public void BindNext(Action onNext)
+        {
+            if (nextButton == null)
+            {
+                return;
+            }
+
+            nextButton.onClick.RemoveAllListeners();
+            if (onNext != null)
+            {
+                nextButton.onClick.AddListener(() => onNext());
+            }
+        }
+
+        private IEnumerator TypeRoutine(string fullText, float typingCps)
+        {
+            IsTyping = true;
+            float elapsed = 0f;
+            int shownCount = 0;
+            int length = fullText.Length;
+
+            while (shownCount < length)
+            {
+                elapsed += Time.deltaTime;
+                int targetCount = Mathf.Min(length, Mathf.FloorToInt(elapsed * typingCps));
+
+                if (targetCount != shownCount)
+                {
+                    shownCount = targetCount;
+                    if (bodyText != null)
+                    {
+                        bodyText.text = fullText.Substring(0, shownCount);
+                    }
+                }
+
+                yield return null;
+            }
+
+            if (bodyText != null)
+            {
+                bodyText.text = fullText;
+            }
+
+            IsTyping = false;
+            _typingCoroutine = null;
+
+            var callback = _onTypingComplete;
+            _onTypingComplete = null;
+            callback?.Invoke();
+        }
+    }
+}

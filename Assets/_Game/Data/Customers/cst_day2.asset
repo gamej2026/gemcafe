@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 737e12c17be25a144a29c79e1f835755, type: 3}
+  m_Name: cst_day2
+  m_EditorClassIdentifier: GemCafe::GemCafe.Data.CustomerSO
+  id: cst_day2
+  portrait: {fileID: 0}
+  orderDialogue:
+  - speakerId: "\uC190\uB2D8"
+    text: "\uC624\uB298\uC740 \uACE0\uBA85\uAE4C\uC9C0 \uC62C\uB824\uC8FC\uAC8C."
+    portrait: {fileID: 0}
+  targetRecipe: {fileID: 11400000, guid: bf2ca86b1e63670429d390715249b2c3, type: 2}
+  patience: 40
+  day: 2
