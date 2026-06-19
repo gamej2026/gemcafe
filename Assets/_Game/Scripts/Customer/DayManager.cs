@@ -28,6 +28,11 @@ namespace GemCafe.Customer
         public int CurrentDay { get; private set; } = 1;
         public int Fare { get; private set; }
 
+        public int RemainingInQueue => _queue != null ? _queue.Count : 0;
+        public CustomerSO CurrentCustomer => _currentCustomer;
+        public bool IsResolved => _resolved;
+        public int FareReward => fareReward;
+
         private void OnEnable()
         {
             EventBus.OnDrinkCompleted += HandleDrinkCompleted;
