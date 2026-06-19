@@ -6,6 +6,8 @@ using GemCafe.Crafting;
 using GemCafe.Customer;
 using GemCafe.Data;
 using GemCafe.Dialogue;
+using GemCafe.Player;
+using GemCafe.Stage;
 using GemCafe.UI;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -35,12 +37,16 @@ namespace GemCafe.EditorTools
         private const string CustomerDay2Path = "Assets/_Game/Data/Customers/cst_day2.asset";
         private const string CustomerDay3Path = "Assets/_Game/Data/Customers/cst_day3.asset";
         private const string CafeScenePath = "Assets/_Game/Scenes/Cafe.unity";
+        private const string LobbyScenePath = "Assets/_Game/Scenes/Lobby.unity";
+        private const string Stage1ScenePath = "Assets/_Game/Scenes/Stage1_Riverside.unity";
 
         [MenuItem("GemCafe/Build/0. Build All")]
         public static void BuildAll()
         {
             CreateSampleData();
             BuildCafeScene();
+            BuildLobbyScene();
+            BuildStage1Scene();
             RegisterScenes();
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
@@ -425,6 +431,318 @@ namespace GemCafe.EditorTools
             Debug.Log("GemCafeSceneBuilder: Cafe scene build complete.");
         }
 
+        [MenuItem("GemCafe/Build/4. Build Lobby Scene")]
+        public static void BuildLobbyScene()
+        {
+            CreateSampleData();
+            AssetDatabase.SaveAssets();
+
+            Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+
+            var gameConfig = AssetDatabase.LoadAssetAtPath<GameConfig>(GameConfigPath);
+
+            var eventSystemGo = new GameObject("EventSystem", typeof(EventSystem), typeof(StandaloneInputModule));
+
+            var cameraGo = new GameObject("Main Camera", typeof(Camera));
+            cameraGo.tag = "MainCamera";
+            var mainCam = cameraGo.GetComponent<Camera>();
+            mainCam.clearFlags = CameraClearFlags.SolidColor;
+            mainCam.backgroundColor = new Color(0.12f, 0.12f, 0.14f, 1f);
+            mainCam.orthographic = true;
+            mainCam.orthographicSize = 5f;
+            mainCam.nearClipPlane = -10f;
+            mainCam.farClipPlane = 100f;
+            cameraGo.transform.position = new Vector3(0f, 0f, -10f);
+
+            var gameManagerGo = new GameObject("GameManager", typeof(GameManager), typeof(SceneRouter));
+            var gameManager = gameManagerGo.GetComponent<GameManager>();
+            var sceneRouter = gameManagerGo.GetComponent<SceneRouter>();
+            SetObjectRef(gameManager, "config", gameConfig);
+            SetObjectRef(gameManager, "sceneRouter", sceneRouter);
+
+            var audioManagerGo = new GameObject("AudioManager", typeof(AudioManager));
+            var audioManager = audioManagerGo.GetComponent<AudioManager>();
+            var sfxSource = audioManagerGo.AddComponent<AudioSource>();
+            var bgmSource = audioManagerGo.AddComponent<AudioSource>();
+            SetObjectRef(audioManager, "sfxSource", sfxSource);
+            SetObjectRef(audioManager, "bgmSource", bgmSource);
+
+            var canvasGo = new GameObject("Canvas", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
+            var canvas = canvasGo.GetComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            var scaler = canvasGo.GetComponent<CanvasScaler>();
+            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            scaler.referenceResolution = new Vector2(1920f, 1080f);
+            scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+            scaler.matchWidthOrHeight = 0.5f;
+
+            var titleGo = CreateUIObject("Title", canvasGo.transform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -160f), new Vector2(900f, 120f), new Vector2(0.5f, 1f));
+            var titleText = titleGo.AddComponent<Text>();
+            ApplyDefaultText(titleText, "삼도천 다방", 64, TextAnchor.MiddleCenter, Color.white);
+
+            var newGameButtonGo = CreateUIObject("NewGameButton", canvasGo.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 110f), new Vector2(360f, 72f), new Vector2(0.5f, 0.5f));
+            var newGameButtonImage = newGameButtonGo.AddComponent<Image>();
+            newGameButtonImage.color = new Color(0.25f, 0.45f, 0.8f, 1f);
+            var newGameButton = newGameButtonGo.AddComponent<Button>();
+            var newGameTextGo = CreateUIObject("Text", newGameButtonGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
+            var newGameText = newGameTextGo.AddComponent<Text>();
+            ApplyDefaultText(newGameText, "새 게임", 24, TextAnchor.MiddleCenter, Color.white);
+
+            var continueButtonGo = CreateUIObject("ContinueButton", canvasGo.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 20f), new Vector2(360f, 72f), new Vector2(0.5f, 0.5f));
+            var continueButtonImage = continueButtonGo.AddComponent<Image>();
+            continueButtonImage.color = new Color(0.25f, 0.45f, 0.8f, 1f);
+            var continueButton = continueButtonGo.AddComponent<Button>();
+            var continueTextGo = CreateUIObject("Text", continueButtonGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
+            var continueText = continueTextGo.AddComponent<Text>();
+            ApplyDefaultText(continueText, "이어하기", 24, TextAnchor.MiddleCenter, Color.white);
+
+            var settingsButtonGo = CreateUIObject("SettingsButton", canvasGo.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -70f), new Vector2(360f, 72f), new Vector2(0.5f, 0.5f));
+            var settingsButtonImage = settingsButtonGo.AddComponent<Image>();
+            settingsButtonImage.color = new Color(0.25f, 0.45f, 0.8f, 1f);
+            var settingsButton = settingsButtonGo.AddComponent<Button>();
+            var settingsTextGo = CreateUIObject("Text", settingsButtonGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
+            var settingsText = settingsTextGo.AddComponent<Text>();
+            ApplyDefaultText(settingsText, "설정", 24, TextAnchor.MiddleCenter, Color.white);
+
+            var quitButtonGo = CreateUIObject("QuitButton", canvasGo.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -160f), new Vector2(360f, 72f), new Vector2(0.5f, 0.5f));
+            var quitButtonImage = quitButtonGo.AddComponent<Image>();
+            quitButtonImage.color = new Color(0.25f, 0.45f, 0.8f, 1f);
+            var quitButton = quitButtonGo.AddComponent<Button>();
+            var quitTextGo = CreateUIObject("Text", quitButtonGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
+            var quitText = quitTextGo.AddComponent<Text>();
+            ApplyDefaultText(quitText, "게임 종료", 24, TextAnchor.MiddleCenter, Color.white);
+
+            var popupManagerGo = new GameObject("PopupManager");
+            popupManagerGo.transform.SetParent(canvasGo.transform, false);
+            var popupManager = popupManagerGo.AddComponent<PopupManager>();
+            var popupTypes = new[] { PopupType.Settings, PopupType.Recipe, PopupType.DialogueLog };
+            var popupNames = new[] { "Popup_Settings", "Popup_Recipe", "Popup_DialogueLog" };
+            var popupArray = new Popup[3];
+
+            for (int i = 0; i < 3; i++)
+            {
+                var popupGo = CreateUIObject(popupNames[i], popupManagerGo.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(700f, 420f), new Vector2(0.5f, 0.5f));
+                var popup = popupGo.AddComponent<Popup>();
+                var popupCg = popupGo.AddComponent<CanvasGroup>();
+
+                var dimGo = CreateUIObject("Dim", popupGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
+                dimGo.transform.SetAsFirstSibling();
+                var dimImage = dimGo.AddComponent<Image>();
+                dimImage.color = new Color(0f, 0f, 0f, 0.55f);
+
+                var panelGo = CreateUIObject("Panel", popupGo.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(560f, 300f), new Vector2(0.5f, 0.5f));
+                var panelImage = panelGo.AddComponent<Image>();
+                panelImage.color = new Color(0.2f, 0.2f, 0.25f, 1f);
+
+                var closeButtonGo = CreateUIObject("CloseButton", panelGo.transform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-20f, -20f), new Vector2(120f, 54f), new Vector2(1f, 1f));
+                var closeImage = closeButtonGo.AddComponent<Image>();
+                closeImage.color = new Color(0.8f, 0.2f, 0.2f, 1f);
+                var closeButton = closeButtonGo.AddComponent<Button>();
+                var closeTextGo = CreateUIObject("Text", closeButtonGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
+                var closeText = closeTextGo.AddComponent<Text>();
+                ApplyDefaultText(closeText, "닫기", 24, TextAnchor.MiddleCenter, Color.white);
+
+                SetEnum(popup, "type", (int)popupTypes[i]);
+                SetObjectRef(popup, "root", popupCg);
+                SetObjectRef(popup, "closeButton", closeButton);
+                SetObjectRef(popup, "dim", dimImage);
+
+                popup.Close();
+                popupArray[i] = popup;
+            }
+
+            SetObjectRefArray(popupManager, "popups", popupArray);
+
+            var lobbyMenuGo = new GameObject("LobbyMenu");
+            lobbyMenuGo.transform.SetParent(canvasGo.transform, false);
+            var lobbyMenu = lobbyMenuGo.AddComponent<LobbyMenu>();
+            SetObjectRef(lobbyMenu, "newGameButton", newGameButton);
+            SetObjectRef(lobbyMenu, "continueButton", continueButton);
+            SetObjectRef(lobbyMenu, "settingsButton", settingsButton);
+            SetObjectRef(lobbyMenu, "quitButton", quitButton);
+            SetObjectRef(lobbyMenu, "popupManager", popupManager);
+
+            EnsureFolder(ScenesDir);
+            EditorSceneManager.SaveScene(scene, LobbyScenePath);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+
+            Debug.Log("GemCafeSceneBuilder: Lobby scene build complete.");
+        }
+
+        [MenuItem("GemCafe/Build/5. Build Stage1 Scene")]
+        public static void BuildStage1Scene()
+        {
+            CreateSampleData();
+            AssetDatabase.SaveAssets();
+
+            Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+
+            var gameConfig = AssetDatabase.LoadAssetAtPath<GameConfig>(GameConfigPath);
+
+            var eventSystemGo = new GameObject("EventSystem", typeof(EventSystem), typeof(StandaloneInputModule));
+
+            var gameManagerGo = new GameObject("GameManager", typeof(GameManager), typeof(SceneRouter));
+            var gameManager = gameManagerGo.GetComponent<GameManager>();
+            var sceneRouter = gameManagerGo.GetComponent<SceneRouter>();
+            SetObjectRef(gameManager, "config", gameConfig);
+            SetObjectRef(gameManager, "sceneRouter", sceneRouter);
+
+            var audioManagerGo = new GameObject("AudioManager", typeof(AudioManager));
+            var audioManager = audioManagerGo.GetComponent<AudioManager>();
+            var sfxSource = audioManagerGo.AddComponent<AudioSource>();
+            var bgmSource = audioManagerGo.AddComponent<AudioSource>();
+            SetObjectRef(audioManager, "sfxSource", sfxSource);
+            SetObjectRef(audioManager, "bgmSource", bgmSource);
+
+            var playerGo = new GameObject("Player", typeof(SpriteRenderer), typeof(PlayerMover), typeof(Interactor));
+            playerGo.transform.position = new Vector3(0f, 0f, 0f);
+            var playerSpriteRenderer = playerGo.GetComponent<SpriteRenderer>();
+            var playerMover = playerGo.GetComponent<PlayerMover>();
+            var interactor = playerGo.GetComponent<Interactor>();
+            SetObjectRef(playerMover, "spriteRenderer", playerSpriteRenderer);
+            SetFloat(playerMover, "fallbackMoveSpeed", 5f);
+            SetFloat(interactor, "fallbackRadius", 1.5f);
+
+            var cameraGo = new GameObject("Main Camera", typeof(Camera), typeof(CameraFollow));
+            cameraGo.tag = "MainCamera";
+            var mainCam = cameraGo.GetComponent<Camera>();
+            mainCam.clearFlags = CameraClearFlags.SolidColor;
+            mainCam.backgroundColor = new Color(0.12f, 0.12f, 0.14f, 1f);
+            mainCam.orthographic = true;
+            mainCam.orthographicSize = 5f;
+            mainCam.nearClipPlane = -10f;
+            mainCam.farClipPlane = 100f;
+            cameraGo.transform.position = new Vector3(0f, 0f, -10f);
+            var cameraFollow = cameraGo.GetComponent<CameraFollow>();
+            SetObjectRef(cameraFollow, "target", playerGo.transform);
+            SetFloat(cameraFollow, "fallbackLerp", 2f);
+
+            var dolsoeGo = new GameObject("NPC_Dolsoe", typeof(SpriteRenderer), typeof(BoxCollider2D), typeof(Interactable));
+            dolsoeGo.transform.position = new Vector3(-4f, 0f, 0f);
+            var dolsoeSprite = dolsoeGo.GetComponent<SpriteRenderer>();
+            dolsoeSprite.color = new Color(0.4f, 0.7f, 1f, 1f);
+            var dolsoeCollider = dolsoeGo.GetComponent<BoxCollider2D>();
+            dolsoeCollider.isTrigger = true;
+            var dolsoeInteractable = dolsoeGo.GetComponent<Interactable>();
+            SetString(dolsoeInteractable, "displayName", "돌쇠");
+            SetDialogueLines(dolsoeInteractable, "dialogue", new[]
+            {
+                ("돌쇠", "이보게, 삼도천을 건너려는가?"),
+                ("주인공", "...네."),
+                ("돌쇠", "저 위 다방에 마님을 찾아가 보게.")
+            });
+            var dolsoeHighlightGo = new GameObject("Highlight", typeof(SpriteRenderer));
+            dolsoeHighlightGo.transform.SetParent(dolsoeGo.transform, false);
+            var dolsoeHighlightSprite = dolsoeHighlightGo.GetComponent<SpriteRenderer>();
+            dolsoeHighlightSprite.color = new Color(1f, 1f, 0.35f, 0.65f);
+            dolsoeHighlightGo.SetActive(false);
+            SetObjectRef(dolsoeInteractable, "highlightVisual", dolsoeHighlightGo);
+
+            var manimGo = new GameObject("NPC_Manim", typeof(SpriteRenderer), typeof(BoxCollider2D), typeof(Interactable));
+            manimGo.transform.position = new Vector3(4f, 0f, 0f);
+            var manimSprite = manimGo.GetComponent<SpriteRenderer>();
+            manimSprite.color = new Color(1f, 0.65f, 0.2f, 1f);
+            var manimCollider = manimGo.GetComponent<BoxCollider2D>();
+            manimCollider.isTrigger = true;
+            var manimInteractable = manimGo.GetComponent<Interactable>();
+            SetString(manimInteractable, "displayName", "마님");
+            SetDialogueLines(manimInteractable, "dialogue", new[]
+            {
+                ("마님", "어서 오게. 일손이 필요하던 참이야."),
+                ("주인공", "제가 돕겠습니다."),
+                ("마님", "좋아, 안으로 들어오게.")
+            });
+            var manimHighlightGo = new GameObject("Highlight", typeof(SpriteRenderer));
+            manimHighlightGo.transform.SetParent(manimGo.transform, false);
+            var manimHighlightSprite = manimHighlightGo.GetComponent<SpriteRenderer>();
+            manimHighlightSprite.color = new Color(1f, 1f, 0.35f, 0.65f);
+            manimHighlightGo.SetActive(false);
+            SetObjectRef(manimInteractable, "highlightVisual", manimHighlightGo);
+
+            var canvasGo = new GameObject("Canvas", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
+            var canvas = canvasGo.GetComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            var scaler = canvasGo.GetComponent<CanvasScaler>();
+            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            scaler.referenceResolution = new Vector2(1920f, 1080f);
+            scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+            scaler.matchWidthOrHeight = 0.5f;
+
+            var keyPromptGo = CreateUIObject("KeyPrompt", canvasGo.transform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -80f), new Vector2(120f, 120f), new Vector2(0.5f, 1f));
+            var keyPromptImage = keyPromptGo.AddComponent<Image>();
+            keyPromptImage.color = new Color(0f, 0f, 0f, 0.65f);
+            var keyPromptTextGo = CreateUIObject("Text", keyPromptGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
+            var keyPromptText = keyPromptTextGo.AddComponent<Text>();
+            ApplyDefaultText(keyPromptText, "F", 42, TextAnchor.MiddleCenter, Color.white);
+            keyPromptGo.SetActive(false);
+            SetObjectRef(interactor, "keyPromptUI", keyPromptGo);
+
+            var dialogueRoot = CreateUIObject("Dialogue", canvasGo.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 20f), new Vector2(1500f, 250f), new Vector2(0.5f, 0f));
+            var dialoguePanelImage = dialogueRoot.AddComponent<Image>();
+            dialoguePanelImage.color = new Color(0f, 0f, 0f, 0.65f);
+            var dialogueCanvasGroup = dialogueRoot.AddComponent<CanvasGroup>();
+
+            var speakerNameGo = CreateUIObject("SpeakerName", dialogueRoot.transform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(20f, -15f), new Vector2(220f, 40f), new Vector2(0f, 1f));
+            var speakerNameText = speakerNameGo.AddComponent<Text>();
+            ApplyDefaultText(speakerNameText, "손님", 28, TextAnchor.UpperLeft, Color.white);
+
+            var bodyTextGo = CreateUIObject("Body", dialogueRoot.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(20f, 20f), new Vector2(-180f, -80f), new Vector2(0f, 0f));
+            var bodyText = bodyTextGo.AddComponent<Text>();
+            ApplyDefaultText(bodyText, string.Empty, 30, TextAnchor.UpperLeft, Color.white);
+
+            var nextButtonGo = CreateUIObject("NextButton", dialogueRoot.transform, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-20f, 20f), new Vector2(140f, 54f), new Vector2(1f, 0f));
+            var nextButtonImage = nextButtonGo.AddComponent<Image>();
+            nextButtonImage.color = new Color(0.25f, 0.45f, 0.8f, 1f);
+            var nextButton = nextButtonGo.AddComponent<Button>();
+            var nextTextGo = CreateUIObject("Text", nextButtonGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
+            var nextText = nextTextGo.AddComponent<Text>();
+            ApplyDefaultText(nextText, "다음", 24, TextAnchor.MiddleCenter, Color.white);
+
+            var dialogueView = dialogueRoot.AddComponent<DialogueView>();
+            SetObjectRef(dialogueView, "root", dialogueCanvasGroup);
+            SetObjectRef(dialogueView, "speakerNameText", speakerNameText);
+            SetObjectRef(dialogueView, "bodyText", bodyText);
+            SetObjectRef(dialogueView, "nextButton", nextButton);
+
+            var speakerViewGo = new GameObject("SpeakerView", typeof(RectTransform));
+            speakerViewGo.transform.SetParent(canvasGo.transform, false);
+            var speakerView = speakerViewGo.AddComponent<SpeakerView>();
+            var leftPortraitGo = CreateUIObject("LeftPortrait", speakerViewGo.transform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(180f, 260f), new Vector2(220f, 300f), new Vector2(0f, 0f));
+            var leftPortrait = leftPortraitGo.AddComponent<Image>();
+            leftPortrait.color = new Color(0.3f, 0.65f, 1f, 1f);
+            var rightPortraitGo = CreateUIObject("RightPortrait", speakerViewGo.transform, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-180f, 260f), new Vector2(220f, 300f), new Vector2(1f, 0f));
+            var rightPortrait = rightPortraitGo.AddComponent<Image>();
+            rightPortrait.color = new Color(1f, 0.65f, 0.2f, 1f);
+            var dimGo = CreateUIObject("BackgroundDim", speakerViewGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
+            dimGo.transform.SetAsFirstSibling();
+            var backgroundDim = dimGo.AddComponent<Image>();
+            backgroundDim.color = new Color(0f, 0f, 0f, 0.35f);
+            SetObjectRef(speakerView, "leftPortrait", leftPortrait);
+            SetObjectRef(speakerView, "rightPortrait", rightPortrait);
+            SetObjectRef(speakerView, "backgroundDim", backgroundDim);
+            SetString(speakerView, "leftSpeakerId", "주인공");
+
+            var dialogueRunnerGo = new GameObject("DialogueRunner");
+            dialogueRunnerGo.transform.SetParent(canvasGo.transform, false);
+            var dialogueRunner = dialogueRunnerGo.AddComponent<DialogueRunner>();
+            SetObjectRef(dialogueRunner, "view", dialogueView);
+            SetObjectRef(dialogueRunner, "speakerView", speakerView);
+
+            var directorGo = new GameObject("Stage1Director", typeof(Stage1Director));
+            var director = directorGo.GetComponent<Stage1Director>();
+            SetObjectRef(director, "interactor", interactor);
+            SetObjectRef(director, "dialogueRunner", dialogueRunner);
+            SetObjectRef(director, "exitInteractable", manimInteractable);
+
+            EnsureFolder(ScenesDir);
+            EditorSceneManager.SaveScene(scene, Stage1ScenePath);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+
+            Debug.Log("GemCafeSceneBuilder: Stage1 scene build complete.");
+        }
+
         [MenuItem("GemCafe/Build/3. Register Scenes In Build")]
         public static void RegisterScenes()
         {
@@ -439,8 +757,13 @@ namespace GemCafe.EditorTools
                 }
             }
 
-            AddSceneIfExists(existing, paths, "Assets/_Game/Scenes/Lobby.unity");
-            AddSceneIfExists(existing, paths, "Assets/_Game/Scenes/Stage1.unity");
+            if (!paths.Contains(LobbyScenePath) && File.Exists(Path.GetFullPath(LobbyScenePath)))
+            {
+                existing.Insert(0, new EditorBuildSettingsScene(LobbyScenePath, true));
+                paths.Add(LobbyScenePath);
+            }
+
+            AddSceneIfExists(existing, paths, Stage1ScenePath);
             AddSceneIfExists(existing, paths, CafeScenePath);
 
             EditorBuildSettings.scenes = existing.ToArray();
@@ -615,6 +938,27 @@ namespace GemCafe.EditorTools
             for (int i = 0; i < property.arraySize; i++)
             {
                 property.GetArrayElementAtIndex(i).objectReferenceValue = values[i];
+            }
+
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        private static void SetDialogueLines(UnityEngine.Object target, string propertyName, (string speakerId, string text)[] lines)
+        {
+            var so = new SerializedObject(target);
+            var property = so.FindProperty(propertyName);
+            if (property == null)
+            {
+                throw new InvalidOperationException("Property not found: " + propertyName + " on " + target.GetType().Name);
+            }
+
+            property.arraySize = lines != null ? lines.Length : 0;
+            for (int i = 0; i < property.arraySize; i++)
+            {
+                var el = property.GetArrayElementAtIndex(i);
+                el.FindPropertyRelative("speakerId").stringValue = lines[i].speakerId;
+                el.FindPropertyRelative("text").stringValue = lines[i].text;
+                el.FindPropertyRelative("portrait").objectReferenceValue = null;
             }
 
             so.ApplyModifiedPropertiesWithoutUndo();
