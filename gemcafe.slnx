@@ -1,4 +1,6 @@
 ﻿<Solution>
   <Project Path="GemCafe.csproj" />
+  <Project Path="Assembly-CSharp.csproj" />
   <Project Path="GemCafe.Editor.csproj" />
+  <Project Path="Assembly-CSharp-Editor.csproj" />
 </Solution>
