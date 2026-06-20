@@ -25,7 +25,6 @@ namespace GemCafe.DebugTools
         private GUIStyle _panelStyle;
         private GUIStyle _titleStyle;
         private GUIStyle _buttonStyle;
-        private GUIStyle _hintStyle;
         private Texture2D _panelTex;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -84,8 +83,6 @@ namespace GemCafe.DebugTools
         {
             if (!_visible)
             {
-                EnsureStyles();
-                GUI.Label(new Rect(10f, 10f, 360f, 24f), "F9: 엔딩 테스트 패널 열기", _hintStyle);
                 return;
             }
 
@@ -148,12 +145,6 @@ namespace GemCafe.DebugTools
             {
                 fontSize = 13,
                 alignment = TextAnchor.MiddleLeft
-            };
-
-            _hintStyle = new GUIStyle(GUI.skin.label)
-            {
-                fontSize = 12,
-                normal = { textColor = new Color(1f, 1f, 1f, 0.6f) }
             };
         }
     }
