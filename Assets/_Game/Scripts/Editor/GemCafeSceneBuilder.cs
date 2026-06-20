@@ -1193,6 +1193,14 @@ namespace GemCafe.EditorTools
             var quitText = quitTextGo.AddComponent<Text>();
             ApplyDefaultText(quitText, "게임 종료", 24, TextAnchor.MiddleCenter, Color.white);
 
+            var creditsButtonGo = CreateUIObject("CreditsButton", canvasGo.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -250f), new Vector2(360f, 72f), new Vector2(0.5f, 0.5f));
+            var creditsButtonImage = creditsButtonGo.AddComponent<Image>();
+            creditsButtonImage.color = new Color(0.25f, 0.45f, 0.8f, 1f);
+            var creditsButton = creditsButtonGo.AddComponent<Button>();
+            var creditsTextGo = CreateUIObject("Text", creditsButtonGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
+            var creditsText = creditsTextGo.AddComponent<Text>();
+            ApplyDefaultText(creditsText, "크레딧", 24, TextAnchor.MiddleCenter, Color.white);
+
             var popupManagerGo = new GameObject("PopupManager");
             popupManagerGo.transform.SetParent(canvasGo.transform, false);
             var popupManager = popupManagerGo.AddComponent<PopupManager>();
@@ -1234,6 +1242,64 @@ namespace GemCafe.EditorTools
 
             SetObjectRefArray(popupManager, "popups", popupArray);
 
+            var creditsPopupGo = CreateUIObject("CreditsPopup", canvasGo.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(760f, 560f), new Vector2(0.5f, 0.5f));
+            var creditsPopup = creditsPopupGo.AddComponent<CreditsPopup>();
+            var creditsPopupCg = creditsPopupGo.AddComponent<CanvasGroup>();
+
+            var creditsDimGo = CreateUIObject("Dim", creditsPopupGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
+            creditsDimGo.transform.SetAsFirstSibling();
+            var creditsDimImage = creditsDimGo.AddComponent<Image>();
+            creditsDimImage.color = new Color(0f, 0f, 0f, 0.55f);
+            creditsDimImage.raycastTarget = false;
+
+            var creditsPanelGo = CreateUIObject("Panel", creditsPopupGo.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(680f, 440f), new Vector2(0.5f, 0.5f));
+            var creditsPanelImage = creditsPanelGo.AddComponent<Image>();
+            creditsPanelImage.color = new Color(0.18f, 0.16f, 0.22f, 1f);
+
+            var creditsTitleGo = CreateUIObject("Title", creditsPanelGo.transform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -20f), new Vector2(-40f, 60f), new Vector2(0.5f, 1f));
+            var creditsTitle = creditsTitleGo.AddComponent<Text>();
+            ApplyDefaultText(creditsTitle, "크레딧", 32, TextAnchor.MiddleCenter, Color.white);
+
+            var creditsScrollGo = CreateUIObject("ScrollView", creditsPanelGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(0f, -10f), new Vector2(-60f, -200f), new Vector2(0.5f, 0.5f));
+            var creditsScrollBg = creditsScrollGo.AddComponent<Image>();
+            creditsScrollBg.color = new Color(0f, 0f, 0f, 0f);
+            var creditsScroll = creditsScrollGo.AddComponent<ScrollRect>();
+            creditsScroll.horizontal = false;
+            creditsScroll.vertical = true;
+            creditsScroll.movementType = ScrollRect.MovementType.Clamped;
+            creditsScroll.scrollSensitivity = 24f;
+
+            var creditsViewportGo = CreateUIObject("Viewport", creditsScrollGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
+            var creditsViewportImage = creditsViewportGo.AddComponent<Image>();
+            creditsViewportImage.color = new Color(1f, 1f, 1f, 0.004f);
+            creditsViewportGo.AddComponent<RectMask2D>();
+            var creditsViewportRt = creditsViewportGo.GetComponent<RectTransform>();
+
+            var creditsContentGo = CreateUIObject("Content", creditsViewportGo.transform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, 0f), new Vector2(-32f, 0f), new Vector2(0.5f, 1f));
+            var creditsContent = creditsContentGo.AddComponent<Text>();
+            ApplyDefaultText(creditsContent, string.Empty, 26, TextAnchor.UpperCenter, Color.white);
+            creditsContent.verticalOverflow = VerticalWrapMode.Overflow;
+            var creditsContentFitter = creditsContentGo.AddComponent<ContentSizeFitter>();
+            creditsContentFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            creditsScroll.viewport = creditsViewportRt;
+            creditsScroll.content = creditsContentGo.GetComponent<RectTransform>();
+
+            var creditsCloseGo = CreateUIObject("CloseButton", creditsPanelGo.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 24f), new Vector2(180f, 56f), new Vector2(0.5f, 0f));
+            var creditsCloseImage = creditsCloseGo.AddComponent<Image>();
+            creditsCloseImage.color = new Color(0.8f, 0.2f, 0.2f, 1f);
+            var creditsCloseButton = creditsCloseGo.AddComponent<Button>();
+            var creditsCloseTextGo = CreateUIObject("Text", creditsCloseGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
+            var creditsCloseText = creditsCloseTextGo.AddComponent<Text>();
+            ApplyDefaultText(creditsCloseText, "닫기", 24, TextAnchor.MiddleCenter, Color.white);
+
+            SetObjectRef(creditsPopup, "root", creditsPopupCg);
+            SetObjectRef(creditsPopup, "closeButton", creditsCloseButton);
+            SetObjectRef(creditsPopup, "dim", creditsDimImage);
+            SetObjectRef(creditsPopup, "contentText", creditsContent);
+            SetObjectRef(creditsPopup, "scrollRect", creditsScroll);
+            creditsPopup.Close();
+
             var lobbyMenuGo = new GameObject("LobbyMenu");
             lobbyMenuGo.transform.SetParent(canvasGo.transform, false);
             var lobbyMenu = lobbyMenuGo.AddComponent<LobbyMenu>();
@@ -1241,7 +1307,9 @@ namespace GemCafe.EditorTools
             SetObjectRef(lobbyMenu, "continueButton", continueButton);
             SetObjectRef(lobbyMenu, "settingsButton", settingsButton);
             SetObjectRef(lobbyMenu, "quitButton", quitButton);
+            SetObjectRef(lobbyMenu, "creditsButton", creditsButton);
             SetObjectRef(lobbyMenu, "popupManager", popupManager);
+            SetObjectRef(lobbyMenu, "creditsPopup", creditsPopup);
 
             EnsureFolder(ScenesDir);
             EditorSceneManager.SaveScene(scene, LobbyScenePath);
