@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using GemCafe.Core;
 using GemCafe.Crafting;
 using GemCafe.Customer;
@@ -60,15 +61,30 @@ namespace GemCafe.EditorTools
         private const string Ing5Path = "Assets/Images/Ingredient/Ingredient_5.png";
         private const string Ing6Path = "Assets/Images/Ingredient/Ingredient_6.png";
 
+        // 코인 슬롯(HUD) 이미지.
+        private const string CoinNormalPath = "Assets/Images/Coin/Coin_Normal.png";
+        private const string CoinGoldPath = "Assets/Images/Coin/Coin_Gold.png";
+
         // 일자별 손님 이미지 (CustomerImage에 표시). 이 경로에 PNG를 넣으면 자동으로 적용됩니다.
         private const string CustomersImageDir = "Assets/Images/Customers";
         private const string CustomerPortrait1Path = "Assets/Images/Customers/cst_day1.png";
         private const string CustomerPortrait2Path = "Assets/Images/Customers/cst_day2.png";
         private const string CustomerPortrait3Path = "Assets/Images/Customers/cst_day3.png";
 
+        // 손님 데이터 CSV(런타임 Resources 로드용)와 손님 이미지의 Resources 사본 경로.
+        private const string ResourcesRootDir = "Assets/_Game/Resources";
+        private const string ResourcesInportCsvDir = "Assets/_Game/Resources/InportCsv";
+        private const string ResourcesCustomersDir = "Assets/_Game/Resources/Customers";
+        private const string CustomerCsvAssetPath = "Assets/_Game/Resources/InportCsv/CustumersData.csv";
+        private const string CustomerCsvResourcePath = "InportCsv/CustumersData";
+        private const string ResourcesCustomerPortrait1Path = "Assets/_Game/Resources/Customers/cst_day1.png";
+        private const string ResourcesCustomerPortrait2Path = "Assets/_Game/Resources/Customers/cst_day2.png";
+        private const string ResourcesCustomerPortrait3Path = "Assets/_Game/Resources/Customers/cst_day3.png";
+
         private static readonly string[] ResourceSpritePaths =
         {
             ResTrayPath, Ing0Path, Ing1Path, Ing2Path, Ing3Path, Ing4Path, Ing5Path, Ing6Path,
+            CoinNormalPath, CoinGoldPath,
             CustomerPortrait1Path, CustomerPortrait2Path, CustomerPortrait3Path
         };
 
@@ -188,7 +204,6 @@ namespace GemCafe.EditorTools
             var cstDay1 = LoadOrCreateAsset<CustomerSO>(CustomerDay1Path);
             cstDay1.id = "cst_day1";
             cstDay1.day = 1;
-            cstDay1.patience = 45f;
             cstDay1.targetRecipe = rcpDay1;
             cstDay1.portrait = sprCstDay1;
             cstDay1.orderDialogue = new[]
@@ -205,7 +220,6 @@ namespace GemCafe.EditorTools
             var cstDay2 = LoadOrCreateAsset<CustomerSO>(CustomerDay2Path);
             cstDay2.id = "cst_day2";
             cstDay2.day = 2;
-            cstDay2.patience = 40f;
             cstDay2.targetRecipe = rcpDay2;
             cstDay2.portrait = sprCstDay2;
             cstDay2.orderDialogue = new[]
@@ -222,7 +236,6 @@ namespace GemCafe.EditorTools
             var cstDay3 = LoadOrCreateAsset<CustomerSO>(CustomerDay3Path);
             cstDay3.id = "cst_day3";
             cstDay3.day = 3;
-            cstDay3.patience = 35f;
             cstDay3.targetRecipe = rcpDay3;
             cstDay3.portrait = sprCstDay3;
             cstDay3.orderDialogue = new[]
@@ -241,6 +254,8 @@ namespace GemCafe.EditorTools
 
             EditorUtility.SetDirty(gameConfig);
             AssetDatabase.SaveAssets();
+
+            EnsureCustomerCsv();
         }
 
         [MenuItem("GemCafe/Build/2. Build Cafe Scene")]
@@ -318,25 +333,26 @@ namespace GemCafe.EditorTools
             var hudRoot = CreateUIObject("HUD", canvasGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, Vector2.zero);
             var hud = hudRoot.AddComponent<HUD>();
 
-            var patienceGo = CreateUIObject("PatienceFill", hudRoot.transform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(250f, -20f), new Vector2(360f, 32f), new Vector2(0f, 1f));
-            var patienceImage = patienceGo.AddComponent<Image>();
-            patienceImage.color = new Color(0.15f, 0.85f, 0.15f, 1f);
-            patienceImage.type = Image.Type.Filled;
-            patienceImage.fillMethod = Image.FillMethod.Horizontal;
-            patienceImage.fillAmount = 1f;
-            SetObjectRef(hud, "patienceFill", patienceImage);
-
-            var coinSprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Knob.psd");
+            var coinNormalSprite = AssetDatabase.LoadAssetAtPath<Sprite>(CoinNormalPath);
+            var coinGoldSprite = AssetDatabase.LoadAssetAtPath<Sprite>(CoinGoldPath);
+            var coinBaseSprite = coinNormalSprite != null
+                ? coinNormalSprite
+                : AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Knob.psd");
             var coinSlots = new Image[3];
             for (int i = 0; i < 3; i++)
             {
                 var slotGo = CreateUIObject("CoinSlot_" + (i + 1), hudRoot.transform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(36f + (i * 72f), -24f), new Vector2(60f, 60f), new Vector2(0f, 1f));
                 var slotImage = slotGo.AddComponent<Image>();
-                slotImage.sprite = coinSprite;
+                slotImage.sprite = coinBaseSprite;
+                slotImage.preserveAspect = true;
                 slotImage.color = new Color(0.2f, 0.2f, 0.22f, 0.5f);
                 coinSlots[i] = slotImage;
             }
             SetObjectRefArray(hud, "coinSlots", coinSlots);
+            SetObjectRef(hud, "normalCoinSprite", coinNormalSprite);
+            SetObjectRef(hud, "goldCoinSprite", coinGoldSprite);
+            SetColor(hud, "normalCoinColor", Color.white);
+            SetColor(hud, "goldCoinColor", Color.white);
 
             var customerImageGo = CreateUIObject("CustomerImage", worldViewRoot.transform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(380f, 40f), new Vector2(640f, 820f), new Vector2(0.5f, 0f));
             var customerImage = customerImageGo.AddComponent<Image>();
@@ -767,18 +783,23 @@ namespace GemCafe.EditorTools
             SetObjectRef(spawner, "customerImage", customerImage);
             SetFloat(spawner, "fadeDuration", 0.5f);
 
-            var dayManagerGo = new GameObject("DayManager", typeof(DayManager), typeof(PatienceTimer));
+            var dayManagerGo = new GameObject("DayManager", typeof(DayManager));
             var dayManager = dayManagerGo.GetComponent<DayManager>();
-            var patienceTimer = dayManagerGo.GetComponent<PatienceTimer>();
+            var customerTable = dayManagerGo.AddComponent<CustomerCsvTable>();
+            SetString(customerTable, "resourcePath", CustomerCsvResourcePath);
+            SetObjectRefArray(customerTable, "ingredientPool", new UnityEngine.Object[]
+            {
+                ingWater, ingSyrup, ingTopping, ingGinseng, ingPersimmon, ingJujube, ingChrys
+            });
             SetObjectRef(dayManager, "spawner", spawner);
             SetObjectRef(dayManager, "dialogue", dialogueRunner);
             SetObjectRef(dayManager, "crafting", craftingController);
-            SetObjectRef(dayManager, "patience", patienceTimer);
             SetObjectRef(dayManager, "resultToast", resultToast);
             SetObjectRef(dayManager, "craftTransition", screenTransition);
             SetObjectRef(dayManager, "coinGainScreen", coinGainScreen);
             SetObjectRef(dayManager, "endingCoinSummary", endingCoinSummary);
             SetObjectRef(dayManager, "dayIntro", dayIntro);
+            SetObjectRef(dayManager, "customerTable", customerTable);
             SetObjectRefList(dayManager, "allCustomers", new[] { cstDay1, cstDay2, cstDay3 });
             SetBool(dayManager, "forceServiceStateOnStart", true);
 
@@ -1158,6 +1179,44 @@ namespace GemCafe.EditorTools
             pathSet.Add(scenePath);
         }
 
+        private static void EnsureCustomerCsv()
+        {
+            EnsureFolder(ResourcesRootDir);
+            EnsureFolder(ResourcesInportCsvDir);
+            EnsureFolder(ResourcesCustomersDir);
+
+            // 손님 이미지를 Resources 폴더로 복사(런타임 Resources.Load 가능하도록).
+            CopyPortraitToResources(CustomerPortrait1Path, ResourcesCustomerPortrait1Path);
+            CopyPortraitToResources(CustomerPortrait2Path, ResourcesCustomerPortrait2Path);
+            CopyPortraitToResources(CustomerPortrait3Path, ResourcesCustomerPortrait3Path);
+
+            var sb = new StringBuilder();
+            sb.AppendLine("id,day,drinkName,ingredient1,ingredient2,ingredient3,speaker,orderText,imagePath");
+            sb.AppendLine("cst_day1,1,1일차 음료,ing_water,ing_syrup,ing_topping,손님,곳감. 도라지. 삼도천물.,Customers/cst_day1");
+            sb.AppendLine("cst_day2,2,2일차 음료,ing_syrup,ing_ginseng,ing_persimmon,손님,도라지에 염라수염과 처녀귀신을 넣어 다오.,Customers/cst_day2");
+            sb.AppendLine("cst_day3,3,3일차 음료,ing_topping,ing_jujube,ing_chrys,손님,삼도천물에 토끼간과 담배를 곁들여주게.,Customers/cst_day3");
+
+            string fullPath = Path.GetFullPath(CustomerCsvAssetPath);
+            File.WriteAllText(fullPath, sb.ToString(), new UTF8Encoding(false));
+            AssetDatabase.ImportAsset(CustomerCsvAssetPath);
+        }
+
+        private static void CopyPortraitToResources(string sourcePath, string destPath)
+        {
+            if (!File.Exists(Path.GetFullPath(sourcePath)))
+            {
+                return;
+            }
+
+            if (AssetDatabase.LoadAssetAtPath<Sprite>(destPath) != null
+                || File.Exists(Path.GetFullPath(destPath)))
+            {
+                return;
+            }
+
+            AssetDatabase.CopyAsset(sourcePath, destPath);
+        }
+
         private static void EnsureSpriteImports()
         {
             foreach (var path in ResourceSpritePaths)
@@ -1358,6 +1417,19 @@ namespace GemCafe.EditorTools
             }
 
             property.vector2Value = value;
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        private static void SetColor(UnityEngine.Object target, string propertyName, Color value)
+        {
+            var so = new SerializedObject(target);
+            var property = so.FindProperty(propertyName);
+            if (property == null)
+            {
+                throw new InvalidOperationException("Property not found: " + propertyName + " on " + target.GetType().Name);
+            }
+
+            property.colorValue = value;
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 

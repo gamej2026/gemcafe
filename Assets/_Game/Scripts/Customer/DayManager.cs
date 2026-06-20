@@ -14,7 +14,6 @@ namespace GemCafe.Customer
         [SerializeField] private CustomerSpawner spawner;
         [SerializeField] private DialogueRunner dialogue;
         [SerializeField] private CraftingController crafting;
-        [SerializeField] private PatienceTimer patience;
         [SerializeField] private ResultToast resultToast;
         [SerializeField] private ScreenTransition craftTransition;
         [SerializeField] private DrinkPopup drinkPopup;
@@ -22,6 +21,7 @@ namespace GemCafe.Customer
         [SerializeField] private CoinGainScreen coinGainScreen;
         [SerializeField] private EndingCoinSummary endingCoinSummary;
         [SerializeField] private DayIntro dayIntro;
+        [SerializeField] private CustomerCsvTable customerTable;
         [SerializeField] private List<CustomerSO> allCustomers;
         [SerializeField] private int fareReward = 10;
         [SerializeField] private bool forceServiceStateOnStart;
@@ -35,6 +35,7 @@ namespace GemCafe.Customer
         private DrinkResult _lastResult;
         private readonly List<CoinType> _coins = new List<CoinType>();
         private int _lastIntroDay = -1;
+        private bool _customersLoaded;
 
         private const int MaxCoinSlots = 3;
 
@@ -93,6 +94,8 @@ namespace GemCafe.Customer
                 ? GameManager.Instance.Config.totalDays
                 : 3;
 
+            EnsureCustomersFromTable();
+
             CurrentDay = Mathf.Clamp(startDay, 1, totalDays);
             Fare = Mathf.Max(0, startFare);
             TotalCoins = Mathf.Max(0, startTotalCoins);
@@ -148,6 +151,21 @@ namespace GemCafe.Customer
             };
 
             SaveSystem.Save(data);
+        }
+
+        private void EnsureCustomersFromTable()
+        {
+            if (_customersLoaded || customerTable == null)
+            {
+                return;
+            }
+
+            _customersLoaded = true;
+            var loaded = customerTable.Load();
+            if (loaded != null && loaded.Count > 0)
+            {
+                allCustomers = loaded;
+            }
         }
 
         private void BuildQueueForDay(int day)
@@ -253,11 +271,6 @@ namespace GemCafe.Customer
 
             _resolved = true;
 
-            if (patience != null)
-            {
-                patience.Stop();
-            }
-
             SetServiceSub(ServiceSubState.Result);
 
             bool success = result != null;
@@ -290,19 +303,6 @@ namespace GemCafe.Customer
             EventBus.RaiseCoinsChanged(TotalCoins);
             EventBus.RaiseCoinSlotsChanged(_coins);
             ResolveAfterResult(result);
-        }
-
-        private void HandlePatienceDepleted()
-        {
-            if (_resolved)
-            {
-                return;
-            }
-
-            _resolved = true;
-            SetServiceSub(ServiceSubState.Result);
-            GameManager.Instance?.Lives.Lose(1);
-            ResolveAfterResult(DrinkResult.Fail);
         }
 
         private void ResolveAfterResult(DrinkResult result)

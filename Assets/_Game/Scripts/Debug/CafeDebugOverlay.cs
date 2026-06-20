@@ -33,7 +33,6 @@ namespace GemCafe.DebugTools
 
         // 캐시된 씬 참조 (씬 재로드 시 재획득).
         private DayManager _dayManager;
-        private PatienceTimer _patience;
         private BowlReceiver _bowl;
         private CustomerSpawner _spawner;
         private DialogueRunner _dialogue;
@@ -42,7 +41,6 @@ namespace GemCafe.DebugTools
         private int _servedCount;
         private int _successCount;
         private int _failCount;
-        private float _lastPatienceRatio = 1f;
         private bool _dialogueActive;
         private string _lastDrinkResult = "-";
         private string _lastStateChange = "-";
@@ -86,8 +84,6 @@ namespace GemCafe.DebugTools
             EventBus.OnCraftStarted += HandleCraftStarted;
             EventBus.OnIngredientAdded += HandleIngredientAdded;
             EventBus.OnDrinkCompleted += HandleDrinkCompleted;
-            EventBus.OnPatienceDepleted += HandlePatienceDepleted;
-            EventBus.OnPatienceChanged += HandlePatienceChanged;
             EventBus.OnLivesChanged += HandleLivesChanged;
             EventBus.OnDayCompleted += HandleDayCompleted;
             EventBus.OnDialogueStarted += HandleDialogueStarted;
@@ -102,8 +98,6 @@ namespace GemCafe.DebugTools
             EventBus.OnCraftStarted -= HandleCraftStarted;
             EventBus.OnIngredientAdded -= HandleIngredientAdded;
             EventBus.OnDrinkCompleted -= HandleDrinkCompleted;
-            EventBus.OnPatienceDepleted -= HandlePatienceDepleted;
-            EventBus.OnPatienceChanged -= HandlePatienceChanged;
             EventBus.OnLivesChanged -= HandleLivesChanged;
             EventBus.OnDayCompleted -= HandleDayCompleted;
             EventBus.OnDialogueStarted -= HandleDialogueStarted;
@@ -174,18 +168,6 @@ namespace GemCafe.DebugTools
             }
         }
 
-        private void HandlePatienceDepleted()
-        {
-            _failCount++;
-            _lastDrinkResult = "FAIL (patience out)";
-            AddLog("Patience depleted");
-        }
-
-        private void HandlePatienceChanged(float ratio)
-        {
-            _lastPatienceRatio = ratio;
-        }
-
         private void HandleLivesChanged(int lives)
         {
             AddLog($"Lives changed: {lives}");
@@ -212,7 +194,6 @@ namespace GemCafe.DebugTools
         {
             // 새 씬의 참조를 다시 잡도록 캐시 초기화.
             _dayManager = null;
-            _patience = null;
             _bowl = null;
             _spawner = null;
             _dialogue = null;
@@ -271,10 +252,9 @@ namespace GemCafe.DebugTools
 
             GUILayout.Space(ColumnGap);
 
-            // 컬럼 2: 손님 + 인내심 + 보울 + 통계
+            // 컬럼 2: 손님 + 보울 + 통계
             GUILayout.BeginVertical(GUILayout.Width(ColumnWidth));
             DrawCustomerSection();
-            DrawPatienceSection();
             DrawBowlSection();
             DrawStatsSection();
             GUILayout.EndVertical();
@@ -346,7 +326,7 @@ namespace GemCafe.DebugTools
                 return;
             }
 
-            GUILayout.Label($"ID: {customer.id}   Day: {customer.day}   인내심: {customer.patience:0.0}s", _labelStyle);
+            GUILayout.Label($"ID: {customer.id}   Day: {customer.day}", _labelStyle);
 
             var recipe = customer.targetRecipe;
             if (recipe == null)
@@ -357,18 +337,6 @@ namespace GemCafe.DebugTools
 
             GUILayout.Label($"목표 음료: {ResolveRecipeName(recipe)}", _labelStyle);
             GUILayout.Label($"필요 재료: {DescribeIngredients(recipe.ingredients)}", _labelStyle);
-        }
-
-        private void DrawPatienceSection()
-        {
-            GUILayout.Space(6);
-            GUILayout.Label("■ 인내심 타이머", _headerStyle);
-
-            float ratio = _patience != null ? _patience.Ratio01 : _lastPatienceRatio;
-            bool running = _patience != null && _patience.IsRunning;
-
-            GUILayout.Label($"비율: {(ratio * 100f):0}%   동작중: {(running ? "예" : "아니오")}", _labelStyle);
-            DrawBar(ratio);
         }
 
         private void DrawBowlSection()
@@ -606,11 +574,6 @@ namespace GemCafe.DebugTools
             if (_dayManager == null)
             {
                 _dayManager = FindFirstObjectByType<DayManager>();
-            }
-
-            if (_patience == null)
-            {
-                _patience = FindFirstObjectByType<PatienceTimer>();
             }
 
             if (_bowl == null)

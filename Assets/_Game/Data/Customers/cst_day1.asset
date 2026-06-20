@@ -16,10 +16,10 @@ MonoBehaviour:
   portrait: {fileID: 21300000, guid: 9b534ded534396e4f83fdc6b33cbd27d, type: 3}
   orderDialogue:
   - speakerId: "\uC190\uB2D8"
-    text: "\uACF3\uAC10\uC5D0 \uB3C4\uB77C\uC9C0\uC640 \uC0BC\uB3C4\uCC9C\uBB3C\uC744 \uC62C\uB824\uC8FC\uAC8C."
+    text: "\uACF3\uAC10\uC5D0 \uB3C4\uB77C\uC9C0\uC640 \uC0BC\uB3C4\uCC9C\uBB3C\uC744
+      \uC62C\uB824\uC8FC\uAC8C."
     portrait: {fileID: 0}
   targetRecipe: {fileID: 11400000, guid: 0e1fb77367211264aa017d24b89f563f, type: 2}
-  patience: 45
   day: 1
   greatSuccessLine: 
   successLine: 

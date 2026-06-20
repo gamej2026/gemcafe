@@ -73,7 +73,6 @@
     <Compile Include="Assets\_Game\Scripts\UI\ServeSequence.cs" />
     <Compile Include="Assets\_Game\Scripts\Core\EventBus.cs" />
     <Compile Include="Assets\_Game\Scripts\UI\EndingCoinSummary.cs" />
-    <Compile Include="Assets\_Game\Scripts\Customer\PatienceTimer.cs" />
     <Compile Include="Assets\_Game\Scripts\UI\ScreenTransition.cs" />
     <Compile Include="Assets\_Game\Scripts\Core\SceneRouter.cs" />
     <Compile Include="Assets\_Game\Scripts\Dialogue\DialogueView.cs" />
@@ -100,6 +99,7 @@
     <Compile Include="Assets\_Game\Scripts\Core\GameStateMachine.cs" />
     <Compile Include="Assets\_Game\Scripts\Crafting\MixAnimation.cs" />
     <Compile Include="Assets\_Game\Scripts\Crafting\DraggableIngredient.cs" />
+    <Compile Include="Assets\_Game\Scripts\Customer\CustomerCsvTable.cs" />
     <Compile Include="Assets\_Game\Scripts\Crafting\BowlReceiver.cs" />
     <Compile Include="Assets\_Game\Scripts\Data\DialogueLine.cs" />
     <Compile Include="Assets\_Game\Scripts\Data\CustomerSO.cs" />

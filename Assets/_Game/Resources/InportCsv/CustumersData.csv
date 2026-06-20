@@ -1,0 +1,4 @@
+id,day,drinkName,ingredient1,ingredient2,ingredient3,speaker,orderText,imagePath
+cst_day1,1,1일차 음료,ing_water,ing_syrup,ing_topping,손님,곳감. 도라지. 삼도천물.,Customers/cst_day1
+cst_day2,2,2일차 음료,ing_syrup,ing_ginseng,ing_persimmon,손님,도라지에 염라수염과 처녀귀신을 넣어 다오.,Customers/cst_day2
+cst_day3,3,3일차 음료,ing_topping,ing_jujube,ing_chrys,손님,삼도천물에 토끼간과 담배를 곁들여주게.,Customers/cst_day3

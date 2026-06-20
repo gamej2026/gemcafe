@@ -6,7 +6,6 @@ namespace GemCafe.UI
 {
     public class HUD : MonoBehaviour
     {
-        [SerializeField] private UnityEngine.UI.Image patienceFill;
         [SerializeField] private GameObject[] lifeObjects;
         [SerializeField] private UnityEngine.UI.Image[] coinSlots;
         [SerializeField] private Sprite normalCoinSprite;
@@ -18,7 +17,6 @@ namespace GemCafe.UI
         private void OnEnable()
         {
             EventBus.OnLivesChanged += HandleLives;
-            EventBus.OnPatienceChanged += HandlePatience;
             EventBus.OnCoinSlotsChanged += HandleCoinSlots;
             RefreshLives();
         }
@@ -32,7 +30,6 @@ namespace GemCafe.UI
         private void OnDisable()
         {
             EventBus.OnLivesChanged -= HandleLives;
-            EventBus.OnPatienceChanged -= HandlePatience;
             EventBus.OnCoinSlotsChanged -= HandleCoinSlots;
         }
 
@@ -60,14 +57,6 @@ namespace GemCafe.UI
                         lifeObjects[i].SetActive(i < lives);
                     }
                 }
-            }
-        }
-
-        private void HandlePatience(float ratio)
-        {
-            if (patienceFill != null)
-            {
-                patienceFill.fillAmount = Mathf.Clamp01(ratio);
             }
         }
 

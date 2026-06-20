@@ -9,7 +9,6 @@ namespace GemCafe.Data
         public Sprite portrait;
         public DialogueLine[] orderDialogue;
         public RecipeSO targetRecipe;
-        public float patience;
         [Range(1, 3)] public int day;
         [TextArea] public string greatSuccessLine;
         [TextArea] public string successLine;
