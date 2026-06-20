@@ -59,6 +59,7 @@
     <Compile Include="Assets\_Game\Scripts\Stage\Stage1Director.cs" />
     <Compile Include="Assets\_Game\Scripts\Crafting\TrayController.cs" />
     <Compile Include="Assets\_Game\Scripts\Core\CoinType.cs" />
+    <Compile Include="Assets\_Game\Scripts\Debug\EndingTestOverlay.cs" />
     <Compile Include="Assets\_Game\Scripts\Customer\LivesSystem.cs" />
     <Compile Include="Assets\_Game\Scripts\Core\KoreanFontApplier.cs" />
     <Compile Include="Assets\_Game\Scripts\Debug\CafeDebugOverlay.cs" />
