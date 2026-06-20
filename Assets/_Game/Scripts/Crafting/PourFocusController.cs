@@ -31,6 +31,8 @@ namespace GemCafe.Crafting
         [SerializeField] private float finishZoomDuration = 0.35f;
         [SerializeField] private float effectHoldDuration = 0.6f;
         [SerializeField] private float restoreDuration = 0.7f;
+        [Tooltip("페이드 아웃(복귀)이 시작되기 이 시간(초) 전에 이펙트 재생을 종료한다. 페이드 아웃 시작 시점엔 이미 이펙트가 보이지 않는다.")]
+        [SerializeField] private float effectStopLeadTime = 0.1f;
         [SerializeField] private int focusSortingOrder = 60;
         [SerializeField] private int dimSortingOrder = 50;
 
@@ -263,12 +265,26 @@ namespace GemCafe.Crafting
                 pourEffect.Play();
             }
 
+            // 페이드 아웃(복귀)을 시작하기 effectStopLeadTime초 전에 이펙트를 정지한다.
+            // → 페이드 아웃이 시작될 때는 이미 이펙트가 화면에 보이지 않는다.
             float hold = Mathf.Max(0f, effectHoldDuration);
+            float effectStopAt = Mathf.Clamp(hold - Mathf.Max(0f, effectStopLeadTime), 0f, hold);
+            bool effectStopped = false;
             float ht = 0f;
             while (ht < hold)
             {
                 ht += Time.deltaTime;
+                if (!effectStopped && ht >= effectStopAt)
+                {
+                    if (pourEffect != null) pourEffect.StopAndClear();
+                    effectStopped = true;
+                }
                 yield return null;
+            }
+
+            if (!effectStopped && pourEffect != null)
+            {
+                pourEffect.StopAndClear();
             }
 
             // 3) 원래 화면으로 천천히 이동하면서 미니게임 페이드아웃 + 디밍 원상복구

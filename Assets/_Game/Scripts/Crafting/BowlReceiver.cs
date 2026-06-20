@@ -102,12 +102,25 @@ namespace GemCafe.Crafting
         private Camera ResolveEventCamera()
         {
             var parentCanvas = bowlRect != null ? bowlRect.GetComponentInParent<Canvas>() : null;
-            if (parentCanvas != null && parentCanvas.renderMode == RenderMode.ScreenSpaceOverlay)
+            if (parentCanvas == null)
+            {
+                return uiCamera;
+            }
+
+            // Overlay 모드에서는 스크린 좌표를 그대로 쓰므로 카메라가 필요 없음(null).
+            if (parentCanvas.renderMode == RenderMode.ScreenSpaceOverlay)
             {
                 return null;
             }
 
-            return uiCamera;
+            // ScreenSpaceCamera/WorldSpace 모드에서는 반드시 캔버스의 이벤트 카메라를 넘겨야
+            // RectangleContainsScreenPoint 영역 판정이 정확함.
+            if (parentCanvas.worldCamera != null)
+            {
+                return parentCanvas.worldCamera;
+            }
+
+            return uiCamera != null ? uiCamera : Camera.main;
         }
     }
 }

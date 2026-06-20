@@ -334,7 +334,10 @@ namespace GemCafe.EditorTools
 
             var canvasGo = new GameObject("Canvas", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
             var canvas = canvasGo.GetComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            // ScreenSpace-Camera 모드: ParticleSystem 이펙트(Pour_Effect 등)가 UI 위에 렌더링되도록 한다.
+            canvas.renderMode = RenderMode.ScreenSpaceCamera;
+            canvas.worldCamera = mainCam;
+            canvas.planeDistance = 100f;
             var scaler = canvasGo.GetComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             scaler.referenceResolution = new Vector2(1920f, 1080f);
@@ -599,6 +602,7 @@ namespace GemCafe.EditorTools
             // Pour_Effect 오브젝트에 직렬화로 ParticleSystem을 받아 재생하는 컴포넌트.
             var pourEffect = pourEffectGo.AddComponent<PourEffect>();
             SetObjectRef(pourEffect, "effect", pourEffectPs);
+            SetObjectRef(pourEffect, "renderCamera", mainCam);
 
             var pourTeapotGo = CreateUIObject("Pour_Teapot", pourRootGo.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(720f, 510f), new Vector2(180f, 140f), new Vector2(0.5f, 0.5f));
             var pourTeapotImage = pourTeapotGo.AddComponent<Image>();
