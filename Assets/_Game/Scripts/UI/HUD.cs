@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using GemCafe.Core;
 using UnityEngine;
 
@@ -5,31 +6,34 @@ namespace GemCafe.UI
 {
     public class HUD : MonoBehaviour
     {
-        [SerializeField] private UnityEngine.UI.Image[] lifeIcons;
         [SerializeField] private UnityEngine.UI.Image patienceFill;
         [SerializeField] private GameObject[] lifeObjects;
-        [SerializeField] private UnityEngine.UI.Text coinText;
-        [SerializeField] private string coinFormat = "{0}";
+        [SerializeField] private UnityEngine.UI.Image[] coinSlots;
+        [SerializeField] private Sprite normalCoinSprite;
+        [SerializeField] private Sprite goldCoinSprite;
+        [SerializeField] private Color normalCoinColor = new Color(0.78f, 0.80f, 0.85f, 1f);
+        [SerializeField] private Color goldCoinColor = new Color(1f, 0.84f, 0.25f, 1f);
+        [SerializeField] private Color emptySlotColor = new Color(0.2f, 0.2f, 0.22f, 0.5f);
 
         private void OnEnable()
         {
             EventBus.OnLivesChanged += HandleLives;
             EventBus.OnPatienceChanged += HandlePatience;
-            EventBus.OnCoinsChanged += HandleCoins;
+            EventBus.OnCoinSlotsChanged += HandleCoinSlots;
             RefreshLives();
         }
 
         private void Start()
         {
             RefreshLives();
-            HandleCoins(0);
+            HandleCoinSlots(null);
         }
 
         private void OnDisable()
         {
             EventBus.OnLivesChanged -= HandleLives;
             EventBus.OnPatienceChanged -= HandlePatience;
-            EventBus.OnCoinsChanged -= HandleCoins;
+            EventBus.OnCoinSlotsChanged -= HandleCoinSlots;
         }
 
         private void RefreshLives()
@@ -47,17 +51,6 @@ namespace GemCafe.UI
 
         private void HandleLives(int lives)
         {
-            if (lifeIcons != null)
-            {
-                for (int i = 0; i < lifeIcons.Length; i++)
-                {
-                    if (lifeIcons[i] != null)
-                    {
-                        lifeIcons[i].enabled = i < lives;
-                    }
-                }
-            }
-
             if (lifeObjects != null)
             {
                 for (int i = 0; i < lifeObjects.Length; i++)
@@ -78,11 +71,35 @@ namespace GemCafe.UI
             }
         }
 
-        private void HandleCoins(int total)
+        private void HandleCoinSlots(IReadOnlyList<CoinType> coins)
         {
-            if (coinText != null)
+            if (coinSlots == null)
             {
-                coinText.text = string.Format(coinFormat, total);
+                return;
+            }
+
+            for (int i = 0; i < coinSlots.Length; i++)
+            {
+                var slot = coinSlots[i];
+                if (slot == null)
+                {
+                    continue;
+                }
+
+                if (coins != null && i < coins.Count)
+                {
+                    var isGold = coins[i] == CoinType.Gold;
+                    var sprite = isGold ? goldCoinSprite : normalCoinSprite;
+                    if (sprite != null)
+                    {
+                        slot.sprite = sprite;
+                    }
+                    slot.color = isGold ? goldCoinColor : normalCoinColor;
+                }
+                else
+                {
+                    slot.color = emptySlotColor;
+                }
             }
         }
     }

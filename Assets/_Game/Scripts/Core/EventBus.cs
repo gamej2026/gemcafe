@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using GemCafe.Data;
 using UnityEngine;
 
@@ -17,6 +18,7 @@ namespace GemCafe.Core
         public static event Action<float> OnPatienceChanged;
         public static event Action<int> OnLivesChanged;
         public static event Action<int> OnCoinsChanged;
+        public static event Action<IReadOnlyList<CoinType>> OnCoinSlotsChanged;
         public static event Action<int> OnDayCompleted;
         public static event Action<GameState, GameState> OnStateChanged;
 
@@ -75,6 +77,11 @@ namespace GemCafe.Core
             OnCoinsChanged?.Invoke(total);
         }
 
+        public static void RaiseCoinSlotsChanged(IReadOnlyList<CoinType> slots)
+        {
+            OnCoinSlotsChanged?.Invoke(slots);
+        }
+
         public static void RaiseDayCompleted(int day)
         {
             OnDayCompleted?.Invoke(day);
@@ -98,6 +105,7 @@ namespace GemCafe.Core
             OnPatienceChanged = null;
             OnLivesChanged = null;
             OnCoinsChanged = null;
+            OnCoinSlotsChanged = null;
             OnDayCompleted = null;
             OnStateChanged = null;
         }
