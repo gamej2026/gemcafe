@@ -8,5 +8,7 @@ namespace GemCafe.Data
         public string id;
         public string drinkName;
         public IngredientSO[] ingredients;
+        public Taste coreTaste;
+        public Taste[] subTastes;
     }
 }

@@ -26,6 +26,52 @@ namespace GemCafe.Crafting
             return true;
         }
 
+        public static DrinkResult Evaluate(IReadOnlyList<IngredientSO> bowl, RecipeSO target)
+        {
+            if (target == null)
+            {
+                return DrinkResult.Fail;
+            }
+
+            var tastes = new HashSet<Taste>();
+            if (bowl != null)
+            {
+                for (int i = 0; i < bowl.Count; i++)
+                {
+                    if (bowl[i] != null)
+                    {
+                        tastes.Add(bowl[i].taste);
+                    }
+                }
+            }
+
+            if (!tastes.Contains(target.coreTaste))
+            {
+                return DrinkResult.Fail;
+            }
+
+            int matchCount = 0;
+            if (target.subTastes != null)
+            {
+                var counted = new HashSet<Taste>();
+                for (int i = 0; i < target.subTastes.Length; i++)
+                {
+                    var sub = target.subTastes[i];
+                    if (counted.Add(sub) && tastes.Contains(sub))
+                    {
+                        matchCount++;
+                    }
+                }
+            }
+
+            if (matchCount >= 2)
+            {
+                return DrinkResult.GreatSuccess;
+            }
+
+            return DrinkResult.Success;
+        }
+
         private static Dictionary<IngredientSO, int> BuildCounts(IReadOnlyList<IngredientSO> source)
         {
             var counts = new Dictionary<IngredientSO, int>();

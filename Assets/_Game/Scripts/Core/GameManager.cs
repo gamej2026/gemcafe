@@ -16,6 +16,9 @@ namespace GemCafe.Core
         public LivesSystem Lives { get; private set; }
         public int ContinueStartDay { get; private set; } = 1;
         public int ContinueStartFare { get; private set; }
+        public int ContinueStartTotalCoins { get; private set; }
+        public int ContinueStartGreatCoins { get; private set; }
+        public EndingKind PendingEnding { get; private set; } = EndingKind.B;
 
         private void Awake()
         {
@@ -48,6 +51,8 @@ namespace GemCafe.Core
             Lives.Reset(lives);
             ContinueStartDay = 1;
             ContinueStartFare = 0;
+            ContinueStartTotalCoins = 0;
+            ContinueStartGreatCoins = 0;
 
             StateMachine.TryTransition(GameState.IntroStage1);
             Router.Load(SceneRouter.SceneStage1);
@@ -69,8 +74,15 @@ namespace GemCafe.Core
             Lives.Reset(d.lives);
             ContinueStartDay = d.day;
             ContinueStartFare = d.fare;
+            ContinueStartTotalCoins = d.totalCoins;
+            ContinueStartGreatCoins = d.greatCoins;
             StateMachine.Restore(GameState.ServiceLoop);
             Router.Load(SceneRouter.SceneCafe);
+        }
+
+        public void SetEndingKind(EndingKind kind)
+        {
+            PendingEnding = kind;
         }
 
         public void QuitGame()

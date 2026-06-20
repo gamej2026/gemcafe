@@ -9,5 +9,6 @@ namespace GemCafe.Data
         public string displayName;
         public Sprite icon;
         public IngredientCategory category;
+        public Taste taste;
     }
 }

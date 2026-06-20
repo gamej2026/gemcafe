@@ -62,8 +62,9 @@ namespace GemCafe.Crafting
             }
 
             bowl.Lock();
-            var ok = RecipeEvaluator.Matches(bowl.Contents, _targetRecipe);
-            EventBus.RaiseDrinkCompleted(ok ? _targetRecipe : null);
+            var result = RecipeEvaluator.Evaluate(bowl.Contents, _targetRecipe);
+            EventBus.RaiseDrinkResult(result);
+            EventBus.RaiseDrinkCompleted(result != DrinkResult.Fail ? _targetRecipe : null);
 
             if (pestleRect != null)
             {

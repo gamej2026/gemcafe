@@ -12,9 +12,11 @@ namespace GemCafe.Core
         public static event Action OnCraftStarted;
         public static event Action<IngredientSO> OnIngredientAdded;
         public static event Action<RecipeSO> OnDrinkCompleted;
+        public static event Action<DrinkResult> OnDrinkResult;
         public static event Action OnPatienceDepleted;
         public static event Action<float> OnPatienceChanged;
         public static event Action<int> OnLivesChanged;
+        public static event Action<int> OnCoinsChanged;
         public static event Action<int> OnDayCompleted;
         public static event Action<GameState, GameState> OnStateChanged;
 
@@ -48,6 +50,11 @@ namespace GemCafe.Core
             OnDrinkCompleted?.Invoke(recipe);
         }
 
+        public static void RaiseDrinkResult(DrinkResult result)
+        {
+            OnDrinkResult?.Invoke(result);
+        }
+
         public static void RaisePatienceDepleted()
         {
             OnPatienceDepleted?.Invoke();
@@ -61,6 +68,11 @@ namespace GemCafe.Core
         public static void RaiseLivesChanged(int lives)
         {
             OnLivesChanged?.Invoke(lives);
+        }
+
+        public static void RaiseCoinsChanged(int total)
+        {
+            OnCoinsChanged?.Invoke(total);
         }
 
         public static void RaiseDayCompleted(int day)
@@ -81,9 +93,11 @@ namespace GemCafe.Core
             OnCraftStarted = null;
             OnIngredientAdded = null;
             OnDrinkCompleted = null;
+            OnDrinkResult = null;
             OnPatienceDepleted = null;
             OnPatienceChanged = null;
             OnLivesChanged = null;
+            OnCoinsChanged = null;
             OnDayCompleted = null;
             OnStateChanged = null;
         }

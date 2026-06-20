@@ -8,24 +8,28 @@ namespace GemCafe.UI
         [SerializeField] private UnityEngine.UI.Image[] lifeIcons;
         [SerializeField] private UnityEngine.UI.Image patienceFill;
         [SerializeField] private GameObject[] lifeObjects;
+        [SerializeField] private UnityEngine.UI.Text coinText;
+        [SerializeField] private string coinFormat = "{0}";
 
         private void OnEnable()
         {
             EventBus.OnLivesChanged += HandleLives;
             EventBus.OnPatienceChanged += HandlePatience;
-
+            EventBus.OnCoinsChanged += HandleCoins;
             RefreshLives();
         }
 
         private void Start()
         {
             RefreshLives();
+            HandleCoins(0);
         }
 
         private void OnDisable()
         {
             EventBus.OnLivesChanged -= HandleLives;
             EventBus.OnPatienceChanged -= HandlePatience;
+            EventBus.OnCoinsChanged -= HandleCoins;
         }
 
         private void RefreshLives()
@@ -71,6 +75,14 @@ namespace GemCafe.UI
             if (patienceFill != null)
             {
                 patienceFill.fillAmount = Mathf.Clamp01(ratio);
+            }
+        }
+
+        private void HandleCoins(int total)
+        {
+            if (coinText != null)
+            {
+                coinText.text = string.Format(coinFormat, total);
             }
         }
     }

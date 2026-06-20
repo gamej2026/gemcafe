@@ -11,5 +11,10 @@ namespace GemCafe.Data
         public RecipeSO targetRecipe;
         public float patience;
         [Range(1, 3)] public int day;
+        [TextArea] public string greatSuccessLine;
+        [TextArea] public string successLine;
+        [TextArea] public string failLine;
+        public Sprite satisfiedPortrait;
+        public Sprite disappointedPortrait;
     }
 }

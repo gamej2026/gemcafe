@@ -17,6 +17,9 @@ namespace GemCafe.Customer
         [SerializeField] private PatienceTimer patience;
         [SerializeField] private ResultToast resultToast;
         [SerializeField] private ScreenTransition craftTransition;
+        [SerializeField] private DrinkPopup drinkPopup;
+        [SerializeField] private ServeSequence serveSequence;
+        [SerializeField] private CoinGainScreen coinGainScreen;
         [SerializeField] private List<CustomerSO> allCustomers;
         [SerializeField] private int fareReward = 10;
         [SerializeField] private bool forceServiceStateOnStart;
@@ -24,9 +27,12 @@ namespace GemCafe.Customer
         private Queue<CustomerSO> _queue = new Queue<CustomerSO>();
         private CustomerSO _currentCustomer;
         private bool _resolved;
+        private DrinkResult _lastResult;
 
         public int CurrentDay { get; private set; } = 1;
         public int Fare { get; private set; }
+        public int TotalCoins { get; private set; }
+        public int GreatCoins { get; private set; }
 
         public int RemainingInQueue => _queue != null ? _queue.Count : 0;
         public CustomerSO CurrentCustomer => _currentCustomer;
@@ -35,14 +41,12 @@ namespace GemCafe.Customer
 
         private void OnEnable()
         {
-            EventBus.OnDrinkCompleted += HandleDrinkCompleted;
-            EventBus.OnPatienceDepleted += HandlePatienceDepleted;
+            EventBus.OnDrinkResult += HandleDrinkResult;
         }
 
         private void OnDisable()
         {
-            EventBus.OnDrinkCompleted -= HandleDrinkCompleted;
-            EventBus.OnPatienceDepleted -= HandlePatienceDepleted;
+            EventBus.OnDrinkResult -= HandleDrinkResult;
         }
 
         private void Start()
@@ -57,7 +61,7 @@ namespace GemCafe.Customer
 
             if (gm != null && gm.StateMachine.Current == GameState.ServiceLoop)
             {
-                StartService(gm.ContinueStartDay, gm.ContinueStartFare);
+                StartService(gm.ContinueStartDay, gm.ContinueStartFare, gm.ContinueStartTotalCoins, gm.ContinueStartGreatCoins);
                 return;
             }
 
@@ -71,12 +75,19 @@ namespace GemCafe.Customer
 
         public void StartService(int startDay, int startFare)
         {
+            StartService(startDay, startFare, 0, 0);
+        }
+
+        public void StartService(int startDay, int startFare, int startTotalCoins, int startGreatCoins)
+        {
             var totalDays = GameManager.Instance != null && GameManager.Instance.Config != null
                 ? GameManager.Instance.Config.totalDays
                 : 3;
 
             CurrentDay = Mathf.Clamp(startDay, 1, totalDays);
             Fare = Mathf.Max(0, startFare);
+            TotalCoins = Mathf.Max(0, startTotalCoins);
+            GreatCoins = Mathf.Max(0, startGreatCoins);
             BuildQueueForDay(CurrentDay);
             SaveProgress();
 
@@ -86,6 +97,7 @@ namespace GemCafe.Customer
                 gm.StateMachine.TryTransition(GameState.ServiceLoop);
             }
 
+            EventBus.RaiseCoinsChanged(TotalCoins);
             NextCustomer();
         }
 
@@ -95,7 +107,9 @@ namespace GemCafe.Customer
             {
                 day = CurrentDay,
                 fare = Fare,
-                lives = GameManager.Instance != null ? GameManager.Instance.Lives.Current : 3
+                lives = GameManager.Instance != null ? GameManager.Instance.Lives.Current : 3,
+                totalCoins = TotalCoins,
+                greatCoins = GreatCoins
             };
 
             SaveSystem.Save(data);
@@ -170,11 +184,6 @@ namespace GemCafe.Customer
 
             SetServiceSub(ServiceSubState.Crafting);
 
-            if (patience != null)
-            {
-                patience.Begin(_currentCustomer.patience);
-            }
-
             if (craftTransition != null)
             {
                 craftTransition.SlideIn(() =>
@@ -215,16 +224,32 @@ namespace GemCafe.Customer
             SetServiceSub(ServiceSubState.Result);
 
             bool success = result != null;
-            if (success)
+            ResolveAfterResult(success ? DrinkResult.Success : DrinkResult.Fail);
+        }
+
+        private void HandleDrinkResult(DrinkResult result)
+        {
+            if (_resolved)
             {
-                Fare += fareReward;
-            }
-            else
-            {
-                GameManager.Instance?.Lives.Lose(1);
+                return;
             }
 
-            ResolveAfterResult(success);
+            _resolved = true;
+            SetServiceSub(ServiceSubState.Result);
+
+            if (result == DrinkResult.GreatSuccess)
+            {
+                TotalCoins++;
+                GreatCoins++;
+            }
+            else if (result == DrinkResult.Success)
+            {
+                TotalCoins++;
+            }
+
+            _lastResult = result;
+            EventBus.RaiseCoinsChanged(TotalCoins);
+            ResolveAfterResult(result);
         }
 
         private void HandlePatienceDepleted()
@@ -237,19 +262,55 @@ namespace GemCafe.Customer
             _resolved = true;
             SetServiceSub(ServiceSubState.Result);
             GameManager.Instance?.Lives.Lose(1);
-            ResolveAfterResult(false);
+            ResolveAfterResult(DrinkResult.Fail);
         }
 
-        private void ResolveAfterResult(bool success)
+        private void ResolveAfterResult(DrinkResult result)
         {
             if (crafting != null)
             {
                 crafting.EndCraft();
             }
 
+            if (drinkPopup != null)
+            {
+                var sprite = _currentCustomer != null && _currentCustomer.targetRecipe != null
+                    ? null
+                    : null;
+                drinkPopup.Show(sprite, () => PlayServe(result));
+                return;
+            }
+
+            PlayServe(result);
+        }
+
+        private void PlayServe(DrinkResult result)
+        {
+            if (serveSequence != null)
+            {
+                serveSequence.Play(() => ShowResultReaction(result));
+                return;
+            }
+
+            ShowResultReaction(result);
+        }
+
+        private void ShowResultReaction(DrinkResult result)
+        {
             if (resultToast != null)
             {
-                resultToast.ShowResult(success, AfterToast);
+                resultToast.ShowResult(result, _currentCustomer, () => ShowCoinGain(result));
+                return;
+            }
+
+            ShowCoinGain(result);
+        }
+
+        private void ShowCoinGain(DrinkResult result)
+        {
+            if (coinGainScreen != null)
+            {
+                coinGainScreen.Show(result, AfterToast);
                 return;
             }
 
@@ -258,13 +319,6 @@ namespace GemCafe.Customer
 
         private void AfterToast()
         {
-            var gm = GameManager.Instance;
-            if (gm != null && gm.Lives.IsDead)
-            {
-                gm.GameOver();
-                return;
-            }
-
             if (spawner != null)
             {
                 spawner.Clear();
@@ -282,6 +336,8 @@ namespace GemCafe.Customer
             var total = gm != null && gm.Config != null ? gm.Config.totalDays : 3;
             if (CurrentDay >= total)
             {
+                var kind = ResolveEndingKind();
+                gm?.SetEndingKind(kind);
                 gm?.StateMachine.TryTransition(GameState.Ending);
             }
             else
@@ -292,6 +348,26 @@ namespace GemCafe.Customer
                 gm?.StateMachine.TryTransition(GameState.ServiceLoop);
                 NextCustomer();
             }
+        }
+
+        private EndingKind ResolveEndingKind()
+        {
+            if (GreatCoins == 3)
+            {
+                return EndingKind.A;
+            }
+
+            if (TotalCoins == 3)
+            {
+                return EndingKind.B;
+            }
+
+            if (TotalCoins == 0)
+            {
+                return EndingKind.C;
+            }
+
+            return EndingKind.B;
         }
 
         private void SetServiceSub(ServiceSubState s)
