@@ -218,9 +218,37 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2240320114396148867, guid: 1f0d7233bf80e904693457d4b564aa3e, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5193350229976223290, guid: 1f0d7233bf80e904693457d4b564aa3e, type: 3}
       propertyPath: m_Name
       value: DialogueSystem
+      objectReference: {fileID: 0}
+    - target: {fileID: 5406867025104132015, guid: 1f0d7233bf80e904693457d4b564aa3e, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5406867025104132015, guid: 1f0d7233bf80e904693457d4b564aa3e, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5406867025104132015, guid: 1f0d7233bf80e904693457d4b564aa3e, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5406867025104132015, guid: 1f0d7233bf80e904693457d4b564aa3e, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5406867025104132015, guid: 1f0d7233bf80e904693457d4b564aa3e, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5406867025104132015, guid: 1f0d7233bf80e904693457d4b564aa3e, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5503854064162871792, guid: 1f0d7233bf80e904693457d4b564aa3e, type: 3}
       propertyPath: m_Pivot.x
@@ -301,6 +329,30 @@ PrefabInstance:
     - target: {fileID: 5503854064162871792, guid: 1f0d7233bf80e904693457d4b564aa3e, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7662978597600805689, guid: 1f0d7233bf80e904693457d4b564aa3e, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7662978597600805689, guid: 1f0d7233bf80e904693457d4b564aa3e, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7662978597600805689, guid: 1f0d7233bf80e904693457d4b564aa3e, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9184961943580437943, guid: 1f0d7233bf80e904693457d4b564aa3e, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9184961943580437943, guid: 1f0d7233bf80e904693457d4b564aa3e, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9184961943580437943, guid: 1f0d7233bf80e904693457d4b564aa3e, type: 3}
+      propertyPath: m_Color.r
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -431,6 +483,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b309a0e80913b8d49b9355fa9d30aa9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: GemCafe::GemCafe.Core.SceneRouter
+  fadeDuration: 0.35
+  fadeColor: {r: 0, g: 0, b: 0, a: 1}
 --- !u!114 &1760610775
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -803,6 +857,7 @@ MonoBehaviour:
   dialogueRunner: {fileID: 742516473}
   dialogueCsvKey: "\uCE74\uD398"
   partnerOnRight: 1
+  skipTutorial: 0
 --- !u!4 &2091591664
 Transform:
   m_ObjectHideFlags: 0
