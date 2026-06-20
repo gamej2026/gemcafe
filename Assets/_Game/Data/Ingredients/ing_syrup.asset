@@ -16,3 +16,4 @@ MonoBehaviour:
   displayName: "\uC2DC\uB7FD"
   icon: {fileID: 21300000, guid: dee13c8148a34c548b8694023c716143, type: 3}
   category: 1
+  taste: 0

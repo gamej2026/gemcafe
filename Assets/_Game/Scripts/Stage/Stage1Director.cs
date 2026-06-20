@@ -24,7 +24,15 @@ namespace GemCafe.Stage
             if (target == null) return;
             if (dialogueRunner == null || dialogueRunner.IsPlaying) return;
             bool isExit = target == exitInteractable;
-            dialogueRunner.Play(target.Dialogue, () => { if (isExit) TriggerCafeEntry(); });
+            bool partnerOnRight = IsTargetOnRight(target);
+            dialogueRunner.Play(target.Dialogue, () => { if (isExit) TriggerCafeEntry(); }, partnerOnRight);
+        }
+
+        // 대화 상대 NPC가 플레이어(Interactor) 기준 오른쪽에 있는지 판단한다.
+        private bool IsTargetOnRight(Interactable target)
+        {
+            if (interactor == null || target == null) return true;
+            return target.transform.position.x >= interactor.transform.position.x;
         }
 
         private void TriggerCafeEntry()

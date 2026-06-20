@@ -21,3 +21,8 @@ MonoBehaviour:
   targetRecipe: {fileID: 11400000, guid: 0e1fb77367211264aa017d24b89f563f, type: 2}
   patience: 45
   day: 1
+  greatSuccessLine: 
+  successLine: 
+  failLine: 
+  satisfiedPortrait: {fileID: 0}
+  disappointedPortrait: {fileID: 0}

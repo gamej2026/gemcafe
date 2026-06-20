@@ -17,7 +17,8 @@ namespace GemCafe.Dialogue
 
         public bool IsPlaying { get; private set; }
 
-        public void Play(IReadOnlyList<DialogueLine> lines, Action onComplete = null)
+        // partnerOnRight: 대화 상대 NPC가 플레이어 기준 오른쪽에 있으면 true(기본값).
+        public void Play(IReadOnlyList<DialogueLine> lines, Action onComplete = null, bool partnerOnRight = true)
         {
             if (lines == null || lines.Count == 0)
             {
@@ -41,6 +42,7 @@ namespace GemCafe.Dialogue
             if (speakerView != null)
             {
                 speakerView.Show(true);
+                speakerView.SetPartnerSide(partnerOnRight);
                 speakerView.SetBackgroundDim(true);
             }
 

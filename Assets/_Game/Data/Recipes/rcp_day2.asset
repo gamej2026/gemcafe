@@ -18,3 +18,5 @@ MonoBehaviour:
   - {fileID: 11400000, guid: ba01a62c7b71dc542bd5c7a8439ec87e, type: 2}
   - {fileID: 11400000, guid: 3e8f7213fdb1d2441b7b7ebadc4afa5a, type: 2}
   - {fileID: 11400000, guid: 584f7336aa07ae045a7ce0546c8b4cd7, type: 2}
+  coreTaste: 0
+  subTastes: 
