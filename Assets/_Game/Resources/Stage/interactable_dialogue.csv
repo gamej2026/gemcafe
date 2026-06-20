@@ -1,0 +1,7 @@
+id,order,speaker,text,portraitPath
+돌쇠,1,돌쇠,"이보게, 삼도천을 건너려는가?",Portraits/dolsoe_illust
+돌쇠,2,주인공,"...네.",Portraits/mc rough_illust
+돌쇠,3,돌쇠,"저 위 다방에 마님을 찾아가 보게.",Portraits/dolsoe_illust
+마님,1,마님,"어서 오게. 일손이 필요하던 참이야.",Portraits/manim_illust
+마님,2,주인공,"제가 돕겠습니다.",Portraits/mc rough_illust
+마님,3,마님,"좋아, 안으로 들어오게.",Portraits/manim_illust

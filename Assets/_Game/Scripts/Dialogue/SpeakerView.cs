@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using GemCafe.Data;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -58,6 +60,46 @@ namespace GemCafe.Dialogue
             }
 
             SetPortrait(UsesLeftSlot(speakerId), sprite);
+        }
+
+        // 대화 시작 시 양쪽 슬롯의 일러스트를 미리 채운다.
+        // 아직 말하지 않은 상대방도 미리 표시되어 "듣고 있다"는 느낌을 준다.
+        // 각 슬롯에는 해당 슬롯을 사용하는 화자의 첫 일러스트를 넣는다.
+        public void PrimePortraits(IReadOnlyList<DialogueLine> lines)
+        {
+            if (lines == null)
+            {
+                return;
+            }
+
+            bool leftFilled = false;
+            bool rightFilled = false;
+
+            for (int i = 0; i < lines.Count; i++)
+            {
+                DialogueLine line = lines[i];
+                if (line.portrait == null)
+                {
+                    continue;
+                }
+
+                bool usesLeft = UsesLeftSlot(line.speakerId);
+                if (usesLeft && !leftFilled)
+                {
+                    SetPortrait(true, line.portrait);
+                    leftFilled = true;
+                }
+                else if (!usesLeft && !rightFilled)
+                {
+                    SetPortrait(false, line.portrait);
+                    rightFilled = true;
+                }
+
+                if (leftFilled && rightFilled)
+                {
+                    break;
+                }
+            }
         }
 
         public void Highlight(string activeSpeakerId)

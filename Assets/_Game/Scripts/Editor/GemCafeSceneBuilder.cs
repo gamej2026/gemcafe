@@ -1013,12 +1013,7 @@ namespace GemCafe.EditorTools
             dolsoeCollider.size = Vector2.one;
             var dolsoeInteractable = dolsoeGo.GetComponent<Interactable>();
             SetString(dolsoeInteractable, "displayName", "돌쇠");
-            SetDialogueLines(dolsoeInteractable, "dialogue", new[]
-            {
-                ("돌쇠", "이보게, 삼도천을 건너려는가?"),
-                ("주인공", "...네."),
-                ("돌쇠", "저 위 다방에 마님을 찾아가 보게.")
-            });
+            SetString(dolsoeInteractable, "dialogueCsvKey", "돌쇠");
             var dolsoeHighlightGo = new GameObject("Highlight", typeof(SpriteRenderer));
             dolsoeHighlightGo.transform.SetParent(dolsoeGo.transform, false);
             var dolsoeHighlightSprite = dolsoeHighlightGo.GetComponent<SpriteRenderer>();
@@ -1035,12 +1030,7 @@ namespace GemCafe.EditorTools
             manimCollider.size = Vector2.one;
             var manimInteractable = manimGo.GetComponent<Interactable>();
             SetString(manimInteractable, "displayName", "마님");
-            SetDialogueLines(manimInteractable, "dialogue", new[]
-            {
-                ("마님", "어서 오게. 일손이 필요하던 참이야."),
-                ("주인공", "제가 돕겠습니다."),
-                ("마님", "좋아, 안으로 들어오게.")
-            });
+            SetString(manimInteractable, "dialogueCsvKey", "마님");
             var manimHighlightGo = new GameObject("Highlight", typeof(SpriteRenderer));
             manimHighlightGo.transform.SetParent(manimGo.transform, false);
             var manimHighlightSprite = manimHighlightGo.GetComponent<SpriteRenderer>();

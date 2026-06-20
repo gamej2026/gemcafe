@@ -43,6 +43,7 @@ namespace GemCafe.Dialogue
             {
                 speakerView.Show(true);
                 speakerView.SetPartnerSide(partnerOnRight);
+                speakerView.PrimePortraits(_lines);
                 speakerView.SetBackgroundDim(true);
             }
 
