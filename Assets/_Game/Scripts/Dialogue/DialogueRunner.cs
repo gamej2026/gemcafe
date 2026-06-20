@@ -40,6 +40,7 @@ namespace GemCafe.Dialogue
 
             if (speakerView != null)
             {
+                speakerView.Show(true);
                 speakerView.SetBackgroundDim(true);
             }
 
@@ -80,6 +81,7 @@ namespace GemCafe.Dialogue
 
             if (speakerView != null)
             {
+                speakerView.SetSpeakerPortrait(line.speakerId, line.portrait);
                 speakerView.Highlight(line.speakerId);
             }
 
@@ -107,6 +109,7 @@ namespace GemCafe.Dialogue
             if (speakerView != null)
             {
                 speakerView.SetBackgroundDim(false);
+                speakerView.Show(false);
             }
 
             EventBus.RaiseDialogueEnded();

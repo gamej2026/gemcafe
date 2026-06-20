@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 8535b42cc72f6dc48b8c903a96d467de
+guid: e4edd66d9828b1f4ead22e41423c7a76
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -110,13 +110,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: manim_illust_0
+      name: dolsoe_illust_0
       rect:
         serializedVersion: 2
-        x: 1060
+        x: 10
         y: 0
-        width: 301
-        height: 443
+        width: 441
+        height: 669
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -125,8 +125,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 18e4243d17b924f4f9d261428aa31ece
-      internalID: -2008950369
+      spriteID: 030bb0c9b69eab84c864361265a4a830
+      internalID: 65479905
       vertices: []
       indices: 
       edges: []
@@ -147,7 +147,7 @@ TextureImporter:
       - key: SpriteEditor.SliceSettings
         value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      manim_illust_0: -2008950369
+      dolsoe_illust_0: 65479905
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
