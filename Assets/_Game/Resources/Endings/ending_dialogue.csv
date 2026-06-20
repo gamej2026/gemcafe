@@ -12,7 +12,7 @@
 엔딩 A,A-11,[대화창] 마님의 망설이는 모습,마님 (어머니),….......,,Portraits/manim_illust,,,,none,right
 엔딩 A,A-12,[대화창] 마님의 옅은 미소,마님 (어머니),"그래도 마지막엔, 이 어미를 기억해주어 고맙구나.",,Portraits/manim_illust,,,,none,right
 엔딩 A,A-13,"[엔딩 CG] 어머니가 다 큰 주인공을 따뜻하게 안아주는 일러스트 등장 (대사창 사라지고, 따뜻하고 애틋한 BGM 페이드인)",(연출),,,,,,,fade,right
-엔딩 B,B-1,[화면] 카페 밖으로 걸어 나오는 주인공 (나루다원 밖 횡 스크롤 화면),(연출),,,,,,,fade,right
+엔딩 B,B-1,[화면] 카페 밖으로 걸어 나오는 주인공 (나루다원 밖 횡 스크롤 화면),(연출),,Endings/NormalEnding,,,,,fade,right
 엔딩 B,B-2,[대화창] (마님과 상호작용) 주인공과 마님의 대화,마님,그동안 수고했어. 또 오지 말고.,,Portraits/manim_illust,,,,none,right
 엔딩 B,B-3,[대화창] (이후 페이드 아웃),돌쇠,타라.,,Portraits/dolsoe_illust,,,,none,right
 엔딩 B,B-4,[대화창] 어두운 배경,독백,이상한 곳이었어.,,Portraits/mc rough_illust,,,,none,left
