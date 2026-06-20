@@ -10,7 +10,9 @@ namespace GemCafe.UI
         [SerializeField] private Button continueButton;
         [SerializeField] private Button settingsButton;
         [SerializeField] private Button quitButton;
+        [SerializeField] private Button creditsButton;
         [SerializeField] private PopupManager popupManager;
+        [SerializeField] private CreditsPopup creditsPopup;
 
         private void Awake()
         {
@@ -32,6 +34,11 @@ namespace GemCafe.UI
             if (quitButton != null)
             {
                 quitButton.onClick.AddListener(OnClickQuit);
+            }
+
+            if (creditsButton != null)
+            {
+                creditsButton.onClick.AddListener(OnClickCredits);
             }
         }
 
@@ -64,6 +71,11 @@ namespace GemCafe.UI
             {
                 quitButton.onClick.RemoveListener(OnClickQuit);
             }
+
+            if (creditsButton != null)
+            {
+                creditsButton.onClick.RemoveListener(OnClickCredits);
+            }
         }
 
         private void OnClickNewGame()
@@ -84,6 +96,11 @@ namespace GemCafe.UI
         private void OnClickQuit()
         {
             GameManager.Instance?.QuitGame();
+        }
+
+        private void OnClickCredits()
+        {
+            creditsPopup?.Open();
         }
     }
 }
