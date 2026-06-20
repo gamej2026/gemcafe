@@ -919,8 +919,11 @@ MonoBehaviour:
   leftPortrait: {fileID: 0}
   rightPortrait: {fileID: 0}
   backgroundDim: {fileID: 1678448291}
+  dialogueRect: {fileID: 0}
   leftStandingPosition: {x: 180, y: 260}
   rightStandingPosition: {x: -180, y: 260}
+  alignPortraitAboveDialogue: 0
+  portraitBottomMargin: 20
   dimAlpha: 0.3
   activeColor: {r: 1, g: 1, b: 1, a: 1}
   dimColor: {r: 0.4, g: 0.4, b: 0.4, a: 1}
@@ -1499,7 +1502,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &227249064
 RectTransform:
   m_ObjectHideFlags: 0
