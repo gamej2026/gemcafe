@@ -265,6 +265,12 @@ jobs:
             [ -f "$log_file" ] && grep -Eiq "Product: Unity Personal|License group:|Successfully updated license|Licensing is initialized|Successfully resolved entitlement details" "$log_file"
           }
 
+          # 라이센스 활성화/확인용 격리된 임시 프로젝트 경로.
+          # -projectPath 를 명시하지 않으면 Unity 가 "마지막으로 연 프로젝트"를 자동으로 열어,
+          # 같은 머신에서 해당 프로젝트를 연 Unity 에디터와 충돌("another Unity instance is running")한다.
+          LICENSE_PROJECT="$(mktemp -d "${TMPDIR:-/tmp}/unity-license-XXXXXX")"
+          trap 'rm -rf "$LICENSE_PROJECT"' EXIT
+
           if [ -n "$UNITY_EMAIL" ] && [ -n "$UNITY_PASSWORD" ]; then
             echo "Unity 라이센스를 EMAIL/PASSWORD로 활성화합니다..."
             LOG_FILE="$PWD/activation.log"
@@ -274,6 +280,7 @@ jobs:
               -batchmode \
               -nographics \
               -quit \
+              -projectPath "$LICENSE_PROJECT" \
               -username "$UNITY_EMAIL" \
               -password "$UNITY_PASSWORD" \
               -logFile "$LOG_FILE"
@@ -308,7 +315,7 @@ jobs:
           TEST_LOG_FILE="$PWD/license-test.log"
           
           set +e
-          "$UNITY_PATH" -batchmode -nographics -quit -logFile "$TEST_LOG_FILE"
+          "$UNITY_PATH" -batchmode -nographics -quit -projectPath "$LICENSE_PROJECT" -logFile "$TEST_LOG_FILE"
           TEST_EXIT_CODE=$?
           set -e
           
