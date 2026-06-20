@@ -1,91 +1,36 @@
-using GemCafe.Core;
-using GemCafe.Data;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace GemCafe.Crafting
 {
-    public class PestleMixer : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+    public class PestleMixer : MonoBehaviour, IPointerClickHandler
     {
         [SerializeField] private BowlReceiver bowl;
         [SerializeField] private RectTransform bowlRect;
         [SerializeField] private Camera uiCamera;
         [SerializeField] private RectTransform pestleRect;
-        [SerializeField] private RecipeSO _targetRecipe;
+        [SerializeField] private CraftingController controller;
 
-        private Vector2 _origin;
+        private bool _interactable;
 
-        public void OnBeginDrag(PointerEventData eventData)
+        private void Awake()
         {
-            if (pestleRect != null)
-            {
-                _origin = pestleRect.anchoredPosition;
-            }
+            _interactable = true;
         }
 
-        public void OnDrag(PointerEventData eventData)
+        public void SetInteractable(bool value)
         {
-            if (pestleRect == null || eventData == null)
+            _interactable = value;
+        }
+
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            if (!_interactable || controller == null)
             {
                 return;
             }
 
-            pestleRect.anchoredPosition += eventData.delta;
-        }
-
-        public void OnEndDrag(PointerEventData eventData)
-        {
-            if (pestleRect == null || bowlRect == null || eventData == null)
-            {
-                return;
-            }
-
-            if (RectTransformUtility.RectangleContainsScreenPoint(bowlRect, eventData.position, ResolveEventCamera()))
-            {
-                Mix();
-                return;
-            }
-
-            pestleRect.anchoredPosition = _origin;
-        }
-
-        public void Mix()
-        {
-            if (bowl == null || bowl.IsLocked)
-            {
-                if (pestleRect != null)
-                {
-                    pestleRect.anchoredPosition = _origin;
-                }
-
-                return;
-            }
-
-            bowl.Lock();
-            var result = RecipeEvaluator.Evaluate(bowl.Contents, _targetRecipe);
-            EventBus.RaiseDrinkResult(result);
-            EventBus.RaiseDrinkCompleted(result != DrinkResult.Fail ? _targetRecipe : null);
-
-            if (pestleRect != null)
-            {
-                pestleRect.anchoredPosition = _origin;
-            }
-        }
-
-        public void SetTargetRecipe(RecipeSO target)
-        {
-            _targetRecipe = target;
-        }
-
-        private Camera ResolveEventCamera()
-        {
-            var parentCanvas = bowlRect != null ? bowlRect.GetComponentInParent<Canvas>() : null;
-            if (parentCanvas != null && parentCanvas.renderMode == RenderMode.ScreenSpaceOverlay)
-            {
-                return null;
-            }
-
-            return uiCamera;
+            controller.OnPestleClicked();
         }
     }
 }

@@ -10,16 +10,28 @@ namespace GemCafe.UI
         [SerializeField] private CanvasGroup root;
         [SerializeField] private Image drinkImage;
         [SerializeField] private GameObject sparkle;
+        [SerializeField] private Text nameLabel;
         [SerializeField] private float autoAdvance = 1.5f;
 
         private Coroutine _routine;
 
         public void Show(Sprite drink, Action onDone = null)
         {
+            Show(drink, string.Empty, onDone);
+        }
+
+        public void Show(Sprite drink, string drinkName, Action onDone = null)
+        {
             if (drinkImage != null)
             {
                 drinkImage.sprite = drink;
                 drinkImage.enabled = drink != null;
+            }
+
+            if (nameLabel != null)
+            {
+                nameLabel.text = drinkName;
+                nameLabel.enabled = !string.IsNullOrEmpty(drinkName);
             }
 
             if (sparkle != null)
