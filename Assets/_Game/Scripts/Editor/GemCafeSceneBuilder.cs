@@ -1160,10 +1160,10 @@ namespace GemCafe.EditorTools
             var speakerViewGo = new GameObject("SpeakerView", typeof(RectTransform));
             speakerViewGo.transform.SetParent(canvasGo.transform, false);
             var speakerView = speakerViewGo.AddComponent<SpeakerView>();
-            var leftPortraitGo = CreateUIObject("LeftPortrait", speakerViewGo.transform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(180f, 260f), new Vector2(220f, 300f), new Vector2(0f, 0f));
+            var leftPortraitGo = CreateUIObject("LeftPortrait", speakerViewGo.transform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(180f, 260f), new Vector2(220f, 300f), new Vector2(0.5f, 0f));
             var leftPortrait = leftPortraitGo.AddComponent<Image>();
             leftPortrait.color = new Color(0.3f, 0.65f, 1f, 1f);
-            var rightPortraitGo = CreateUIObject("RightPortrait", speakerViewGo.transform, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-180f, 260f), new Vector2(220f, 300f), new Vector2(1f, 0f));
+            var rightPortraitGo = CreateUIObject("RightPortrait", speakerViewGo.transform, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-180f, 260f), new Vector2(220f, 300f), new Vector2(0.5f, 0f));
             var rightPortrait = rightPortraitGo.AddComponent<Image>();
             rightPortrait.color = new Color(1f, 0.65f, 0.2f, 1f);
             var dimGo = CreateUIObject("BackgroundDim", speakerViewGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
@@ -1257,11 +1257,11 @@ namespace GemCafe.EditorTools
             var speakerViewGo = new GameObject("SpeakerView", typeof(RectTransform));
             speakerViewGo.transform.SetParent(canvasGo.transform, false);
             var speakerView = speakerViewGo.AddComponent<SpeakerView>();
-            var leftPortraitGo = CreateUIObject("LeftPortrait", speakerViewGo.transform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(180f, 260f), new Vector2(220f, 300f), new Vector2(0f, 0f));
+            var leftPortraitGo = CreateUIObject("LeftPortrait", speakerViewGo.transform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(180f, 260f), new Vector2(220f, 300f), new Vector2(0.5f, 0f));
             var leftPortrait = leftPortraitGo.AddComponent<Image>();
             leftPortrait.color = new Color(0.3f, 0.65f, 1f, 1f);
             leftPortrait.gameObject.SetActive(false);
-            var rightPortraitGo = CreateUIObject("RightPortrait", speakerViewGo.transform, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-180f, 260f), new Vector2(220f, 300f), new Vector2(1f, 0f));
+            var rightPortraitGo = CreateUIObject("RightPortrait", speakerViewGo.transform, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-180f, 260f), new Vector2(220f, 300f), new Vector2(0.5f, 0f));
             var rightPortrait = rightPortraitGo.AddComponent<Image>();
             rightPortrait.color = new Color(1f, 0.65f, 0.2f, 1f);
             rightPortrait.gameObject.SetActive(false);

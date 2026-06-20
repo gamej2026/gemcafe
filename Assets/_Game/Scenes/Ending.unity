@@ -953,6 +953,8 @@ MonoBehaviour:
   leftPortrait: {fileID: 1379512029}
   rightPortrait: {fileID: 1448174358}
   backgroundDim: {fileID: 1091022018}
+  leftStandingPosition: {x: 448, y: -293}
+  rightStandingPosition: {x: -448, y: -293}
   dimAlpha: 0.3
   activeColor: {r: 1, g: 1, b: 1, a: 1}
   dimColor: {r: 0.4, g: 0.4, b: 0.4, a: 1}
@@ -1430,7 +1432,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 180, y: 260}
+  m_AnchoredPosition: {x: 180, y: -293}
   m_SizeDelta: {x: 220, y: 300}
   m_Pivot: {x: 0, y: 0}
 --- !u!222 &1379512028
@@ -1505,7 +1507,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -180, y: 260}
+  m_AnchoredPosition: {x: -180, y: -293}
   m_SizeDelta: {x: 220, y: 300}
   m_Pivot: {x: 1, y: 0}
 --- !u!222 &1448174357

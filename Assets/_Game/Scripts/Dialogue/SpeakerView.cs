@@ -10,13 +10,23 @@ namespace GemCafe.Dialogue
         [SerializeField] private Image leftPortrait;
         [SerializeField] private Image rightPortrait;
         [SerializeField] private Image backgroundDim;
+        [SerializeField] private Vector2 leftStandingPosition = new Vector2(180f, 260f);
+        [SerializeField] private Vector2 rightStandingPosition = new Vector2(-180f, 260f);
         [SerializeField] private float dimAlpha = 0.3f;   
         [SerializeField] private Color activeColor = Color.white;
         [SerializeField] private Color dimColor = new Color(0.4f, 0.4f, 0.4f, 1f);
         [SerializeField] private string leftSpeakerId;
+        private static readonly Vector2 BottomCenterPivot = new Vector2(0.5f, 0f);
+        private static readonly Vector2 LeftAnchor = new Vector2(0f, 0f);
+        private static readonly Vector2 RightAnchor = new Vector2(1f, 0f);
         // 대화 상대(주인공이 아닌 화자)가 화면 오른쪽에 표시될지 여부.
         // 게임 월드에서 NPC가 플레이어 오른쪽에 있으면 true, 왼쪽이면 false.
         private bool _partnerOnRight = true;
+
+        private void Awake()
+        {
+            ApplyPortraitLayout();
+        }
 
         // 대화 시작 시 상대방 NPC가 플레이어 기준 어느 쪽에 있는지 알려준다.
         public void SetPartnerSide(bool partnerOnRight)
@@ -39,6 +49,8 @@ namespace GemCafe.Dialogue
             {
                 return;
             }
+
+            ConfigurePortraitRect(target.rectTransform, left);
 
             target.sprite = sprite;
             target.gameObject.SetActive(sprite != null);
@@ -136,6 +148,27 @@ namespace GemCafe.Dialogue
             var color = backgroundDim.color;
             color.a = on ? dimAlpha : 0f;
             backgroundDim.color = color;
+        }
+
+        private void ApplyPortraitLayout()
+        {
+            if (leftPortrait != null)
+            {
+                ConfigurePortraitRect(leftPortrait.rectTransform, true);
+            }
+
+            if (rightPortrait != null)
+            {
+                ConfigurePortraitRect(rightPortrait.rectTransform, false);
+            }
+        }
+
+        private void ConfigurePortraitRect(RectTransform rect, bool left)
+        {
+            rect.anchorMin = left ? LeftAnchor : RightAnchor;
+            rect.anchorMax = left ? LeftAnchor : RightAnchor;
+            rect.pivot = BottomCenterPivot;
+            rect.anchoredPosition = left ? leftStandingPosition : rightStandingPosition;
         }
     }
      

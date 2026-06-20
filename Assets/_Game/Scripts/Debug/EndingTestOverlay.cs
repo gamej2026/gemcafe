@@ -76,6 +76,11 @@ namespace GemCafe.DebugTools
 
         private static void Trigger(EndingKind kind, int totalCoins, int greatCoins)
         {
+            if (_instance != null)
+            {
+                _instance._visible = false;
+            }
+
             EndingFlow.Trigger(kind, totalCoins, greatCoins);
         }
 
