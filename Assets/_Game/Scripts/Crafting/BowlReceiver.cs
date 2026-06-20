@@ -14,6 +14,7 @@ namespace GemCafe.Crafting
         [SerializeField] private RectTransform[] slots = new RectTransform[3];
 
         private readonly List<IngredientSO> _contents = new();
+        private readonly List<DraggableIngredient> _placed = new();
 
         public IReadOnlyList<IngredientSO> Contents => _contents;
         public bool IsLocked { get; private set; }
@@ -54,6 +55,7 @@ namespace GemCafe.Crafting
             var slot = ResolveSlot(_contents.Count);
             Add(draggable.Ingredient);
             draggable.Settle(slot);
+            _placed.Add(draggable);
         }
 
         private RectTransform ResolveSlot(int index)
@@ -84,6 +86,15 @@ namespace GemCafe.Crafting
 
         public void Clear()
         {
+            for (int i = 0; i < _placed.Count; i++)
+            {
+                if (_placed[i] != null)
+                {
+                    _placed[i].ReturnToOrigin();
+                }
+            }
+
+            _placed.Clear();
             _contents.Clear();
             IsLocked = false;
         }

@@ -64,7 +64,6 @@
     <Compile Include="Assets\_Game\Scripts\Debug\EndingTestOverlay.cs" />
     <Compile Include="Assets\_Game\Scripts\Customer\LivesSystem.cs" />
     <Compile Include="Assets\_Game\Scripts\Core\KoreanFontApplier.cs" />
-    <Compile Include="Assets\_Game\Scripts\Debug\CafeDebugOverlay.cs" />
     <Compile Include="Assets\_Game\Scripts\Data\IngredientSO.cs" />
     <Compile Include="Assets\_Game\Scripts\Crafting\MixMinigame.cs" />
     <Compile Include="Assets\_Game\Scripts\Stage\ParallaxBackground.cs" />
@@ -117,7 +116,6 @@
     <Compile Include="Assets\_Game\Scripts\Ending\EndingBeat.cs" />
     <Compile Include="Assets\_Game\Scripts\UI\DayIntro.cs" />
     <Compile Include="Assets\_Game\Scripts\Core\GameConfig.cs" />
-    <Compile Include="Assets\_Game\Scripts\Debug\Stage1DebugOverlay.cs" />
     <Compile Include="Assets\_Game\Scripts\UI\DrinkPopup.cs" />
   </ItemGroup>
   <ItemGroup>
