@@ -184,9 +184,9 @@
     <Compile Include="Library\PackageCache\com.unity.render-pipelines.universal@35356061dd01\Runtime\Overrides\WhiteBalance.cs" />
     <Compile Include="Library\PackageCache\com.unity.render-pipelines.universal@35356061dd01\Runtime\FrameData\UniversalLightData.cs" />
     <Compile Include="Library\PackageCache\com.unity.render-pipelines.universal@35356061dd01\Runtime\Debug\DebugHandler.cs" />
-    <Compile Include="Library\PackageCache\com.unity.render-pipelines.universal@35356061dd01\Runtime\Decal\Entities\DecalDrawSystem.cs" />
     <Compile Include="Library\PackageCache\com.unity.render-pipelines.universal@35356061dd01\Runtime\Passes\PostProcessPass.cs" />
     <Compile Include="Library\PackageCache\com.unity.render-pipelines.universal@35356061dd01\Runtime\Passes\CapturePass.cs" />
+    <Compile Include="Library\PackageCache\com.unity.render-pipelines.universal@35356061dd01\Runtime\Decal\Entities\DecalDrawSystem.cs" />
     <Compile Include="Library\PackageCache\com.unity.render-pipelines.universal@35356061dd01\Runtime\Settings\URPShaderStrippingSetting.cs" />
     <Compile Include="Library\PackageCache\com.unity.render-pipelines.universal@35356061dd01\Runtime\Decal\DecalProjector.cs" />
     <Compile Include="Library\PackageCache\com.unity.render-pipelines.universal@35356061dd01\Runtime\Passes\ScriptableRenderPass.cs" />

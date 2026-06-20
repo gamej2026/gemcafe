@@ -227,10 +227,10 @@
     <Compile Include="Library\PackageCache\com.unity.shadergraph@2b401d56d4b3\Editor\Drawing\Inspector\PropertyDrawers\GradientPropertyDrawer.cs" />
     <Compile Include="Library\PackageCache\com.unity.shadergraph@2b401d56d4b3\Editor\Data\Graphs\SerializableTexture.cs" />
     <Compile Include="Library\PackageCache\com.unity.shadergraph@2b401d56d4b3\Editor\Data\Interfaces\IMayRequirePosition.cs" />
-    <Compile Include="Library\PackageCache\com.unity.shadergraph@2b401d56d4b3\Editor\Data\Attributes\NeverAllowedByTargetAttribute.cs" />
     <Compile Include="Library\PackageCache\com.unity.shadergraph@2b401d56d4b3\Editor\Data\Nodes\Math\Advanced\ReciprocalSquareRootNode.cs" />
     <Compile Include="Library\PackageCache\com.unity.shadergraph@2b401d56d4b3\Editor\Serialization\FakeJsonObject.cs" />
     <Compile Include="Library\PackageCache\com.unity.shadergraph@2b401d56d4b3\Editor\Drawing\Inspector\PropertyDrawers\Vector4PropertyDrawer.cs" />
+    <Compile Include="Library\PackageCache\com.unity.shadergraph@2b401d56d4b3\Editor\Data\Attributes\NeverAllowedByTargetAttribute.cs" />
     <Compile Include="Library\PackageCache\com.unity.shadergraph@2b401d56d4b3\Editor\Data\Nodes\Math\Round\CeilingNode.cs" />
     <Compile Include="Library\PackageCache\com.unity.shadergraph@2b401d56d4b3\Editor\Drawing\Controls\ButtonControl.cs" />
     <Compile Include="Library\PackageCache\com.unity.shadergraph@2b401d56d4b3\Editor\Generation\Targets\BuiltIn\Editor\ShaderGraph\BuiltInStructs.cs" />

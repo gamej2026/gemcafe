@@ -24,6 +24,14 @@ namespace GemCafe.Dialogue
 
         private static Dictionary<string, DialogueLine[]> _cached;
 
+        // Play 모드 진입 시 항상 캐시를 비워, CSV 수정분이 즉시 반영되도록 한다.
+        // ("Enter Play Mode (도메인 리로드 비활성)" 설정에서도 정적 캐시가 남지 않게 함)
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetCacheOnPlay()
+        {
+            _cached = null;
+        }
+
         public static DialogueLine[] LoadById(string id)
         {
             if (string.IsNullOrWhiteSpace(id))

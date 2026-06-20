@@ -82,8 +82,8 @@
     <Compile Include="Library\PackageCache\com.unity.2d.sprite@d8bb22511404\Editor\SpriteEditorModule\SpriteFrameModule\SpriteFrameEditor\SpriteFrameEditorModeToggle.cs" />
     <Compile Include="Library\PackageCache\com.unity.2d.sprite@d8bb22511404\Editor\SpriteEditorModule\SpriteFrameModule\SpriteFrameModuleBase.cs" />
     <Compile Include="Library\PackageCache\com.unity.2d.sprite@d8bb22511404\Editor\Interface\IGUIUtility.cs" />
-    <Compile Include="Library\PackageCache\com.unity.2d.sprite@d8bb22511404\Editor\SpriteEditorModule\SpriteFrameModule\SpritePolygonModeModuleView.cs" />
     <Compile Include="Library\PackageCache\com.unity.2d.sprite@d8bb22511404\Editor\ObjectMenuCreation\ItemCreationUtility.cs" />
+    <Compile Include="Library\PackageCache\com.unity.2d.sprite@d8bb22511404\Editor\SpriteEditorModule\SpriteFrameModule\SpritePolygonModeModuleView.cs" />
     <Compile Include="Library\PackageCache\com.unity.2d.sprite@d8bb22511404\Editor\SpriteEditorModule\SpriteOutlineModule.cs" />
     <Compile Include="Library\PackageCache\com.unity.2d.sprite@d8bb22511404\Editor\SpriteEditorModule\SpriteFrameModule\SpriteFrameModuleBaseSpriteEditor.cs" />
     <Compile Include="Library\PackageCache\com.unity.2d.sprite@d8bb22511404\Editor\SpriteEditorModule\SpriteFrameModule\SpriteFrameModule.cs" />

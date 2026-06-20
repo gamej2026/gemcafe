@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace GemCafe.Stage
@@ -8,8 +9,10 @@ namespace GemCafe.Stage
     /// - <see cref="parallaxFactor"/> 로 컴포넌트(레이어)별 이동 속도를 조절한다.<br/>
     ///   1 = 카메라와 함께 이동(가장 먼 배경, 멈춘 듯 보임),
     ///   0 = 월드에 고정(가장 가까운 배경, 카메라와 같은 속도로 흐름).<br/>
-    /// - SpriteRenderer 를 <see cref="SpriteDrawMode.Tiled"/> 로 설정하고 카메라 가시 영역을
-    ///   충분히 덮도록 가로 크기를 자동 확장하여, 좌우 어느 방향으로 이동해도 이음새 없이 반복된다.
+    /// - 사용 중인 이미지의 좌우 끝단이 서로 일치하지 않아 단순 반복 시 이음새가 보이는 문제를
+    ///   방지하기 위해, 인접 타일을 <b>좌우 반전(거울상)</b> 으로 이어 붙인다.<br/>
+    ///   짝수 타일은 원본, 홀수 타일은 좌우 반전이므로 맞닿는 가장자리 픽셀이 항상 동일해
+    ///   이음새가 보이지 않는다.
     /// </para>
     /// 같은 오브젝트에 여러 배경 레이어를 두고 <see cref="parallaxFactor"/> 를 다르게 주면
     /// 시차(parallax) 스크롤 효과를 얻을 수 있다.
@@ -31,31 +34,56 @@ namespace GemCafe.Stage
         [SerializeField] private bool followVertical;
 
         [Header("Tiling")]
-        [Tooltip("스프라이트를 Tiled 모드로 두고 가로 크기를 자동으로 카메라 가시 영역에 맞춘다.")]
-        [SerializeField] private bool autoTile = true;
-
         [Tooltip("카메라 가시 영역 좌우로 추가로 채울 여유 폭(월드 단위). 빠른 이동 시 가장자리 빈틈 방지.")]
         [SerializeField] private float padding = 2f;
 
-        private SpriteRenderer _renderer;
+        private SpriteRenderer _source;
         private Transform _camTransform;
 
+        private readonly List<SpriteRenderer> _tiles = new List<SpriteRenderer>();
+
         private float _unitWidth;        // 한 타일(원본 스프라이트)의 월드 가로 폭.
-        private float _baseY;            // 시작 시점의 Y 위치.
+        private float _baseY;            // 시작 시점의 Y 위치(또는 카메라 기준 오프셋).
         private float _baseZ;            // 시작 시점의 Z 위치.
         private float _lastOrthoSize;
         private float _lastAspect;
 
         private void Awake()
         {
-            _renderer = GetComponent<SpriteRenderer>();
+            _source = GetComponent<SpriteRenderer>();
         }
 
         private void OnEnable()
         {
             ResolveCamera();
             CacheBaseTransform();
-            ConfigureTiling(force: true);
+            RebuildTiles(force: true);
+        }
+
+        private void OnDisable()
+        {
+            // 생성한 타일을 정리하고 원본 렌더러를 복구한다.
+            for (int i = _tiles.Count - 1; i >= 0; i--)
+            {
+                if (_tiles[i] != null)
+                {
+                    if (Application.isPlaying)
+                    {
+                        Destroy(_tiles[i].gameObject);
+                    }
+                    else
+                    {
+                        DestroyImmediate(_tiles[i].gameObject);
+                    }
+                }
+            }
+
+            _tiles.Clear();
+
+            if (_source != null)
+            {
+                _source.enabled = true;
+            }
         }
 
         private void LateUpdate()
@@ -69,28 +97,46 @@ namespace GemCafe.Stage
                 }
             }
 
-            ConfigureTiling(force: false);
+            RebuildTiles(force: false);
 
-            if (_unitWidth <= Mathf.Epsilon)
+            if (_unitWidth <= Mathf.Epsilon || _tiles.Count == 0 || targetCamera == null)
             {
                 return;
             }
 
             float camX = _camTransform.position.x;
+            float y = followVertical ? _camTransform.position.y + _baseY : _baseY;
 
-            // 배경 콘텐츠가 흘러가야 하는 거리(시차 계수 반영).
-            // factor=1 이면 0(정지), factor=0 이면 camX 전체(완전 스크롤).
-            float scrolled = camX * (1f - parallaxFactor);
+            // 배경 콘텐츠 원점은 시차 계수만큼만 카메라를 따라간다.
+            // (factor=1 → 카메라와 함께 이동, factor=0 → 월드 고정)
+            float originX = parallaxFactor * camX;
 
-            // 한 타일 폭 안으로 감싸서, 패턴이 반복되는 지점에서 위치를 되돌린다.
-            // Tiled 패턴은 _unitWidth 마다 동일하므로 이 점프는 화면상 보이지 않는다.
-            float wrapped = Mathf.Repeat(scrolled, _unitWidth);
+            float halfView = targetCamera.orthographic
+                ? targetCamera.orthographicSize * targetCamera.aspect
+                : _unitWidth;
 
-            var pos = transform.position;
-            pos.x = camX - wrapped;
-            pos.y = followVertical ? _camTransform.position.y + _baseY : _baseY;
-            pos.z = _baseZ;
-            transform.position = pos;
+            float leftWorld = camX - halfView - padding;
+
+            // 화면 왼쪽 바깥에서 시작하도록 시작 인덱스를 한 칸 앞당긴다.
+            int startIndex = Mathf.FloorToInt((leftWorld - originX) / _unitWidth) - 1;
+
+            for (int k = 0; k < _tiles.Count; k++)
+            {
+                var tile = _tiles[k];
+                if (tile == null)
+                {
+                    continue;
+                }
+
+                int idx = startIndex + k;
+                float worldX = originX + idx * _unitWidth;
+
+                tile.transform.position = new Vector3(worldX, y, _baseZ);
+
+                // 인접 타일을 거울상으로: 홀수 인덱스는 좌우 반전.
+                // 반전 시 맞닿는 가장자리 픽셀이 서로 동일해져 이음새가 사라진다.
+                tile.flipX = (idx % 2) != 0;
+            }
         }
 
         private void ResolveCamera()
@@ -112,58 +158,117 @@ namespace GemCafe.Stage
         }
 
         /// <summary>
-        /// 스프라이트의 타일 폭을 계산하고, 필요하면 SpriteRenderer 를 Tiled 모드로 전환하여
-        /// 카메라 가시 영역을 덮도록 가로 크기를 설정한다.
+        /// 타일 폭을 계산하고, 가시 영역을 덮을 만큼의 자식 타일 스프라이트를 생성/유지한다.
+        /// 원본 SpriteRenderer 는 비활성화하고 생성된 타일들로 그린다.
         /// </summary>
-        private void ConfigureTiling(bool force)
+        private void RebuildTiles(bool force)
         {
-            if (_renderer == null || _renderer.sprite == null)
+            if (_source == null || _source.sprite == null)
             {
                 _unitWidth = 0f;
                 return;
             }
 
-            var sprite = _renderer.sprite;
+            var sprite = _source.sprite;
             float scaleX = Mathf.Abs(transform.lossyScale.x);
             float nativeWidth = sprite.rect.width / sprite.pixelsPerUnit;
             _unitWidth = nativeWidth * scaleX;
 
-            if (!autoTile || targetCamera == null || !targetCamera.orthographic)
+            if (_unitWidth <= Mathf.Epsilon)
             {
                 return;
             }
 
-            // 카메라 설정이 바뀌지 않았으면 매 프레임 재계산하지 않는다.
-            if (!force &&
-                Mathf.Approximately(_lastOrthoSize, targetCamera.orthographicSize) &&
-                Mathf.Approximately(_lastAspect, targetCamera.aspect))
+            // 원본 렌더러는 끄고, 동일한 스프라이트로 타일을 그린다.
+            if (_source.enabled)
+            {
+                _source.enabled = false;
+            }
+
+            float halfView = targetCamera != null && targetCamera.orthographic
+                ? targetCamera.orthographicSize * targetCamera.aspect
+                : _unitWidth;
+
+            // 가시 폭 + 좌우 여유를 덮는 데 필요한 타일 수(+여분). 거울상 패턴 유지를 위해 짝수로 맞춘다.
+            float coverWidth = (halfView * 2f) + (padding * 2f);
+            int needed = Mathf.CeilToInt(coverWidth / _unitWidth) + 3;
+            if ((needed & 1) != 0)
+            {
+                needed++;
+            }
+
+            bool sizeChanged = targetCamera != null &&
+                               (!Mathf.Approximately(_lastOrthoSize, targetCamera.orthographicSize) ||
+                                !Mathf.Approximately(_lastAspect, targetCamera.aspect));
+
+            if (!force && !sizeChanged && _tiles.Count == needed)
             {
                 return;
             }
 
-            _lastOrthoSize = targetCamera.orthographicSize;
-            _lastAspect = targetCamera.aspect;
-
-            if (_renderer.drawMode == SpriteDrawMode.Simple)
+            if (targetCamera != null)
             {
-                _renderer.drawMode = SpriteDrawMode.Tiled;
-                _renderer.tileMode = SpriteTileMode.Continuous;
+                _lastOrthoSize = targetCamera.orthographicSize;
+                _lastAspect = targetCamera.aspect;
             }
 
-            float viewWidth = targetCamera.orthographicSize * 2f * targetCamera.aspect;
+            // 부족하면 생성, 남으면 제거.
+            while (_tiles.Count < needed)
+            {
+                _tiles.Add(CreateTile(_tiles.Count));
+            }
 
-            // 가시 영역 + 좌우 여유 + 한 타일 폭(랩 이동분)을 모두 덮도록 한다.
-            float targetWorldWidth = viewWidth + (padding * 2f) + (_unitWidth * 2f);
+            while (_tiles.Count > needed)
+            {
+                int last = _tiles.Count - 1;
+                if (_tiles[last] != null)
+                {
+                    if (Application.isPlaying)
+                    {
+                        Destroy(_tiles[last].gameObject);
+                    }
+                    else
+                    {
+                        DestroyImmediate(_tiles[last].gameObject);
+                    }
+                }
 
-            if (scaleX <= Mathf.Epsilon)
+                _tiles.RemoveAt(last);
+            }
+
+            // 스프라이트/정렬/색상 등 원본 속성을 타일에 동기화.
+            for (int i = 0; i < _tiles.Count; i++)
+            {
+                SyncTile(_tiles[i]);
+            }
+        }
+
+        private SpriteRenderer CreateTile(int index)
+        {
+            var go = new GameObject($"ParallaxTile_{index}");
+            go.transform.SetParent(transform, worldPositionStays: false);
+            go.transform.localScale = Vector3.one;
+
+            var sr = go.AddComponent<SpriteRenderer>();
+            SyncTile(sr);
+            return sr;
+        }
+
+        private void SyncTile(SpriteRenderer sr)
+        {
+            if (sr == null || _source == null)
             {
                 return;
             }
 
-            // 가로(Size.x)만 조정한다. 세로(Size.y)는 인스펙터 설정값을 그대로 유지.
-            var size = _renderer.size;
-            size.x = targetWorldWidth / scaleX;
-            _renderer.size = size;
+            sr.sprite = _source.sprite;
+            sr.color = _source.color;
+            sr.sharedMaterial = _source.sharedMaterial;
+            sr.sortingLayerID = _source.sortingLayerID;
+            sr.sortingOrder = _source.sortingOrder;
+            sr.maskInteraction = _source.maskInteraction;
+            sr.drawMode = SpriteDrawMode.Simple;
+            sr.flipY = _source.flipY;
         }
     }
 }

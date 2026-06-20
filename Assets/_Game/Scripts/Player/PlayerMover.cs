@@ -8,6 +8,9 @@ namespace GemCafe.Player
         [SerializeField] private SpriteRenderer spriteRenderer;
         [SerializeField] private float fallbackMoveSpeed = 5f;
 
+        [Tooltip("주인공이 이동할 수 있는 X좌표 한계. ±값 범위를 벗어나지 못하게 벽처럼 막는다.")]
+        [SerializeField] private float horizontalLimit = 25f;
+
         private bool _inputLocked;
 
         private void OnEnable()
@@ -33,6 +36,13 @@ namespace GemCafe.Player
             var x = Input.GetAxisRaw("Horizontal");
 
             transform.Translate(x * speed * Time.deltaTime, 0f, 0f);
+
+            if (horizontalLimit > 0f)
+            {
+                var pos = transform.position;
+                pos.x = Mathf.Clamp(pos.x, -horizontalLimit, horizontalLimit);
+                transform.position = pos;
+            }
 
             if (spriteRenderer != null)
             {
