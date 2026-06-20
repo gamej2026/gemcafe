@@ -6,12 +6,23 @@ namespace GemCafe.Player
     public class PlayerMover : MonoBehaviour
     {
         [SerializeField] private SpriteRenderer spriteRenderer;
+        [SerializeField] private Animator animator;
         [SerializeField] private float fallbackMoveSpeed = 5f;
 
         [Tooltip("주인공이 이동할 수 있는 X좌표 한계. ±값 범위를 벗어나지 못하게 벽처럼 막는다.")]
         [SerializeField] private float horizontalLimit = 25f;
 
+        private static readonly int IsWalkingHash = Animator.StringToHash("IsWalking");
+
         private bool _inputLocked;
+
+        private void Awake()
+        {
+            if (animator == null)
+            {
+                animator = GetComponent<Animator>();
+            }
+        }
 
         private void OnEnable()
         {
@@ -29,6 +40,7 @@ namespace GemCafe.Player
         {
             if (_inputLocked)
             {
+                UpdateWalkAnimation(0f);
                 return;
             }
 
@@ -54,6 +66,16 @@ namespace GemCafe.Player
                 {
                     spriteRenderer.flipX = true;
                 }
+            }
+
+            UpdateWalkAnimation(x);
+        }
+
+        private void UpdateWalkAnimation(float horizontal)
+        {
+            if (animator != null)
+            {
+                animator.SetBool(IsWalkingHash, Mathf.Abs(horizontal) > 0.01f);
             }
         }
 
