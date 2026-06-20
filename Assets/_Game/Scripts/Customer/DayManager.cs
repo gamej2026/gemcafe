@@ -24,6 +24,7 @@ namespace GemCafe.Customer
         [SerializeField] private EndingCoinSummary endingCoinSummary;
         [SerializeField] private DayIntro dayIntro;
         [SerializeField] private CustomerCsvTable customerTable;
+        [SerializeField] private CafeMainDialogTable mainDialogTable;
         [SerializeField] private List<CustomerSO> allCustomers;
         [SerializeField] private int fareReward = 10;
         [SerializeField] private bool forceServiceStateOnStart;
@@ -251,6 +252,12 @@ namespace GemCafe.Customer
                 return;
             }
 
+            // 미니게임 진입 전 대화: cafe_MainDialog_Source 의 '일반' 분기 사용(없으면 기존 주문 대사).
+            if (PlayMainDialog(CafeMainDialogTable.BranchNormal, OnOrderDialogueDone))
+            {
+                return;
+            }
+
             dialogue.Play(_currentCustomer.orderDialogue, OnOrderDialogueDone);
         }
 
@@ -334,12 +341,75 @@ namespace GemCafe.Customer
         {
             if (dialogue != null && _currentCustomer != null)
             {
+                // 미니게임 결과 대화: 결과에 따른 분기(대성공/성공/실패) 사용(없으면 기존 한 줄 반응).
+                if (PlayMainDialog(BranchForResult(result), FadeOutCustomerThenNext))
+                {
+                    return;
+                }
+
                 var line = BuildReactionLine(result);
                 dialogue.Play(new[] { line }, FadeOutCustomerThenNext);
                 return;
             }
 
             FadeOutCustomerThenNext();
+        }
+
+        // cafe_MainDialog_Source 의 (현재 날짜, 분기) 대사 묶음을 재생한다.
+        // 손님이 말하는 줄에서는 해당 줄의 감정 스프라이트로 손님 이미지를 교체한다.
+        // 화자 초상화/배경 디밍 없이 대사 텍스트 + 손님 이미지만 보여준다.
+        // 재생할 대사가 있으면 true, 없으면(폴백 필요) false 를 반환한다.
+        private bool PlayMainDialog(string branch, System.Action onComplete)
+        {
+            if (mainDialogTable == null || dialogue == null)
+            {
+                return false;
+            }
+
+            var lines = mainDialogTable.GetLines(CurrentDay, branch);
+            if (lines == null || lines.Count == 0)
+            {
+                return false;
+            }
+
+            var dlg = new DialogueLine[lines.Count];
+            var sprites = new Sprite[lines.Count];
+            for (int i = 0; i < lines.Count; i++)
+            {
+                dlg[i] = new DialogueLine
+                {
+                    speakerId = lines[i].speaker,
+                    text = lines[i].text,
+                    portrait = null
+                };
+                sprites[i] = lines[i].isCustomerLine ? lines[i].customerSprite : null;
+            }
+
+            System.Action<int> onLineShown = idx =>
+            {
+                if (idx >= 0 && idx < sprites.Length && sprites[idx] != null && spawner != null)
+                {
+                    spawner.SetPortraitSprite(sprites[idx]);
+                }
+            };
+
+            dialogue.Play(dlg, onComplete, true, onLineShown, false);
+            return true;
+        }
+
+        private static string BranchForResult(DrinkResult result)
+        {
+            if (result == DrinkResult.GreatSuccess)
+            {
+                return CafeMainDialogTable.BranchGreatSuccess;
+            }
+
+            if (result == DrinkResult.Success)
+            {
+                return CafeMainDialogTable.BranchSuccess;
+            }
+
+            return CafeMainDialogTable.BranchFail;
         }
 
         private DialogueLine BuildReactionLine(DrinkResult result)

@@ -118,8 +118,8 @@ namespace GemCafe.Crafting
             }
 
             var pos = barRect.anchoredPosition;
-            pos.y += _barVelocity * dt;
-            pos.y = ClampCenterY(pos.y, GetHalfBarHeight());
+            pos.x += _barVelocity * dt;
+            pos.x = ClampCenter(pos.x, GetHalfBarExtent());
             barRect.anchoredPosition = pos;
         }
 
@@ -140,18 +140,18 @@ namespace GemCafe.Crafting
                 patternOffset = config.leafPattern.Evaluate(normalized);
             }
 
-            var y = amplitude * Mathf.Sin(2f * Mathf.PI * frequency * _time) + (patternOffset * amplitude);
+            var x = amplitude * Mathf.Sin(2f * Mathf.PI * frequency * _time) + (patternOffset * amplitude);
             var pos = leafRect.anchoredPosition;
-            pos.y = ClampCenterY(y, GetHalfLeafHeight());
+            pos.x = ClampCenter(x, GetHalfLeafExtent());
             leafRect.anchoredPosition = pos;
         }
 
         private void UpdateProgress(float dt)
         {
-            var leafY = leafRect != null ? leafRect.anchoredPosition.y : 0f;
-            var barY = barRect != null ? barRect.anchoredPosition.y : 0f;
-            var halfBar = GetHalfBarHeight();
-            var inside = leafY >= (barY - halfBar) && leafY <= (barY + halfBar);
+            var leafX = leafRect != null ? leafRect.anchoredPosition.x : 0f;
+            var barX = barRect != null ? barRect.anchoredPosition.x : 0f;
+            var halfBar = GetHalfBarExtent();
+            var inside = leafX >= (barX - halfBar) && leafX <= (barX + halfBar);
 
             var gainRate = config.progressGainRate;
             var lossRate = config.progressLossRate;
@@ -207,50 +207,50 @@ namespace GemCafe.Crafting
             }
 
             var pos = barRect.anchoredPosition;
-            pos.y = ClampCenterY(0f, GetHalfBarHeight());
+            pos.x = ClampCenter(0f, GetHalfBarExtent());
             barRect.anchoredPosition = pos;
         }
 
-        private float ClampCenterY(float y, float halfHeight)
+        private float ClampCenter(float value, float halfExtent)
         {
-            var limit = GetTrackHalfHeight() - halfHeight;
+            var limit = GetTrackHalfWidth() - halfExtent;
             if (limit < 0f)
             {
                 return 0f;
             }
 
-            return Mathf.Clamp(y, -limit, limit);
+            return Mathf.Clamp(value, -limit, limit);
         }
 
-        private float GetTrackHalfHeight()
+        private float GetTrackHalfWidth()
         {
             if (trackRect == null)
             {
                 return 0f;
             }
 
-            return trackRect.rect.height * 0.5f;
+            return trackRect.rect.width * 0.5f;
         }
 
-        private float GetHalfBarHeight()
+        private float GetHalfBarExtent()
         {
-            if (barRect != null && barRect.rect.height > 0f)
+            if (barRect != null && barRect.rect.width > 0f)
             {
-                return barRect.rect.height * 0.5f;
+                return barRect.rect.width * 0.5f;
             }
 
-            var h = config != null ? config.barHeight : 0f;
-            return Mathf.Max(0f, h * 0.5f);
+            var w = config != null ? config.barHeight : 0f;
+            return Mathf.Max(0f, w * 0.5f);
         }
 
-        private float GetHalfLeafHeight()
+        private float GetHalfLeafExtent()
         {
             if (leafRect == null)
             {
                 return 0f;
             }
 
-            return leafRect.rect.height * 0.5f;
+            return leafRect.rect.width * 0.5f;
         }
 
         private void SetVisible(bool visible)

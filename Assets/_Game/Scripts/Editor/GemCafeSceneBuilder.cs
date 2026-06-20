@@ -87,6 +87,7 @@ namespace GemCafe.EditorTools
         private const string ResourcesCustomersDir = "Assets/_Game/Resources/Customers";
         private const string CustomerCsvAssetPath = "Assets/_Game/Resources/InportCsv/CustumersData.csv";
         private const string CustomerCsvResourcePath = "InportCsv/CustumersData";
+        private const string MainDialogCsvResourcePath = "Cafe/Main/cafe_MainDialog_Source";
         private const string ResourcesCustomerPortrait1Path = "Assets/_Game/Resources/Customers/cst_day1.png";
         private const string ResourcesCustomerPortrait2Path = "Assets/_Game/Resources/Customers/cst_day2.png";
         private const string ResourcesCustomerPortrait3Path = "Assets/_Game/Resources/Customers/cst_day3.png";
@@ -535,27 +536,27 @@ namespace GemCafe.EditorTools
             mixHoldAreaImage.raycastTarget = true;
             var mixHoldArea = mixHoldAreaGo.AddComponent<HoldInputArea>();
 
-            var mixTrackGo = CreateUIObject("Mix_Track", mixRootGo.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(860f, 0f), new Vector2(160f, 700f), new Vector2(0.5f, 0.5f));
+            var mixTrackGo = CreateUIObject("Mix_Track", mixRootGo.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(772f, -80f), new Vector2(700f, 160f), new Vector2(0.5f, 0.5f));
             var mixTrackImage = mixTrackGo.AddComponent<Image>();
             mixTrackImage.color = new Color(0.2f, 0.2f, 0.2f, 0.75f);
 
-            var mixBarGo = CreateUIObject("Mix_Bar", mixTrackGo.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(120f, 220f), new Vector2(0.5f, 0.5f));
+            var mixBarGo = CreateUIObject("Mix_Bar", mixTrackGo.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(220f, 120f), new Vector2(0.5f, 0.5f));
             var mixBarImage = mixBarGo.AddComponent<Image>();
             mixBarImage.color = new Color(0.2f, 0.8f, 0.2f, 0.85f);
 
-            var mixLeafGo = CreateUIObject("Mix_Leaf", mixTrackGo.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 120f), new Vector2(80f, 80f), new Vector2(0.5f, 0.5f));
+            var mixLeafGo = CreateUIObject("Mix_Leaf", mixTrackGo.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(120f, 0f), new Vector2(80f, 80f), new Vector2(0.5f, 0.5f));
             var mixLeafImage = mixLeafGo.AddComponent<Image>();
             mixLeafImage.color = new Color(0.95f, 0.95f, 0.2f, 1f);
 
             var filledSprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
 
-            var mixProgressGo = CreateUIObject("Mix_ProgressFill", mixRootGo.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(700f, 0f), new Vector2(60f, 700f), new Vector2(0.5f, 0.5f));
+            var mixProgressGo = CreateUIObject("Mix_ProgressFill", mixRootGo.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(772f, -190f), new Vector2(700f, 60f), new Vector2(0.5f, 0.5f));
             var mixProgressFill = mixProgressGo.AddComponent<Image>();
             mixProgressFill.color = new Color(0.3f, 0.8f, 1f, 1f);
             mixProgressFill.sprite = filledSprite;
             mixProgressFill.type = Image.Type.Filled;
-            mixProgressFill.fillMethod = Image.FillMethod.Vertical;
-            mixProgressFill.fillOrigin = (int)Image.OriginVertical.Bottom;
+            mixProgressFill.fillMethod = Image.FillMethod.Horizontal;
+            mixProgressFill.fillOrigin = (int)Image.OriginHorizontal.Left;
             mixProgressFill.fillAmount = 0.4f;
 
             var mixMinigame = mixRootGo.AddComponent<MixMinigame>();
@@ -781,11 +782,39 @@ namespace GemCafe.EditorTools
 
             var orderRecallTitleGo = CreateUIObject("Title", orderRecallPanelGo.transform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -20f), new Vector2(-40f, 60f), new Vector2(0.5f, 1f));
             var orderRecallTitle = orderRecallTitleGo.AddComponent<Text>();
-            ApplyDefaultText(orderRecallTitle, "손님 주문 다시보기", 32, TextAnchor.MiddleCenter, Color.white);
+            ApplyDefaultText(orderRecallTitle, "대화 다시보기", 32, TextAnchor.MiddleCenter, Color.white);
 
-            var orderRecallContentGo = CreateUIObject("Content", orderRecallPanelGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(0f, 0f), new Vector2(-60f, -160f), new Vector2(0.5f, 0.5f));
-            var orderRecallContent = orderRecallContentGo.AddComponent<Text>();
-            ApplyDefaultText(orderRecallContent, "", 26, TextAnchor.UpperLeft, Color.white);
+            // 대화 로그 스크롤뷰 (말풍선이 쌓이는 영역)
+            var orderRecallScrollGo = CreateUIObject("ScrollView", orderRecallPanelGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(0f, -10f), new Vector2(-60f, -200f), new Vector2(0.5f, 0.5f));
+            var orderRecallScrollBg = orderRecallScrollGo.AddComponent<Image>();
+            orderRecallScrollBg.color = new Color(0.12f, 0.11f, 0.15f, 1f);
+            var orderRecallScroll = orderRecallScrollGo.AddComponent<ScrollRect>();
+            orderRecallScroll.horizontal = false;
+            orderRecallScroll.vertical = true;
+            orderRecallScroll.movementType = ScrollRect.MovementType.Clamped;
+            orderRecallScroll.scrollSensitivity = 24f;
+
+            var orderRecallViewportGo = CreateUIObject("Viewport", orderRecallScrollGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
+            var orderRecallViewportImage = orderRecallViewportGo.AddComponent<Image>();
+            orderRecallViewportImage.color = new Color(1f, 1f, 1f, 0.004f);
+            orderRecallViewportGo.AddComponent<RectMask2D>();
+            var orderRecallViewportRt = orderRecallViewportGo.GetComponent<RectTransform>();
+
+            var orderRecallContentGo = CreateUIObject("Content", orderRecallViewportGo.transform, new Vector2(0f, 1f), new Vector2(1f, 1f), Vector2.zero, new Vector2(0f, 0f), new Vector2(0.5f, 1f));
+            var orderRecallMessageRoot = orderRecallContentGo.GetComponent<RectTransform>();
+            var orderRecallContentLayout = orderRecallContentGo.AddComponent<VerticalLayoutGroup>();
+            orderRecallContentLayout.padding = new RectOffset(16, 16, 16, 16);
+            orderRecallContentLayout.spacing = 16f;
+            orderRecallContentLayout.childAlignment = TextAnchor.UpperLeft;
+            orderRecallContentLayout.childControlWidth = true;
+            orderRecallContentLayout.childControlHeight = true;
+            orderRecallContentLayout.childForceExpandWidth = true;
+            orderRecallContentLayout.childForceExpandHeight = false;
+            var orderRecallContentFitter = orderRecallContentGo.AddComponent<ContentSizeFitter>();
+            orderRecallContentFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            orderRecallScroll.viewport = orderRecallViewportRt;
+            orderRecallScroll.content = orderRecallMessageRoot;
 
             var orderRecallCloseGo = CreateUIObject("CloseButton", orderRecallPanelGo.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 24f), new Vector2(180f, 56f), new Vector2(0.5f, 0f));
             var orderRecallCloseImage = orderRecallCloseGo.AddComponent<Image>();
@@ -822,7 +851,9 @@ namespace GemCafe.EditorTools
             SetObjectRef(orderRecallPopup, "toggleButton", orderRecallToggleButton);
             SetObjectRef(orderRecallPopup, "closeButton", orderRecallCloseButton);
             SetObjectRef(orderRecallPopup, "dim", orderRecallDimImage);
-            SetObjectRef(orderRecallPopup, "contentText", orderRecallContent);
+            SetObjectRef(orderRecallPopup, "messageRoot", orderRecallMessageRoot);
+            SetObjectRef(orderRecallPopup, "scrollRect", orderRecallScroll);
+            SetObjectRef(orderRecallPopup, "bubbleSprite", AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd"));
             orderRecallPopup.Close();
 
             // 레시피 보기 — 토글 팝업
@@ -1034,6 +1065,8 @@ namespace GemCafe.EditorTools
             {
                 ingWater, ingSyrup, ingTopping, ingGinseng, ingPersimmon, ingJujube, ingChrys
             });
+            var mainDialogTable = dayManagerGo.AddComponent<CafeMainDialogTable>();
+            SetString(mainDialogTable, "resourcePath", MainDialogCsvResourcePath);
             SetObjectRef(dayManager, "spawner", spawner);
             SetObjectRef(dayManager, "dialogue", dialogueRunner);
             SetObjectRef(dayManager, "crafting", craftingController);
@@ -1043,6 +1076,8 @@ namespace GemCafe.EditorTools
             SetObjectRef(dayManager, "endingCoinSummary", endingCoinSummary);
             SetObjectRef(dayManager, "dayIntro", dayIntro);
             SetObjectRef(dayManager, "customerTable", customerTable);
+            SetObjectRef(dayManager, "mainDialogTable", mainDialogTable);
+            SetObjectRef(orderRecallPopup, "dialogTable", mainDialogTable);
             SetObjectRefList(dayManager, "allCustomers", new[] { cstDay1, cstDay2, cstDay3 });
             SetBool(dayManager, "forceServiceStateOnStart", true);
 

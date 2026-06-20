@@ -56,6 +56,17 @@ namespace GemCafe.Customer
             SetImageAlpha(0f);
         }
 
+        /// <summary>현재 표시 중인 손님 이미지를 다른 스프라이트로 교체한다(알파 유지). 대사별 감정 교체에 사용.</summary>
+        public void SetPortraitSprite(Sprite sprite)
+        {
+            if (customerImage == null || sprite == null)
+            {
+                return;
+            }
+
+            customerImage.sprite = sprite;
+        }
+
         public void FadeOutAndClear(Action onComplete = null)
         {
             if (_fadeRoutine != null)
