@@ -19,6 +19,8 @@ namespace GemCafe.Customer
         {
             Current = customer;
 
+            AudioManager.Instance?.PlayCustomerBell();
+
             var gm = GameManager.Instance;
             if (gm != null)
             {

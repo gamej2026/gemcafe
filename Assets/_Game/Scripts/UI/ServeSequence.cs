@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using GemCafe.Core;
 using UnityEngine;
 
 namespace GemCafe.UI
@@ -31,6 +32,8 @@ namespace GemCafe.UI
                 serveAnimator.SetTrigger(offerTrigger);
             }
 
+            AudioManager.Instance?.PlayOffer();
+
             var step = stepDuration > 0f ? stepDuration : 0f;
             if (step > 0f)
             {
@@ -41,6 +44,8 @@ namespace GemCafe.UI
             {
                 serveAnimator.SetTrigger(drinkTrigger);
             }
+
+            AudioManager.Instance?.PlayDrink();
 
             if (step > 0f)
             {

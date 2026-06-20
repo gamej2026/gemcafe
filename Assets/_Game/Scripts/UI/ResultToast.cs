@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using GemCafe.Core;
 using GemCafe.Data;
 using UnityEngine;
 using UnityEngine.UI;
@@ -37,6 +38,8 @@ namespace GemCafe.UI
                 StopCoroutine(_showRoutine);
                 _showRoutine = null;
             }
+
+            AudioManager.Instance?.PlayResult(result);
 
             if (messageText != null)
             {

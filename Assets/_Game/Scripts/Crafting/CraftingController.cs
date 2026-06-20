@@ -162,6 +162,8 @@ namespace GemCafe.Crafting
 
             bowl.Lock();
 
+            AudioManager.Instance?.PlayGrind();
+
             if (pestle != null)
             {
                 pestle.SetInteractable(false);

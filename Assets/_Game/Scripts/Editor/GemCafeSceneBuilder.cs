@@ -332,6 +332,7 @@ namespace GemCafe.EditorTools
             var bgmSource = audioManagerGo.AddComponent<AudioSource>();
             SetObjectRef(audioManager, "sfxSource", sfxSource);
             SetObjectRef(audioManager, "bgmSource", bgmSource);
+            SetObjectRef(audioManager, "clickClip", AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Sounds/기본 클릭.wav"));
 
             var canvasGo = new GameObject("Canvas", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
             var canvas = canvasGo.GetComponent<Canvas>();
@@ -644,12 +645,14 @@ namespace GemCafe.EditorTools
             SetObjectRef(craftingController, "mixMinigame", mixMinigame);
             SetObjectRef(craftingController, "pourMinigame", pourMinigame);
             SetObjectRef(craftingController, "teaware", teawarePour);
+            SetObjectRef(craftingController, "grindSfx", AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Sounds/사발가는소리.wav"));
 
             SetObjectRef(pestleMixer, "controller", craftingController);
             SetObjectRef(teawarePour, "controller", craftingController);
             SetObjectRef(teawarePour, "guideHint", teawareGuideGo);
             SetObjectRef(teawarePour, "pourAnimator", null);
             SetFloat(teawarePour, "pourDuration", 1.2f);
+            SetObjectRef(teawarePour, "pourSfx", AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Sounds/물따르는 소리.wav"));
 
             // 섞기 미니게임 포커스 연출 (Bowl 확대 + 디밍 + 시작 버튼)
             var mixDimGo = CreateUIObject("MixDimOverlay", canvasGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
@@ -927,6 +930,9 @@ namespace GemCafe.EditorTools
             ApplyDefaultText(resultText, "", 34, TextAnchor.MiddleCenter, Color.white);
             SetObjectRef(resultToast, "root", resultToastRoot);
             SetObjectRef(resultToast, "messageText", resultText);
+            SetObjectRef(resultToast, "greatSuccessSfx", AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Sounds/결과-대성공.flac"));
+            SetObjectRef(resultToast, "successSfx", AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Sounds/결과-성공.flac"));
+            SetObjectRef(resultToast, "failSfx", AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Sounds/결과-실패.wav"));
             resultToastRoot.alpha = 0f;
             resultToastRoot.interactable = false;
             resultToastRoot.blocksRaycasts = false;
@@ -963,6 +969,8 @@ namespace GemCafe.EditorTools
             SetString(serveSequence, "offerTrigger", "Offer");
             SetString(serveSequence, "drinkTrigger", "Drink");
             SetFloat(serveSequence, "stepDuration", 1f);
+            SetObjectRef(serveSequence, "offerSfx", AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Sounds/잔 내려놓는 소리.wav"));
+            SetObjectRef(serveSequence, "drinkSfx", AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Sounds/물 꿀꺽.mp3"));
 
             var coinGainRootGo = CreateUIObject("CoinGain_Root", canvasGo.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 140f), new Vector2(700f, 360f), new Vector2(0.5f, 0.5f));
             var coinGainRoot = coinGainRootGo.AddComponent<CanvasGroup>();
@@ -1079,6 +1087,7 @@ namespace GemCafe.EditorTools
             var spawner = spawnerGo.GetComponent<CustomerSpawner>();
             SetObjectRef(spawner, "customerImage", customerImage);
             SetFloat(spawner, "fadeDuration", 0.5f);
+            SetObjectRef(spawner, "bellClip", AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Sounds/문 열리는 딸랑.wav"));
 
             var dayManagerGo = new GameObject("DayManager", typeof(DayManager));
             var dayManager = dayManagerGo.GetComponent<DayManager>();
@@ -1103,6 +1112,7 @@ namespace GemCafe.EditorTools
             SetObjectRef(orderRecallPopup, "dialogTable", mainDialogTable);
             SetObjectRefList(dayManager, "allCustomers", new[] { cstDay1, cstDay2, cstDay3 });
             SetBool(dayManager, "forceServiceStateOnStart", true);
+            SetObjectRef(dayManager, "cafeBgmClip", AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Sounds/BGM_카페.mp3"));
 
             EnsureFolder(ScenesDir);
             EditorSceneManager.SaveScene(scene, CafeScenePath);
@@ -1147,6 +1157,7 @@ namespace GemCafe.EditorTools
             var bgmSource = audioManagerGo.AddComponent<AudioSource>();
             SetObjectRef(audioManager, "sfxSource", sfxSource);
             SetObjectRef(audioManager, "bgmSource", bgmSource);
+            SetObjectRef(audioManager, "clickClip", AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Sounds/기본 클릭.wav"));
 
             var canvasGo = new GameObject("Canvas", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
             var canvas = canvasGo.GetComponent<Canvas>();
@@ -1310,6 +1321,7 @@ namespace GemCafe.EditorTools
             SetObjectRef(lobbyMenu, "creditsButton", creditsButton);
             SetObjectRef(lobbyMenu, "popupManager", popupManager);
             SetObjectRef(lobbyMenu, "creditsPopup", creditsPopup);
+            SetObjectRef(lobbyMenu, "lobbyBgmClip", AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Sounds/BGM_삼도천.wav"));
 
             EnsureFolder(ScenesDir);
             EditorSceneManager.SaveScene(scene, LobbyScenePath);
@@ -1343,6 +1355,7 @@ namespace GemCafe.EditorTools
             var bgmSource = audioManagerGo.AddComponent<AudioSource>();
             SetObjectRef(audioManager, "sfxSource", sfxSource);
             SetObjectRef(audioManager, "bgmSource", bgmSource);
+            SetObjectRef(audioManager, "clickClip", AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Sounds/기본 클릭.wav"));
 
             var playerGo = new GameObject("Player", typeof(SpriteRenderer), typeof(PlayerMover), typeof(Interactor));
             playerGo.transform.position = new Vector3(0f, 0f, 0f);
@@ -1485,6 +1498,7 @@ namespace GemCafe.EditorTools
             SetObjectRef(director, "interactor", interactor);
             SetObjectRef(director, "dialogueRunner", dialogueRunner);
             SetObjectRef(director, "exitInteractable", manimInteractable);
+            SetObjectRef(director, "samdocheonBgm", AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Sounds/BGM_삼도천.wav"));
 
             EnsureFolder(ScenesDir);
             EditorSceneManager.SaveScene(scene, Stage1ScenePath);
@@ -1530,6 +1544,7 @@ namespace GemCafe.EditorTools
             var bgmSource = audioManagerGo.AddComponent<AudioSource>();
             SetObjectRef(audioManager, "sfxSource", sfxSource);
             SetObjectRef(audioManager, "bgmSource", bgmSource);
+            SetObjectRef(audioManager, "clickClip", AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Sounds/기본 클릭.wav"));
 
             var canvasGo = new GameObject("Canvas", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
             var canvas = canvasGo.GetComponent<Canvas>();
@@ -1617,6 +1632,9 @@ namespace GemCafe.EditorTools
             SetObjectRef(director, "effectOverlay", effectOverlay);
             SetObjectRef(director, "dialogueView", dialogueView);
             SetObjectRef(director, "speakerView", speakerView);
+            SetObjectRef(director, "endingABgm", AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Sounds/BGM_엔딩A.mp3"));
+            SetObjectRef(director, "endingBBgm", AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Sounds/BGM_배 노 젓는 소리 - 엔딩 B.wav"));
+            SetObjectRef(director, "endingCBgm", AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Sounds/BGM_천둥 소리 - 엔딩 C.wav"));
 
             EnsureFolder(ScenesDir);
             EditorSceneManager.SaveScene(scene, EndingScenePath);
@@ -1767,6 +1785,7 @@ namespace GemCafe.EditorTools
             var bgmSource = audioManagerGo.AddComponent<AudioSource>();
             SetObjectRef(audioManager, "sfxSource", sfxSource);
             SetObjectRef(audioManager, "bgmSource", bgmSource);
+            SetObjectRef(audioManager, "clickClip", AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Sounds/기본 클릭.wav"));
 
             // 공용 대화 프리팹 인스턴스 배치(프리팹 연결 유지).
             var dialogueSystemGo = (GameObject)PrefabUtility.InstantiatePrefab(prefab);

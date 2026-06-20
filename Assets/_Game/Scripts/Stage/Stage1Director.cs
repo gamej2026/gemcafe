@@ -13,6 +13,11 @@ namespace GemCafe.Stage
 
         private bool _transitioned;
 
+        private void Start()
+        {
+            AudioManager.Instance?.PlayStage1Bgm();
+        }
+
         private void OnEnable() { if (interactor != null) interactor.OnInteract += HandleInteract; }
         private void OnDisable() { if (interactor != null) interactor.OnInteract -= HandleInteract; }
 

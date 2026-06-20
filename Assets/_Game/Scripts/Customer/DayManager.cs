@@ -71,6 +71,8 @@ namespace GemCafe.Customer
                 return;
             }
 
+            AudioManager.Instance?.PlayCafeBgm();
+
             var gm = GameManager.Instance;
             if (forceServiceStateOnStart && gm != null && gm.StateMachine.Current != GameState.ServiceLoop)
             {

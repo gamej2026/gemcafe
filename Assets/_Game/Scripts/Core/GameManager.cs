@@ -46,7 +46,7 @@ namespace GemCafe.Core
             }
         }
 
-        public void StartNewGame()
+        public void StartNewGame(bool loadScene = true)
         {
             SaveSystem.Delete();
             var lives = config != null ? config.startingLives : 3;
@@ -57,7 +57,11 @@ namespace GemCafe.Core
             ContinueStartGreatCoins = 0;
 
             StateMachine.TryTransition(GameState.IntroStage1);
-            Router.Load(SceneRouter.SceneStage1);
+
+            if (loadScene)
+            {
+                Router.Load(SceneRouter.SceneStage1);
+            }
         }
 
         public void ContinueGame()

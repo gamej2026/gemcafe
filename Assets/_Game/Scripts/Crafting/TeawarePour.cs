@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using GemCafe.Core;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -48,6 +49,8 @@ namespace GemCafe.Crafting
 
         private IEnumerator PourRoutine(Action onDone)
         {
+            AudioManager.Instance?.PlayPour();
+
             if (pourAnimator != null)
             {
                 if (!string.IsNullOrEmpty(tiltTrigger))

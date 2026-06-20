@@ -41,6 +41,8 @@ namespace GemCafe.Ending
             var kind = GameManager.Instance != null ? GameManager.Instance.PendingEnding : EndingKind.B;
             _beats = EndingCsvLoader.Load(kind);
 
+            AudioManager.Instance?.PlayEndingBgm(kind);
+
             if (dialogueView != null)
             {
                 dialogueView.BindNext(Advance);
