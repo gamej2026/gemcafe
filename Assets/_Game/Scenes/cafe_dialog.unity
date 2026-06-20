@@ -185,7 +185,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: c3c76861eb0d0944582ca575845e116b, type: 3}
+  m_Sprite: {fileID: 21300000, guid: edafc176d4c418a43bed75a1bde848a0, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -218,37 +218,9 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 2240320114396148867, guid: 1f0d7233bf80e904693457d4b564aa3e, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 5193350229976223290, guid: 1f0d7233bf80e904693457d4b564aa3e, type: 3}
       propertyPath: m_Name
       value: DialogueSystem
-      objectReference: {fileID: 0}
-    - target: {fileID: 5406867025104132015, guid: 1f0d7233bf80e904693457d4b564aa3e, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5406867025104132015, guid: 1f0d7233bf80e904693457d4b564aa3e, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5406867025104132015, guid: 1f0d7233bf80e904693457d4b564aa3e, type: 3}
-      propertyPath: m_AnchorMin.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5406867025104132015, guid: 1f0d7233bf80e904693457d4b564aa3e, type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5406867025104132015, guid: 1f0d7233bf80e904693457d4b564aa3e, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5406867025104132015, guid: 1f0d7233bf80e904693457d4b564aa3e, type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5503854064162871792, guid: 1f0d7233bf80e904693457d4b564aa3e, type: 3}
       propertyPath: m_Pivot.x
@@ -329,30 +301,6 @@ PrefabInstance:
     - target: {fileID: 5503854064162871792, guid: 1f0d7233bf80e904693457d4b564aa3e, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7662978597600805689, guid: 1f0d7233bf80e904693457d4b564aa3e, type: 3}
-      propertyPath: m_Color.b
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7662978597600805689, guid: 1f0d7233bf80e904693457d4b564aa3e, type: 3}
-      propertyPath: m_Color.g
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7662978597600805689, guid: 1f0d7233bf80e904693457d4b564aa3e, type: 3}
-      propertyPath: m_Color.r
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9184961943580437943, guid: 1f0d7233bf80e904693457d4b564aa3e, type: 3}
-      propertyPath: m_Color.b
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9184961943580437943, guid: 1f0d7233bf80e904693457d4b564aa3e, type: 3}
-      propertyPath: m_Color.g
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9184961943580437943, guid: 1f0d7233bf80e904693457d4b564aa3e, type: 3}
-      propertyPath: m_Color.r
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -741,7 +689,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: GemCafe::GemCafe.Core.AudioManager
   sfxSource: {fileID: 1834034686}
   bgmSource: {fileID: 1834034685}
-  customerBellClip: {fileID: 0}
 --- !u!4 &1834034688
 Transform:
   m_ObjectHideFlags: 0
