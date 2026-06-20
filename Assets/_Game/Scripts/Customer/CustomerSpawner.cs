@@ -56,6 +56,52 @@ namespace GemCafe.Customer
             SetImageAlpha(0f);
         }
 
+        public void FadeOutAndClear(Action onComplete = null)
+        {
+            if (_fadeRoutine != null)
+            {
+                StopCoroutine(_fadeRoutine);
+                _fadeRoutine = null;
+            }
+
+            if (customerImage == null)
+            {
+                Current = null;
+                onComplete?.Invoke();
+                return;
+            }
+
+            _fadeRoutine = StartCoroutine(FadeOut(onComplete));
+        }
+
+        private IEnumerator FadeOut(Action onComplete)
+        {
+            float elapsed = 0f;
+            float duration = fadeDuration > 0f ? fadeDuration : 0f;
+            float startAlpha = customerImage != null ? customerImage.color.a : 1f;
+
+            if (duration <= 0f)
+            {
+                SetImageAlpha(0f);
+            }
+            else
+            {
+                while (elapsed < duration)
+                {
+                    elapsed += Time.deltaTime;
+                    var t = Mathf.Clamp01(elapsed / duration);
+                    SetImageAlpha(Mathf.Lerp(startAlpha, 0f, t));
+                    yield return null;
+                }
+
+                SetImageAlpha(0f);
+            }
+
+            _fadeRoutine = null;
+            Current = null;
+            onComplete?.Invoke();
+        }
+
         private IEnumerator FadeIn(CustomerSO customer, Action onArrived)
         {
             float elapsed = 0f;

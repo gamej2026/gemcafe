@@ -25,6 +25,9 @@ namespace GemCafe.Customer
         [SerializeField] private List<CustomerSO> allCustomers;
         [SerializeField] private int fareReward = 10;
         [SerializeField] private bool forceServiceStateOnStart;
+        [TextArea] [SerializeField] private string greatReactionLine = "만족스러워";
+        [TextArea] [SerializeField] private string successReactionLine = "나쁘지 않아";
+        [TextArea] [SerializeField] private string failReactionLine = "실망스럽군";
 
         private Queue<CustomerSO> _queue = new Queue<CustomerSO>();
         private CustomerSO _currentCustomer;
@@ -314,31 +317,74 @@ namespace GemCafe.Customer
 
         private void ShowResultReaction(DrinkResult result)
         {
-            if (resultToast != null)
+            if (dialogue != null && _currentCustomer != null)
             {
-                resultToast.ShowResult(result, _currentCustomer, () => ShowCoinGain(result));
+                var line = BuildReactionLine(result);
+                dialogue.Play(new[] { line }, FadeOutCustomerThenNext);
                 return;
             }
 
-            ShowCoinGain(result);
+            FadeOutCustomerThenNext();
         }
 
-        private void ShowCoinGain(DrinkResult result)
+        private DialogueLine BuildReactionLine(DrinkResult result)
         {
-            if (coinGainScreen != null)
+            string speaker = "손님";
+            Sprite portrait = null;
+
+            if (_currentCustomer != null && _currentCustomer.orderDialogue != null && _currentCustomer.orderDialogue.Length > 0)
             {
-                coinGainScreen.Show(result, AfterToast);
-                return;
+                speaker = _currentCustomer.orderDialogue[0].speakerId;
+                portrait = _currentCustomer.orderDialogue[0].portrait;
             }
 
-            AfterToast();
+            return new DialogueLine
+            {
+                speakerId = speaker,
+                text = ResolveReactionText(result),
+                portrait = portrait
+            };
         }
 
-        private void AfterToast()
+        private string ResolveReactionText(DrinkResult result)
+        {
+            if (_currentCustomer != null)
+            {
+                if (result == DrinkResult.GreatSuccess && !string.IsNullOrEmpty(_currentCustomer.greatSuccessLine))
+                {
+                    return _currentCustomer.greatSuccessLine;
+                }
+
+                if (result == DrinkResult.Success && !string.IsNullOrEmpty(_currentCustomer.successLine))
+                {
+                    return _currentCustomer.successLine;
+                }
+
+                if (result == DrinkResult.Fail && !string.IsNullOrEmpty(_currentCustomer.failLine))
+                {
+                    return _currentCustomer.failLine;
+                }
+            }
+
+            if (result == DrinkResult.GreatSuccess)
+            {
+                return !string.IsNullOrEmpty(greatReactionLine) ? greatReactionLine : "만족스러워";
+            }
+
+            if (result == DrinkResult.Success)
+            {
+                return !string.IsNullOrEmpty(successReactionLine) ? successReactionLine : "나쁘지 않아";
+            }
+
+            return !string.IsNullOrEmpty(failReactionLine) ? failReactionLine : "실망스럽군";
+        }
+
+        private void FadeOutCustomerThenNext()
         {
             if (spawner != null)
             {
-                spawner.Clear();
+                spawner.FadeOutAndClear(NextCustomer);
+                return;
             }
 
             NextCustomer();
