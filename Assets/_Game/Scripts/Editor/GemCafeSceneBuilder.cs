@@ -30,6 +30,10 @@ namespace GemCafe.EditorTools
         private const string WaterPath = "Assets/_Game/Data/Ingredients/ing_water.asset";
         private const string SyrupPath = "Assets/_Game/Data/Ingredients/ing_syrup.asset";
         private const string ToppingPath = "Assets/_Game/Data/Ingredients/ing_topping.asset";
+        private const string GinsengPath = "Assets/_Game/Data/Ingredients/ing_ginseng.asset";
+        private const string PersimmonPath = "Assets/_Game/Data/Ingredients/ing_persimmon.asset";
+        private const string JujubePath = "Assets/_Game/Data/Ingredients/ing_jujube.asset";
+        private const string ChrysPath = "Assets/_Game/Data/Ingredients/ing_chrys.asset";
         private const string RecipeDay1Path = "Assets/_Game/Data/Recipes/rcp_day1.asset";
         private const string RecipeDay2Path = "Assets/_Game/Data/Recipes/rcp_day2.asset";
         private const string RecipeDay3Path = "Assets/_Game/Data/Recipes/rcp_day3.asset";
@@ -48,13 +52,24 @@ namespace GemCafe.EditorTools
         private const string Stage1ScenePath = "Assets/_Game/Scenes/Stage1_Riverside.unity";
 
         private const string ResTrayPath = "Assets/Resource/Tray.png";
-        private const string ResRockPath = "Assets/Resource/Ingredient_0.png";     // 돌
-        private const string ResGinsengPath = "Assets/Resource/Ingredient_1.png";  // 인삼
-        private const string ResPersimmonPath = "Assets/Resource/Ingredient_2.png"; // 곶감
+        private const string Ing0Path = "Assets/Images/Ingredient/Ingredient_0.png";
+        private const string Ing1Path = "Assets/Images/Ingredient/Ingredient_1.png";
+        private const string Ing2Path = "Assets/Images/Ingredient/Ingredient_2.png";
+        private const string Ing3Path = "Assets/Images/Ingredient/Ingredient_3.png";
+        private const string Ing4Path = "Assets/Images/Ingredient/Ingredient_4.png";
+        private const string Ing5Path = "Assets/Images/Ingredient/Ingredient_5.png";
+        private const string Ing6Path = "Assets/Images/Ingredient/Ingredient_6.png";
+
+        // 일자별 손님 이미지 (CustomerImage에 표시). 이 경로에 PNG를 넣으면 자동으로 적용됩니다.
+        private const string CustomersImageDir = "Assets/Images/Customers";
+        private const string CustomerPortrait1Path = "Assets/Images/Customers/cst_day1.png";
+        private const string CustomerPortrait2Path = "Assets/Images/Customers/cst_day2.png";
+        private const string CustomerPortrait3Path = "Assets/Images/Customers/cst_day3.png";
 
         private static readonly string[] ResourceSpritePaths =
         {
-            ResTrayPath, ResRockPath, ResGinsengPath, ResPersimmonPath
+            ResTrayPath, Ing0Path, Ing1Path, Ing2Path, Ing3Path, Ing4Path, Ing5Path, Ing6Path,
+            CustomerPortrait1Path, CustomerPortrait2Path, CustomerPortrait3Path
         };
 
         [MenuItem("GemCafe/Build/0. Build All")]
@@ -76,53 +91,98 @@ namespace GemCafe.EditorTools
             EnsureFolder(IngredientsDir);
             EnsureFolder(RecipesDir);
             EnsureFolder(CustomersDir);
+            EnsureFolder(CustomersImageDir);
 
             EnsureSpriteImports();
-            var sprWaterIcon = AssetDatabase.LoadAssetAtPath<Sprite>(ResPersimmonPath); // 곶감
-            var sprSyrupIcon = AssetDatabase.LoadAssetAtPath<Sprite>(ResRockPath);       // 돌
-            var sprToppingIcon = AssetDatabase.LoadAssetAtPath<Sprite>(ResGinsengPath);  // 인삼
+            var sprIng0 = AssetDatabase.LoadAssetAtPath<Sprite>(Ing0Path);
+            var sprIng1 = AssetDatabase.LoadAssetAtPath<Sprite>(Ing1Path);
+            var sprIng2 = AssetDatabase.LoadAssetAtPath<Sprite>(Ing2Path);
+            var sprIng3 = AssetDatabase.LoadAssetAtPath<Sprite>(Ing3Path);
+            var sprIng4 = AssetDatabase.LoadAssetAtPath<Sprite>(Ing4Path);
+            var sprIng5 = AssetDatabase.LoadAssetAtPath<Sprite>(Ing5Path);
+            var sprIng6 = AssetDatabase.LoadAssetAtPath<Sprite>(Ing6Path);
+            var sprCstDay1 = AssetDatabase.LoadAssetAtPath<Sprite>(CustomerPortrait1Path);
+            var sprCstDay2 = AssetDatabase.LoadAssetAtPath<Sprite>(CustomerPortrait2Path);
+            var sprCstDay3 = AssetDatabase.LoadAssetAtPath<Sprite>(CustomerPortrait3Path);
 
             var gameConfig = LoadOrCreateAsset<GameConfig>(GameConfigPath);
             var water = LoadOrCreateAsset<IngredientSO>(WaterPath);
             var syrup = LoadOrCreateAsset<IngredientSO>(SyrupPath);
             var topping = LoadOrCreateAsset<IngredientSO>(ToppingPath);
+            var ginseng = LoadOrCreateAsset<IngredientSO>(GinsengPath);
+            var persimmon = LoadOrCreateAsset<IngredientSO>(PersimmonPath);
+            var jujube = LoadOrCreateAsset<IngredientSO>(JujubePath);
+            var chrys = LoadOrCreateAsset<IngredientSO>(ChrysPath);
             var mixConfig = LoadOrCreateAsset<MixMinigameConfig>(MixMinigameConfigPath);
             var pourConfig = LoadOrCreateAsset<PourMinigameConfig>(PourMinigameConfigPath);
 
             water.id = "ing_water";
-            water.displayName = "삼도천 물";
+            water.displayName = "곳감";
             water.category = IngredientCategory.Base;
-            water.icon = sprWaterIcon;
+            water.taste = Taste.Umami;
+            water.icon = sprIng0;
             EditorUtility.SetDirty(water);
 
             syrup.id = "ing_syrup";
-            syrup.displayName = "시럽";
+            syrup.displayName = "도라지";
             syrup.category = IngredientCategory.Syrup;
-            syrup.icon = sprSyrupIcon;
+            syrup.taste = Taste.Sweet;
+            syrup.icon = sprIng1;
             EditorUtility.SetDirty(syrup);
 
             topping.id = "ing_topping";
-            topping.displayName = "고명";
+            topping.displayName = "삼도천물";
             topping.category = IngredientCategory.Topping;
-            topping.icon = sprToppingIcon;
+            topping.taste = Taste.Spicy;
+            topping.icon = sprIng2;
             EditorUtility.SetDirty(topping);
+
+            ginseng.id = "ing_ginseng";
+            ginseng.displayName = "염라수염";
+            ginseng.category = IngredientCategory.Topping;
+            ginseng.icon = sprIng3;
+            EditorUtility.SetDirty(ginseng);
+
+            persimmon.id = "ing_persimmon";
+            persimmon.displayName = "처녀귀신";
+            persimmon.category = IngredientCategory.Topping;
+            persimmon.icon = sprIng4;
+            EditorUtility.SetDirty(persimmon);
+
+            jujube.id = "ing_jujube";
+            jujube.displayName = "토끼간";
+            jujube.category = IngredientCategory.Topping;
+            jujube.icon = sprIng5;
+            EditorUtility.SetDirty(jujube);
+
+            chrys.id = "ing_chrys";
+            chrys.displayName = "담배";
+            chrys.category = IngredientCategory.Topping;
+            chrys.icon = sprIng6;
+            EditorUtility.SetDirty(chrys);
 
             var rcpDay1 = LoadOrCreateAsset<RecipeSO>(RecipeDay1Path);
             rcpDay1.id = "rcp_day1";
             rcpDay1.drinkName = "1일차 음료";
-            rcpDay1.ingredients = new[] { water, syrup };
+            rcpDay1.ingredients = new[] { water, syrup, topping };
+            rcpDay1.coreTaste = Taste.Sweet;
+            rcpDay1.subTastes = new[] { Taste.Umami, Taste.Sweet };
             EditorUtility.SetDirty(rcpDay1);
 
             var rcpDay2 = LoadOrCreateAsset<RecipeSO>(RecipeDay2Path);
             rcpDay2.id = "rcp_day2";
             rcpDay2.drinkName = "2일차 음료";
-            rcpDay2.ingredients = new[] { water, syrup, topping };
+            rcpDay2.ingredients = new[] { syrup, ginseng, persimmon };
+            rcpDay2.coreTaste = Taste.Sweet;
+            rcpDay2.subTastes = new[] { Taste.Sweet, Taste.Spicy };
             EditorUtility.SetDirty(rcpDay2);
 
             var rcpDay3 = LoadOrCreateAsset<RecipeSO>(RecipeDay3Path);
             rcpDay3.id = "rcp_day3";
             rcpDay3.drinkName = "3일차 음료";
-            rcpDay3.ingredients = new[] { water, topping };
+            rcpDay3.ingredients = new[] { topping, jujube, chrys };
+            rcpDay3.coreTaste = Taste.Spicy;
+            rcpDay3.subTastes = new[] { Taste.Umami, Taste.Spicy };
             EditorUtility.SetDirty(rcpDay3);
 
             var cstDay1 = LoadOrCreateAsset<CustomerSO>(CustomerDay1Path);
@@ -130,12 +190,13 @@ namespace GemCafe.EditorTools
             cstDay1.day = 1;
             cstDay1.patience = 45f;
             cstDay1.targetRecipe = rcpDay1;
+            cstDay1.portrait = sprCstDay1;
             cstDay1.orderDialogue = new[]
             {
                 new DialogueLine
                 {
                     speakerId = "손님",
-                    text = "삼도천 물에 시럽 넣어주게.",
+                    text = "곳감에 도라지와 삼도천물을 올려주게.",
                     portrait = null
                 }
             };
@@ -146,12 +207,13 @@ namespace GemCafe.EditorTools
             cstDay2.day = 2;
             cstDay2.patience = 40f;
             cstDay2.targetRecipe = rcpDay2;
+            cstDay2.portrait = sprCstDay2;
             cstDay2.orderDialogue = new[]
             {
                 new DialogueLine
                 {
                     speakerId = "손님",
-                    text = "오늘은 고명까지 올려주게.",
+                    text = "도라지에 염라수염과 처녀귀신을 넣어 다오.",
                     portrait = null
                 }
             };
@@ -162,12 +224,13 @@ namespace GemCafe.EditorTools
             cstDay3.day = 3;
             cstDay3.patience = 35f;
             cstDay3.targetRecipe = rcpDay3;
+            cstDay3.portrait = sprCstDay3;
             cstDay3.orderDialogue = new[]
             {
                 new DialogueLine
                 {
                     speakerId = "손님",
-                    text = "시럽은 빼고 물과 고명으로 부탁하네.",
+                    text = "삼도천물에 토끼간과 담배를 곁들여주게.",
                     portrait = null
                 }
             };
@@ -195,6 +258,10 @@ namespace GemCafe.EditorTools
             var ingWater = AssetDatabase.LoadAssetAtPath<IngredientSO>(WaterPath);
             var ingSyrup = AssetDatabase.LoadAssetAtPath<IngredientSO>(SyrupPath);
             var ingTopping = AssetDatabase.LoadAssetAtPath<IngredientSO>(ToppingPath);
+            var ingGinseng = AssetDatabase.LoadAssetAtPath<IngredientSO>(GinsengPath);
+            var ingPersimmon = AssetDatabase.LoadAssetAtPath<IngredientSO>(PersimmonPath);
+            var ingJujube = AssetDatabase.LoadAssetAtPath<IngredientSO>(JujubePath);
+            var ingChrys = AssetDatabase.LoadAssetAtPath<IngredientSO>(ChrysPath);
             var cstDay1 = AssetDatabase.LoadAssetAtPath<CustomerSO>(CustomerDay1Path);
             var cstDay2 = AssetDatabase.LoadAssetAtPath<CustomerSO>(CustomerDay2Path);
             var cstDay3 = AssetDatabase.LoadAssetAtPath<CustomerSO>(CustomerDay3Path);
@@ -202,9 +269,13 @@ namespace GemCafe.EditorTools
             var pourMinigameConfig = AssetDatabase.LoadAssetAtPath<PourMinigameConfig>(PourMinigameConfigPath);
 
             var sprTray = AssetDatabase.LoadAssetAtPath<Sprite>(ResTrayPath);
-            var sprPersimmon = AssetDatabase.LoadAssetAtPath<Sprite>(ResPersimmonPath);
-            var sprRock = AssetDatabase.LoadAssetAtPath<Sprite>(ResRockPath);
-            var sprGinseng = AssetDatabase.LoadAssetAtPath<Sprite>(ResGinsengPath);
+            var sprIng0 = AssetDatabase.LoadAssetAtPath<Sprite>(Ing0Path);
+            var sprIng1 = AssetDatabase.LoadAssetAtPath<Sprite>(Ing1Path);
+            var sprIng2 = AssetDatabase.LoadAssetAtPath<Sprite>(Ing2Path);
+            var sprIng3 = AssetDatabase.LoadAssetAtPath<Sprite>(Ing3Path);
+            var sprIng4 = AssetDatabase.LoadAssetAtPath<Sprite>(Ing4Path);
+            var sprIng5 = AssetDatabase.LoadAssetAtPath<Sprite>(Ing5Path);
+            var sprIng6 = AssetDatabase.LoadAssetAtPath<Sprite>(Ing6Path);
 
             var eventSystemGo = new GameObject("EventSystem", typeof(EventSystem), typeof(StandaloneInputModule));
 
@@ -269,7 +340,7 @@ namespace GemCafe.EditorTools
 
             var customerImageGo = CreateUIObject("CustomerImage", worldViewRoot.transform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(380f, 40f), new Vector2(640f, 820f), new Vector2(0.5f, 0f));
             var customerImage = customerImageGo.AddComponent<Image>();
-            customerImage.color = new Color(0.75f, 0.85f, 0.95f, 1f);
+            customerImage.color = Color.white;
             customerImage.preserveAspect = true;
 
             var dialogueRoot = CreateUIObject("Dialogue", canvasGo.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 20f), new Vector2(1500f, 250f), new Vector2(0.5f, 0f));
@@ -330,25 +401,24 @@ namespace GemCafe.EditorTools
             SetVector2(trayController, "openAnchoredPos", new Vector2(-30f, -30f));
             SetVector2(trayController, "closedAnchoredPos", new Vector2(1200f, -30f));
 
-            // 트레이 위 재료 3종: 곶감(좌상) / 돌(좌하) / 인삼(우)
-            var ingredientSOs = new[] { ingWater, ingSyrup, ingTopping };
-            var ingredientSprites = new[] { sprPersimmon, sprRock, sprGinseng };
+            // 트레이 위 재료 7종 — 손님은 이 중 서로 다른 3종을 요구한다
+            var ingredientSOs = new[] { ingWater, ingSyrup, ingTopping, ingGinseng, ingPersimmon, ingJujube, ingChrys };
+            var ingredientSprites = new[] { sprIng0, sprIng1, sprIng2, sprIng3, sprIng4, sprIng5, sprIng6 };
             var ingredientPositions = new[]
             {
-                new Vector2(-330f, 70f),
-                new Vector2(-330f, -150f),
-                new Vector2(380f, -10f)
+                new Vector2(-405f, 120f),
+                new Vector2(-135f, 120f),
+                new Vector2(135f, 120f),
+                new Vector2(405f, 120f),
+                new Vector2(-270f, -130f),
+                new Vector2(0f, -130f),
+                new Vector2(270f, -130f)
             };
-            var ingredientSizes = new[]
-            {
-                new Vector2(300f, 240f),
-                new Vector2(330f, 220f),
-                new Vector2(250f, 330f)
-            };
+            var ingredientSize = new Vector2(200f, 200f);
 
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < ingredientSOs.Length; i++)
             {
-                var ingGo = CreateUIObject("Ingredient_" + i, trayPanel.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), ingredientPositions[i], ingredientSizes[i], new Vector2(0.5f, 0.5f));
+                var ingGo = CreateUIObject("Ingredient_" + i, trayPanel.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), ingredientPositions[i], ingredientSize, new Vector2(0.5f, 0.5f));
                 var ingImg = ingGo.AddComponent<Image>();
                 ingImg.sprite = ingredientSprites[i];
                 ingImg.color = Color.white;
@@ -417,9 +487,12 @@ namespace GemCafe.EditorTools
             var mixLeafImage = mixLeafGo.AddComponent<Image>();
             mixLeafImage.color = new Color(0.95f, 0.95f, 0.2f, 1f);
 
+            var filledSprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
+
             var mixProgressGo = CreateUIObject("Mix_ProgressFill", mixRootGo.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(700f, 0f), new Vector2(60f, 700f), new Vector2(0.5f, 0.5f));
             var mixProgressFill = mixProgressGo.AddComponent<Image>();
             mixProgressFill.color = new Color(0.3f, 0.8f, 1f, 1f);
+            mixProgressFill.sprite = filledSprite;
             mixProgressFill.type = Image.Type.Filled;
             mixProgressFill.fillMethod = Image.FillMethod.Vertical;
             mixProgressFill.fillOrigin = (int)Image.OriginVertical.Bottom;
@@ -449,6 +522,8 @@ namespace GemCafe.EditorTools
             var pourFillGo = CreateUIObject("Pour_Fill", pourRootGo.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(350f, 160f), new Vector2(240f, 420f), new Vector2(0.5f, 0f));
             var pourFillImage = pourFillGo.AddComponent<Image>();
             pourFillImage.color = new Color(0.25f, 0.6f, 0.95f, 1f);
+            pourFillImage.sprite = filledSprite;
+            pourFillImage.raycastTarget = false;
             pourFillImage.type = Image.Type.Filled;
             pourFillImage.fillMethod = Image.FillMethod.Vertical;
             pourFillImage.fillOrigin = (int)Image.OriginVertical.Bottom;
@@ -457,10 +532,12 @@ namespace GemCafe.EditorTools
             var pourTargetBandGo = CreateUIObject("Pour_TargetBand", pourFillGo.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(220f, 100f), new Vector2(0.5f, 0.5f));
             var pourTargetBandImage = pourTargetBandGo.AddComponent<Image>();
             pourTargetBandImage.color = new Color(1f, 0.85f, 0.2f, 0.45f);
+            pourTargetBandImage.raycastTarget = false;
 
             var pourTeapotGo = CreateUIObject("Pour_Teapot", pourRootGo.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(720f, 510f), new Vector2(180f, 140f), new Vector2(0.5f, 0.5f));
             var pourTeapotImage = pourTeapotGo.AddComponent<Image>();
             pourTeapotImage.color = new Color(0.45f, 0.3f, 0.2f, 1f);
+            pourTeapotImage.raycastTarget = false;
 
             var pourMinigame = pourRootGo.AddComponent<PourMinigame>();
             SetObjectRef(pourMinigame, "config", pourMinigameConfig);
@@ -624,7 +701,8 @@ namespace GemCafe.EditorTools
                 var badgeGo = CreateUIObject("GreatBadge", slotGo.transform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 30f), new Vector2(100f, 40f), new Vector2(0.5f, 0.5f));
                 var badgeImage = badgeGo.AddComponent<Image>();
                 badgeImage.color = new Color(1f, 0.25f, 0.25f, 0.9f);
-                var badgeText = badgeGo.AddComponent<Text>();
+                var badgeTextGo = CreateUIObject("Text", badgeGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
+                var badgeText = badgeTextGo.AddComponent<Text>();
                 ApplyDefaultText(badgeText, "GREAT", 20, TextAnchor.MiddleCenter, Color.white);
                 badgeGo.SetActive(false);
                 endingGreatBadges[i] = badgeGo;

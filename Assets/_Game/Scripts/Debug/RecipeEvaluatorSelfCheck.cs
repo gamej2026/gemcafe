@@ -11,29 +11,34 @@ namespace GemCafe.Crafting
         [MenuItem("GemCafe/Run RecipeEvaluator SelfCheck")]
         public static void Run()
         {
-            var recipe = ScriptableObject.CreateInstance<RecipeSO>();
-            recipe.coreTaste = Taste.Sweet;
-            recipe.subTastes = new[] { Taste.Sour, Taste.Spicy };
+            var water = ScriptableObject.CreateInstance<IngredientSO>();
+            var syrup = ScriptableObject.CreateInstance<IngredientSO>();
+            var wrong = ScriptableObject.CreateInstance<IngredientSO>();
 
-            Check(recipe, new[] { Taste.Sweet, Taste.Spicy, Taste.Salty }, DrinkResult.Success, "단맛,매운맛,짠맛");
-            Check(recipe, new[] { Taste.Spicy, Taste.Sour, Taste.Salty }, DrinkResult.Fail, "매운맛,신맛,짠맛");
-            Check(recipe, new[] { Taste.Sweet, Taste.Sour, Taste.Umami }, DrinkResult.Success, "단맛,신맛,감칠맛");
-            Check(recipe, new[] { Taste.Sweet, Taste.Sour, Taste.Spicy }, DrinkResult.GreatSuccess, "단맛,신맛,매운맛");
+            var recipe = ScriptableObject.CreateInstance<RecipeSO>();
+            recipe.ingredients = new[] { water, syrup };
+
+            // 재료 전체 일치(2/2)
+            Check(recipe, new[] { water, syrup }, 1, DrinkResult.GreatSuccess, "전체일치+미니1성공");
+            Check(recipe, new[] { water, syrup }, 2, DrinkResult.GreatSuccess, "전체일치+미니2성공");
+            Check(recipe, new[] { water, syrup }, 0, DrinkResult.Success, "전체일치+미니0성공");
+            // 재료 일부 일치(1/2)
+            Check(recipe, new[] { water }, 1, DrinkResult.Success, "일부일치+미니1성공");
+            Check(recipe, new[] { water }, 0, DrinkResult.Fail, "일부일치+미니0성공");
+            // 재료 일치 없음
+            Check(recipe, new[] { wrong }, 2, DrinkResult.Fail, "일치없음");
 
             Object.DestroyImmediate(recipe);
+            Object.DestroyImmediate(water);
+            Object.DestroyImmediate(syrup);
+            Object.DestroyImmediate(wrong);
         }
 
-        private static void Check(RecipeSO recipe, Taste[] tastes, DrinkResult expected, string label)
+        private static void Check(RecipeSO recipe, IngredientSO[] bowlItems, int minigameSuccessCount, DrinkResult expected, string label)
         {
-            var bowl = new List<IngredientSO>();
-            for (int i = 0; i < tastes.Length; i++)
-            {
-                var ing = ScriptableObject.CreateInstance<IngredientSO>();
-                ing.taste = tastes[i];
-                bowl.Add(ing);
-            }
+            var bowl = new List<IngredientSO>(bowlItems);
 
-            var actual = RecipeEvaluator.Evaluate(bowl, recipe);
+            var actual = RecipeEvaluator.Evaluate(bowl, recipe, minigameSuccessCount);
             if (actual == expected)
             {
                 Debug.Log($"[SelfCheck] PASS {label} => {actual}");
@@ -41,11 +46,6 @@ namespace GemCafe.Crafting
             else
             {
                 Debug.LogError($"[SelfCheck] FAIL {label} => {actual} (expected {expected})");
-            }
-
-            for (int i = 0; i < bowl.Count; i++)
-            {
-                Object.DestroyImmediate(bowl[i]);
             }
         }
     }

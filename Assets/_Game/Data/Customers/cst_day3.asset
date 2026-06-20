@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: cst_day3
   m_EditorClassIdentifier: GemCafe::GemCafe.Data.CustomerSO
   id: cst_day3
-  portrait: {fileID: 0}
+  portrait: {fileID: 21300000, guid: 56fe31f8e2d6add47b6dee9bc2d9d2e2, type: 3}
   orderDialogue:
   - speakerId: "\uC190\uB2D8"
-    text: "\uC2DC\uB7FD\uC740 \uBE7C\uACE0 \uBB3C\uACFC \uACE0\uBA85\uC73C\uB85C \uBD80\uD0C1\uD558\uB124."
+    text: "\uC0BC\uB3C4\uCC9C\uBB3C\uC5D0 \uD1A0\uB07C\uAC04\uACFC \uB2F4\uBC30\uB97C \uACC1\uB4E4\uC5EC\uC8FC\uAC8C."
     portrait: {fileID: 0}
   targetRecipe: {fileID: 11400000, guid: 019a4d4d4e07dfe428526e084ed3046e, type: 2}
   patience: 35

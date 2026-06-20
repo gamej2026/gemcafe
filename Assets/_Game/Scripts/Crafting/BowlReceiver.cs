@@ -10,6 +10,7 @@ namespace GemCafe.Crafting
     {
         [SerializeField] private RectTransform bowlRect;
         [SerializeField] private Camera uiCamera;
+        [SerializeField] private int maxContents = 3;
 
         private readonly List<IngredientSO> _contents = new();
 
@@ -40,6 +41,11 @@ namespace GemCafe.Crafting
             }
 
             if (!RectTransformUtility.RectangleContainsScreenPoint(bowlRect, eventData.position, ResolveEventCamera()))
+            {
+                return;
+            }
+
+            if (_contents.Count >= maxContents)
             {
                 return;
             }

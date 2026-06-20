@@ -31,6 +31,8 @@ namespace GemCafe.Crafting
         private RecipeSO _targetRecipe;
         private DrinkResult _pendingResult;
         private bool _resultRaised;
+        private bool _mixSucceeded;
+        private bool _pourSucceeded;
 
         public CraftStage CurrentStage { get; private set; } = CraftStage.None;
 
@@ -51,6 +53,8 @@ namespace GemCafe.Crafting
             _targetRecipe = targetRecipe;
             _pendingResult = DrinkResult.Fail;
             _resultRaised = false;
+            _mixSucceeded = false;
+            _pourSucceeded = false;
             CurrentStage = CraftStage.IngredientSelect;
 
             if (bowl != null)
@@ -128,7 +132,7 @@ namespace GemCafe.Crafting
 
         public void OnPestleClicked()
         {
-            if (CurrentStage != CraftStage.IngredientSelect || bowl == null || bowl.Contents.Count < 1)
+            if (CurrentStage != CraftStage.IngredientSelect || bowl == null || bowl.Contents.Count < 3)
             {
                 return;
             }
@@ -175,7 +179,7 @@ namespace GemCafe.Crafting
                 return;
             }
 
-            pestle.SetInteractable(bowl.Contents.Count > 0);
+            pestle.SetInteractable(bowl.Contents.Count >= 3);
         }
 
         private void HandleMixSuccess()
@@ -185,17 +189,29 @@ namespace GemCafe.Crafting
                 return;
             }
 
+            _mixSucceeded = true;
+            EnterPourPrep();
+        }
+
+        private void HandleMixFail()
+        {
+            if (CurrentStage != CraftStage.MixMinigame)
+            {
+                return;
+            }
+
+            _mixSucceeded = false;
+            EnterPourPrep();
+        }
+
+        private void EnterPourPrep()
+        {
             CurrentStage = CraftStage.PourPrep;
 
             if (teaware != null)
             {
                 teaware.SetInteractable(true);
             }
-        }
-
-        private void HandleMixFail()
-        {
-            ResolveAndRaise(DrinkResult.Fail);
         }
 
         private void HandleTeawarePourDone()
@@ -228,8 +244,30 @@ namespace GemCafe.Crafting
                 return;
             }
 
+            _pourSucceeded = true;
+            FinishCraft();
+        }
+
+        private void HandlePourFail()
+        {
+            if (CurrentStage != CraftStage.PourMinigame)
+            {
+                return;
+            }
+
+            _pourSucceeded = false;
+            FinishCraft();
+        }
+
+        private void FinishCraft()
+        {
             CurrentStage = CraftStage.DrinkComplete;
-            _pendingResult = RecipeEvaluator.Evaluate(bowl != null ? bowl.Contents : null, _targetRecipe);
+
+            int minigameSuccessCount = (_mixSucceeded ? 1 : 0) + (_pourSucceeded ? 1 : 0);
+            _pendingResult = RecipeEvaluator.Evaluate(
+                bowl != null ? bowl.Contents : null,
+                _targetRecipe,
+                minigameSuccessCount);
 
             var drinkName = _targetRecipe != null ? _targetRecipe.drinkName : string.Empty;
             if (drinkPopup != null)
@@ -255,11 +293,6 @@ namespace GemCafe.Crafting
         private void HandleServeDone()
         {
             ResolveAndRaise(_pendingResult);
-        }
-
-        private void HandlePourFail()
-        {
-            ResolveAndRaise(DrinkResult.Fail);
         }
 
         private void ResolveAndRaise(DrinkResult result)

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: ing_topping
   m_EditorClassIdentifier: GemCafe::GemCafe.Data.IngredientSO
   id: ing_topping
-  displayName: "\uACE0\uBA85"
-  icon: {fileID: 21300000, guid: 001ab2affe7513844a2c8462ada8dd6e, type: 3}
+  displayName: "\uC0BC\uB3C4\uCC9C\uBB3C"
+  icon: {fileID: 21300000, guid: b7f03bf8c98c10041a4cc14bd93edf63, type: 3}
   category: 2
-  taste: 0
+  taste: 2

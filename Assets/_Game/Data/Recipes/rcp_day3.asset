@@ -15,7 +15,8 @@ MonoBehaviour:
   id: rcp_day3
   drinkName: "3\uC77C\uCC28 \uC74C\uB8CC"
   ingredients:
-  - {fileID: 11400000, guid: ba01a62c7b71dc542bd5c7a8439ec87e, type: 2}
   - {fileID: 11400000, guid: 584f7336aa07ae045a7ce0546c8b4cd7, type: 2}
-  coreTaste: 0
-  subTastes: 
+  - {fileID: 11400000, guid: c84500e32ea029347b973db1c9552747, type: 2}
+  - {fileID: 11400000, guid: f767da381c359364facf8eeaeb8611fb, type: 2}
+  coreTaste: 2
+  subTastes: 0400000002000000
