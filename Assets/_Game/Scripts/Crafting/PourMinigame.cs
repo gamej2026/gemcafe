@@ -98,6 +98,34 @@ namespace GemCafe.Crafting
             SetVisible(false);
         }
 
+        /// <summary>
+        /// 미니게임을 시작하지 않은 채로 컵(Pour_Fill)을 초기 상태로 보여준다.
+        /// 포커스 연출(PourFocusController) 단계에서 Pour_Teapot을 누르기 전에
+        /// 컵과 주전자를 보이게 하고 클릭을 받을 수 있도록 한다.
+        /// </summary>
+        public void PrepareVisuals()
+        {
+            _holdTime = 0f;
+            _index = -1;
+            _hasHeld = false;
+            _wasHolding = false;
+
+            if (targetBandRect != null)
+            {
+                targetBandRect.gameObject.SetActive(false);
+            }
+
+            if (fillImage != null)
+            {
+                fillImage.type = Image.Type.Simple;
+                fillImage.preserveAspect = true;
+                fillImage.color = Color.white;
+            }
+
+            ApplySprite(0, true);
+            SetVisible(true);
+        }
+
         private void UpdateSpriteIndex()
         {
             if (cupSprites == null || cupSprites.Length == 0)
@@ -174,7 +202,8 @@ namespace GemCafe.Crafting
             }
 
             IsRunning = false;
-            SetVisible(false);
+            // 화면을 즉시 숨기지 않는다. PourFocusController가 마무리 연출 후
+            // 천천히 페이드아웃하도록 둔다.
 
             var successCb = _onSuccess;
             var failCb = _onFail;

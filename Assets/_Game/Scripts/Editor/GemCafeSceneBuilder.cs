@@ -506,14 +506,6 @@ namespace GemCafe.EditorTools
             ApplyDefaultText(bowlLabel, "음료 보이는 곳 (컵)", 40, TextAnchor.MiddleCenter, Color.white);
             bowlLabel.raycastTarget = false;
 
-            // 다기(Teaware) == 사발(Bowl): 동일한 컵 오브젝트가 따르기 클릭 대상도 겸한다
-            var teawarePour = bowlGo.AddComponent<TeawarePour>();
-            var teawareGuideGo = CreateUIObject("Teaware_Guide", bowlGo.transform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -40f), new Vector2(300f, 56f), new Vector2(0.5f, 0.5f));
-            var teawareGuideText = teawareGuideGo.AddComponent<Text>();
-            ApplyDefaultText(teawareGuideText, "다기를 누르세요", 24, TextAnchor.MiddleCenter, Color.white);
-            teawareGuideText.raycastTarget = false;
-            teawareGuideGo.SetActive(false);
-
             // 막자 (섞기 도구) — 컵에 드롭하면 제조 완료
             var pestleGo = CreateUIObject("Pestle", craftingRoot.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(360f, 60f), new Vector2(110f, 260f), new Vector2(0.5f, 0f));
             var pestleImage = pestleGo.AddComponent<Image>();
@@ -593,10 +585,31 @@ namespace GemCafe.EditorTools
             pourTargetBandImage.color = new Color(1f, 0.85f, 0.2f, 0.45f);
             pourTargetBandImage.raycastTarget = false;
 
+            // 따르기 완료 이펙트(파티클). 기본은 빈 시스템 → 재생해도 아무것도 안 나온다.
+            var pourEffectGo = new GameObject("Pour_Effect");
+            pourEffectGo.transform.SetParent(pourFillGo.transform, false);
+            var pourEffectPs = pourEffectGo.AddComponent<ParticleSystem>();
+            var pourEffectMain = pourEffectPs.main;
+            pourEffectMain.playOnAwake = false;
+            var pourEffectEmission = pourEffectPs.emission;
+            pourEffectEmission.enabled = false;
+            // Pour_Effect 오브젝트에 직렬화로 ParticleSystem을 받아 재생하는 컴포넌트.
+            var pourEffect = pourEffectGo.AddComponent<PourEffect>();
+            SetObjectRef(pourEffect, "effect", pourEffectPs);
+
             var pourTeapotGo = CreateUIObject("Pour_Teapot", pourRootGo.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(720f, 510f), new Vector2(180f, 140f), new Vector2(0.5f, 0.5f));
             var pourTeapotImage = pourTeapotGo.AddComponent<Image>();
             pourTeapotImage.color = new Color(0.45f, 0.3f, 0.2f, 1f);
-            pourTeapotImage.raycastTarget = false;
+            pourTeapotImage.raycastTarget = true;
+
+            // 따르기 클릭 대상: 주전자(Pour_Teapot). 클릭하면 따르기 연출이 시작된다.
+            var teawarePour = pourTeapotGo.AddComponent<TeawarePour>();
+            var teawareGuideGo = CreateUIObject("Teaware_Guide", pourTeapotGo.transform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 40f), new Vector2(300f, 56f), new Vector2(0.5f, 0.5f));
+            var teawareGuideText = teawareGuideGo.AddComponent<Text>();
+            ApplyDefaultText(teawareGuideText, "주전자를 누르세요", 24, TextAnchor.MiddleCenter, Color.white);
+            teawareGuideText.raycastTarget = false;
+            teawareGuideGo.SetActive(false);
+
 
             var pourMinigame = pourRootGo.AddComponent<PourMinigame>();
             SetObjectRef(pourMinigame, "config", pourMinigameConfig);
@@ -665,6 +678,43 @@ namespace GemCafe.EditorTools
             SetObjectRef(mixFocus, "startButtonRoot", mixStartBtnGo);
             SetObjectRef(mixFocus, "startButton", mixStartButton);
             SetObjectRef(craftingController, "mixFocus", mixFocus);
+
+            // 따르기 미니게임 포커스 연출 (Pour_Fill 확대 + 디밍 + 시작 버튼 + 완료 이펙트)
+            var pourDimGo = CreateUIObject("PourDimOverlay", canvasGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
+            var pourDimImage = pourDimGo.AddComponent<Image>();
+            pourDimImage.color = new Color(0f, 0f, 0f, 1f);
+            pourDimImage.raycastTarget = true;
+            var pourDimCanvas = pourDimGo.AddComponent<Canvas>();
+            pourDimCanvas.overrideSorting = true;
+            pourDimCanvas.sortingOrder = 50;
+            pourDimGo.AddComponent<GraphicRaycaster>();
+            var pourDimCg = pourDimGo.AddComponent<CanvasGroup>();
+            pourDimCg.alpha = 0f;
+            pourDimCg.interactable = false;
+            pourDimCg.blocksRaycasts = false;
+            pourDimGo.SetActive(false);
+
+            var pourStartBtnGo = CreateUIObject("Btn_PourStart", pourFillGo.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, -30f), new Vector2(240f, 84f), new Vector2(0.5f, 1f));
+            var pourStartBtnImage = pourStartBtnGo.AddComponent<Image>();
+            pourStartBtnImage.color = new Color(0.85f, 0.55f, 0.2f, 1f);
+            pourStartBtnImage.raycastTarget = true;
+            var pourStartButton = pourStartBtnGo.AddComponent<Button>();
+            pourStartButton.targetGraphic = pourStartBtnImage;
+            var pourStartLabelGo = CreateUIObject("Label", pourStartBtnGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
+            var pourStartLabel = pourStartLabelGo.AddComponent<Text>();
+            ApplyDefaultText(pourStartLabel, "시작", 40, TextAnchor.MiddleCenter, Color.white);
+            pourStartLabel.raycastTarget = false;
+            pourStartBtnGo.SetActive(false);
+
+            var pourFocus = craftingControllerGo.AddComponent<PourFocusController>();
+            SetObjectRef(pourFocus, "zoomRoot", worldViewRoot.GetComponent<RectTransform>());
+            SetObjectRef(pourFocus, "focusTarget", pourFillGo.GetComponent<RectTransform>());
+            SetObjectRef(pourFocus, "pourUiGroup", pourRootGroup);
+            SetObjectRef(pourFocus, "dimOverlay", pourDimCg);
+            SetObjectRef(pourFocus, "startButtonRoot", pourStartBtnGo);
+            SetObjectRef(pourFocus, "startButton", pourStartButton);
+            SetObjectRef(pourFocus, "pourEffect", pourEffect);
+            SetObjectRef(craftingController, "pourFocus", pourFocus);
 
             var popupManagerGo = new GameObject("PopupManager");
             popupManagerGo.transform.SetParent(canvasGo.transform, false);

@@ -25,6 +25,7 @@ namespace GemCafe.Crafting
         [SerializeField] private MixMinigame mixMinigame;
         [SerializeField] private MixFocusController mixFocus;
         [SerializeField] private PourMinigame pourMinigame;
+        [SerializeField] private PourFocusController pourFocus;
         [SerializeField] private TeawarePour teaware;
         [SerializeField] private DrinkPopup drinkPopup;
         [SerializeField] private ServeSequence serveSequence;
@@ -94,6 +95,11 @@ namespace GemCafe.Crafting
                 pourMinigame.Cancel();
             }
 
+            if (pourFocus != null)
+            {
+                pourFocus.CancelImmediate();
+            }
+
             if (dualView != null)
             {
                 dualView.SwitchTo(CafeView.Craft);
@@ -139,6 +145,11 @@ namespace GemCafe.Crafting
             if (pourMinigame != null)
             {
                 pourMinigame.Cancel();
+            }
+
+            if (pourFocus != null)
+            {
+                pourFocus.CancelImmediate();
             }
         }
 
@@ -200,11 +211,33 @@ namespace GemCafe.Crafting
             if (teaware != null)
             {
                 teaware.SetInteractable(false);
-                teaware.PlayPour(HandleTeawarePourDone);
+            }
+
+            if (pourFocus != null)
+            {
+                pourFocus.BeginFocus(BeginPourMinigame);
                 return;
             }
 
-            HandleTeawarePourDone();
+            BeginPourMinigame();
+        }
+
+        private void BeginPourMinigame()
+        {
+            if (CurrentStage != CraftStage.PourPrep)
+            {
+                return;
+            }
+
+            CurrentStage = CraftStage.PourMinigame;
+
+            if (pourMinigame != null)
+            {
+                pourMinigame.Begin(HandlePourSuccess, HandlePourFail);
+                return;
+            }
+
+            HandlePourSuccess();
         }
 
         private void HandleIngredientAdded(IngredientSO ingredient)
@@ -254,19 +287,6 @@ namespace GemCafe.Crafting
         {
             CurrentStage = CraftStage.PourPrep;
 
-            if (teaware != null)
-            {
-                teaware.SetInteractable(true);
-            }
-        }
-
-        private void HandleTeawarePourDone()
-        {
-            if (CurrentStage != CraftStage.PourPrep)
-            {
-                return;
-            }
-
             if (dualView != null)
             {
                 dualView.SwitchTo(CafeView.Customer);
@@ -278,15 +298,16 @@ namespace GemCafe.Crafting
                 tray.Close();
             }
 
-            CurrentStage = CraftStage.PourMinigame;
-
+            // 컵(Pour_Fill)과 주전자(Pour_Teapot)를 보이게 하고 주전자 클릭을 열어둔다.
             if (pourMinigame != null)
             {
-                pourMinigame.Begin(HandlePourSuccess, HandlePourFail);
-                return;
+                pourMinigame.PrepareVisuals();
             }
 
-            HandlePourSuccess();
+            if (teaware != null)
+            {
+                teaware.SetInteractable(true);
+            }
         }
 
         private void HandlePourSuccess()
@@ -297,7 +318,7 @@ namespace GemCafe.Crafting
             }
 
             _pourSucceeded = true;
-            FinishCraft();
+            FinishPourFocus();
         }
 
         private void HandlePourFail()
@@ -308,6 +329,17 @@ namespace GemCafe.Crafting
             }
 
             _pourSucceeded = false;
+            FinishPourFocus();
+        }
+
+        private void FinishPourFocus()
+        {
+            if (pourFocus != null)
+            {
+                pourFocus.EndFocus(FinishCraft);
+                return;
+            }
+
             FinishCraft();
         }
 

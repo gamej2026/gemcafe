@@ -76,6 +76,7 @@
     <Compile Include="Assets\_Game\Scripts\UI\ServeSequence.cs" />
     <Compile Include="Assets\_Game\Scripts\Core\EventBus.cs" />
     <Compile Include="Assets\_Game\Scripts\UI\EndingCoinSummary.cs" />
+    <Compile Include="Assets\_Game\Scripts\Crafting\PourFocusController.cs" />
     <Compile Include="Assets\_Game\Scripts\UI\OrderRecallPopup.cs" />
     <Compile Include="Assets\_Game\Scripts\UI\ScreenTransition.cs" />
     <Compile Include="Assets\_Game\Scripts\Core\SceneRouter.cs" />
@@ -92,6 +93,7 @@
     <Compile Include="Assets\_Game\Scripts\Core\SaveData.cs" />
     <Compile Include="Assets\_Game\Scripts\Player\Interactable.cs" />
     <Compile Include="Assets\_Game\Scripts\Core\GameManager.cs" />
+    <Compile Include="Assets\_Game\Scripts\Crafting\PourEffect.cs" />
     <Compile Include="Assets\_Game\Scripts\Crafting\PestleMixer.cs" />
     <Compile Include="Assets\_Game\Scripts\Dialogue\DialogueRunner.cs" />
     <Compile Include="Assets\_Game\Scripts\Crafting\RecipeEvaluator.cs" />
