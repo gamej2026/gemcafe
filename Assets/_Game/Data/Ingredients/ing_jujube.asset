@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: GemCafe::GemCafe.Data.IngredientSO
   id: ing_jujube
   displayName: "\uD1A0\uB07C\uAC04"
-  icon: {fileID: 21300000, guid: f55beccd4be504040bdd1ecb32cb13f4, type: 3}
+  icon: {fileID: 21300000, guid: 97e7239e32e559b468777644b246dbca, type: 3}
   category: 2
   taste: 0

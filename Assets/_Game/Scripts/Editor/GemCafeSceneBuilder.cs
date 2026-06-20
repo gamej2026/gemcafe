@@ -52,7 +52,10 @@ namespace GemCafe.EditorTools
         private const string CafeScenePath = "Assets/_Game/Scenes/Cafe.unity";
         private const string LobbyScenePath = "Assets/_Game/Scenes/Lobby.unity";
         private const string Stage1ScenePath = "Assets/_Game/Scenes/Stage1_Riverside.unity";
+        private const string CafeDialogScenePath = "Assets/_Game/Scenes/cafe_dialog.unity";
         private const string EndingScenePath = "Assets/_Game/Scenes/Ending.unity";
+        private const string PrefabsDir = "Assets/_Game/Prefabs";
+        private const string DialogueSystemPrefabPath = "Assets/_Game/Prefabs/DialogueSystem.prefab";
         private const string ResourcesRoot = "Assets/_Game/Resources";
         private const string EndingResourcesDir = "Assets/_Game/Resources/Endings";
         private const string EndingCsvAssetPath = "Assets/_Game/Resources/Endings/ending_dialogue.csv";
@@ -101,6 +104,8 @@ namespace GemCafe.EditorTools
             BuildLobbyScene();
             BuildStage1Scene();
             BuildEndingScene();
+            BuildDialogueSystemPrefab();
+            BuildCafeDialogScene();
             RegisterScenes();
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
@@ -1349,6 +1354,143 @@ namespace GemCafe.EditorTools
             Debug.Log("GemCafeSceneBuilder: Ending CSV import complete -> " + EndingCsvAssetPath);
         }
 
+        [MenuItem("GemCafe/Build/8. Build Dialogue System Prefab")]
+        public static GameObject BuildDialogueSystemPrefab()
+        {
+            EnsureFolder(PrefabsDir);
+
+            // 공용 대화 프리팹: 자체 Canvas + 스탠딩 일러스트(SpeakerView) + 대화창(DialogueView) + DialogueRunner.
+            var root = new GameObject("DialogueSystem", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
+            var canvas = root.GetComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            var scaler = root.GetComponent<CanvasScaler>();
+            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            scaler.referenceResolution = new Vector2(1920f, 1080f);
+            scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+            scaler.matchWidthOrHeight = 0.5f;
+
+            // 스탠딩 일러스트(SpeakerView) - 대화창 뒤쪽에 표시.
+            var speakerViewGo = new GameObject("SpeakerView", typeof(RectTransform));
+            speakerViewGo.transform.SetParent(root.transform, false);
+            var speakerView = speakerViewGo.AddComponent<SpeakerView>();
+            var dimGo = CreateUIObject("BackgroundDim", speakerViewGo.transform, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
+            var backgroundDim = dimGo.AddComponent<Image>();
+            backgroundDim.color = new Color(0f, 0f, 0f, 0.35f);
+            var leftPortraitGo = CreateUIObject("LeftPortrait", speakerViewGo.transform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(180f, 260f), new Vector2(220f, 300f), new Vector2(0.5f, 0f));
+            var leftPortrait = leftPortraitGo.AddComponent<Image>();
+            leftPortrait.color = new Color(0.3f, 0.65f, 1f, 1f);
+            leftPortrait.preserveAspect = true;
+            var rightPortraitGo = CreateUIObject("RightPortrait", speakerViewGo.transform, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-180f, 260f), new Vector2(220f, 300f), new Vector2(0.5f, 0f));
+            var rightPortrait = rightPortraitGo.AddComponent<Image>();
+            rightPortrait.color = new Color(1f, 0.65f, 0.2f, 1f);
+            rightPortrait.preserveAspect = true;
+            SetObjectRef(speakerView, "leftPortrait", leftPortrait);
+            SetObjectRef(speakerView, "rightPortrait", rightPortrait);
+            SetObjectRef(speakerView, "backgroundDim", backgroundDim);
+            SetString(speakerView, "leftSpeakerId", "주인공");
+
+            // 대화창(DialogueView) - 화면 앞쪽에 표시.
+            var dialogueRoot = CreateUIObject("Dialogue", root.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 20f), new Vector2(1500f, 250f), new Vector2(0.5f, 0f));
+            var dialoguePanelImage = dialogueRoot.AddComponent<Image>();
+            dialoguePanelImage.color = new Color(0f, 0f, 0f, 0.7f);
+            var dialogueCanvasGroup = dialogueRoot.AddComponent<CanvasGroup>();
+
+            var speakerNameGo = CreateUIObject("SpeakerName", dialogueRoot.transform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(20f, -15f), new Vector2(360f, 40f), new Vector2(0f, 1f));
+            var speakerNameText = speakerNameGo.AddComponent<Text>();
+            ApplyDefaultText(speakerNameText, string.Empty, 28, TextAnchor.UpperLeft, Color.white);
+
+            var bodyTextGo = CreateUIObject("Body", dialogueRoot.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(20f, 20f), new Vector2(-180f, -80f), new Vector2(0f, 0f));
+            var bodyText = bodyTextGo.AddComponent<Text>();
+            ApplyDefaultText(bodyText, string.Empty, 30, TextAnchor.UpperLeft, Color.white);
+
+            var nextButtonGo = CreateUIObject("NextButton", dialogueRoot.transform, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-20f, 20f), new Vector2(140f, 54f), new Vector2(1f, 0f));
+            var nextButtonImage = nextButtonGo.AddComponent<Image>();
+            nextButtonImage.color = new Color(0.25f, 0.45f, 0.8f, 1f);
+            var nextButton = nextButtonGo.AddComponent<Button>();
+            var nextTextGo = CreateUIObject("Text", nextButtonGo.transform, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
+            var nextText = nextTextGo.AddComponent<Text>();
+            ApplyDefaultText(nextText, "다음", 24, TextAnchor.MiddleCenter, Color.white);
+
+            var dialogueView = dialogueRoot.AddComponent<DialogueView>();
+            SetObjectRef(dialogueView, "root", dialogueCanvasGroup);
+            SetObjectRef(dialogueView, "speakerNameText", speakerNameText);
+            SetObjectRef(dialogueView, "bodyText", bodyText);
+            SetObjectRef(dialogueView, "nextButton", nextButton);
+
+            var dialogueRunnerGo = new GameObject("DialogueRunner");
+            dialogueRunnerGo.transform.SetParent(root.transform, false);
+            var dialogueRunner = dialogueRunnerGo.AddComponent<DialogueRunner>();
+            SetObjectRef(dialogueRunner, "view", dialogueView);
+            SetObjectRef(dialogueRunner, "speakerView", speakerView);
+
+            var prefab = PrefabUtility.SaveAsPrefabAsset(root, DialogueSystemPrefabPath);
+            UnityEngine.Object.DestroyImmediate(root);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+
+            Debug.Log("GemCafeSceneBuilder: DialogueSystem prefab build complete -> " + DialogueSystemPrefabPath);
+            return prefab;
+        }
+
+        [MenuItem("GemCafe/Build/9. Build CafeDialog Scene")]
+        public static void BuildCafeDialogScene()
+        {
+            CreateSampleData();
+            AssetDatabase.SaveAssets();
+
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(DialogueSystemPrefabPath);
+            if (prefab == null)
+            {
+                prefab = BuildDialogueSystemPrefab();
+            }
+
+            Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+
+            var gameConfig = AssetDatabase.LoadAssetAtPath<GameConfig>(GameConfigPath);
+
+            var eventSystemGo = new GameObject("EventSystem", typeof(EventSystem), typeof(StandaloneInputModule));
+
+            var cameraGo = new GameObject("Main Camera", typeof(Camera));
+            cameraGo.tag = "MainCamera";
+            var mainCam = cameraGo.GetComponent<Camera>();
+            mainCam.clearFlags = CameraClearFlags.SolidColor;
+            mainCam.backgroundColor = new Color(0.18f, 0.14f, 0.12f, 1f);
+            mainCam.orthographic = true;
+            mainCam.orthographicSize = 5f;
+            mainCam.nearClipPlane = -10f;
+            mainCam.farClipPlane = 100f;
+            cameraGo.transform.position = new Vector3(0f, 0f, -10f);
+
+            var gameManagerGo = new GameObject("GameManager", typeof(GameManager), typeof(SceneRouter));
+            var gameManager = gameManagerGo.GetComponent<GameManager>();
+            var sceneRouter = gameManagerGo.GetComponent<SceneRouter>();
+            SetObjectRef(gameManager, "config", gameConfig);
+            SetObjectRef(gameManager, "sceneRouter", sceneRouter);
+
+            var audioManagerGo = new GameObject("AudioManager", typeof(AudioManager));
+            var audioManager = audioManagerGo.GetComponent<AudioManager>();
+            var sfxSource = audioManagerGo.AddComponent<AudioSource>();
+            var bgmSource = audioManagerGo.AddComponent<AudioSource>();
+            SetObjectRef(audioManager, "sfxSource", sfxSource);
+            SetObjectRef(audioManager, "bgmSource", bgmSource);
+
+            // 공용 대화 프리팹 인스턴스 배치(프리팹 연결 유지).
+            var dialogueSystemGo = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
+            var dialogueRunner = dialogueSystemGo.GetComponentInChildren<DialogueRunner>(true);
+
+            var directorGo = new GameObject("CafeDialogDirector", typeof(CafeDialogDirector));
+            var director = directorGo.GetComponent<CafeDialogDirector>();
+            SetObjectRef(director, "dialogueRunner", dialogueRunner);
+            SetString(director, "dialogueCsvKey", "카페");
+
+            EnsureFolder(ScenesDir);
+            EditorSceneManager.SaveScene(scene, CafeDialogScenePath);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+
+            Debug.Log("GemCafeSceneBuilder: CafeDialog scene build complete.");
+        }
+
         [MenuItem("GemCafe/Build/3. Register Scenes In Build")]
         public static void RegisterScenes()
 
@@ -1371,6 +1513,7 @@ namespace GemCafe.EditorTools
             }
 
             AddSceneIfExists(existing, paths, Stage1ScenePath);
+            AddSceneIfExists(existing, paths, CafeDialogScenePath);
             AddSceneIfExists(existing, paths, CafeScenePath);
             AddSceneIfExists(existing, paths, EndingScenePath);
 

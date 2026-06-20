@@ -44,7 +44,7 @@ namespace GemCafe.Stage
             if (gm.StateMachine.Current != GameState.IntroStage1)
                 gm.StateMachine.Restore(GameState.IntroStage1);
             gm.StateMachine.TryTransition(GameState.CafeIntro);
-            gm.Router.Load(SceneRouter.SceneCafe);
+            gm.Router.Load(SceneRouter.SceneCafeDialog);
         }
     }
 }
