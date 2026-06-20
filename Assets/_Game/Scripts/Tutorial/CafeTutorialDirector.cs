@@ -61,6 +61,10 @@ namespace GemCafe.Tutorial
 
         private bool _craftOpened;
 
+        // 현재 스폰되어 대화 동안 유지 중인 프리팹 인스턴스와 그 Resources 키.
+        private GameObject _spawnedInstance;
+        private string _spawnedKey = string.Empty;
+
         private const string DefaultHint = "클릭 / 스페이스로 계속 ▶";
 
         private void Awake()
@@ -106,6 +110,10 @@ namespace GemCafe.Tutorial
             {
                 var line = lines[i];
                 ShowLine(line);
+
+                // 이 줄이 지정한 스폰 프리팹을 반영(없으면 직전 스폰을 그대로 유지).
+                yield return ApplySpawnPrefab(line.spawnPrefab);
+
                 yield return WaitForAdvance();
 
                 // 미니게임 안내 줄: 실제 미니게임을 띄워 플레이어가 직접 해보게 한 뒤 다음 줄로 진행.
@@ -126,6 +134,9 @@ namespace GemCafe.Tutorial
                     break;
                 }
             }
+
+            // 튜토리얼이 끝나면 남아 있는 스폰 프리팹을 (트윈이 있으면 끝난 뒤) 제거.
+            yield return DespawnPrefab();
 
             FinishTutorial();
         }
@@ -237,6 +248,88 @@ namespace GemCafe.Tutorial
                 // targetRecipe 없이 시각적 배경으로만 제조 화면을 연다. 입력이 막혀 있어
                 // 실제 제조/판정/저장은 일어나지 않는다.
                 crafting.BeginCraft(null);
+            }
+        }
+
+        // ---------- 스폰 프리팹 (대화 동안 유지되는 프리팹) ----------
+
+        /// <summary>
+        /// 한 줄이 지정한 스폰 프리팹을 반영한다.
+        /// - 같은 프리팹 키가 이미 떠 있으면: 그대로 유지(여러 줄에 걸쳐 유지하려면 같은 값을 반복 지정).
+        /// - 그 외(빈 값 포함, 다른 값)이면: 직전 스폰을 제거한다. 이때 사라지는 트윈이 있으면
+        ///   트윈을 백그라운드로 재생하고 끝난 뒤 파괴하므로 대화 진행을 막지 않는다.
+        /// - 새 값이 비어 있지 않으면 새 프리팹을 스폰한다.
+        /// 즉, 스폰 프리팹은 자신을 지정한 줄(대화) 동안 유지되고, 대화가 넘어가면 사라진다.
+        /// </summary>
+        private IEnumerator ApplySpawnPrefab(string resourcePath)
+        {
+            string desired = string.IsNullOrWhiteSpace(resourcePath) ? string.Empty : resourcePath;
+
+            // 같은 프리팹이 이미 떠 있으면 유지.
+            if (_spawnedInstance != null && _spawnedKey == desired)
+            {
+                yield break;
+            }
+
+            // 직전 스폰은 (사라지는 트윈이 있으면 끝난 뒤) 백그라운드로 제거한다.
+            if (_spawnedInstance != null)
+            {
+                StartCoroutine(FadeOutAndDestroy(_spawnedInstance));
+            }
+
+            _spawnedInstance = null;
+            _spawnedKey = string.Empty;
+
+            if (desired.Length == 0)
+            {
+                yield break;
+            }
+
+            var prefab = Resources.Load<GameObject>(desired);
+            if (prefab == null)
+            {
+                Debug.LogWarning($"CafeTutorialDirector: 스폰 프리팹 '{desired}' 를 찾을 수 없습니다.");
+                yield break;
+            }
+
+            _spawnedInstance = Instantiate(prefab);
+            _spawnedKey = desired;
+        }
+
+        /// <summary>
+        /// 현재 스폰된 프리팹을 제거한다(튜토리얼 종료 시). <see cref="ITutorialSpawnDisappear"/> 가 있으면
+        /// 사라지는 트윈을 재생하고 끝날 때까지 기다린 뒤 파괴한다.
+        /// </summary>
+        private IEnumerator DespawnPrefab()
+        {
+            var instance = _spawnedInstance;
+            _spawnedInstance = null;
+            _spawnedKey = string.Empty;
+
+            yield return FadeOutAndDestroy(instance);
+        }
+
+        /// <summary>
+        /// 인스턴스에 사라지는 트윈이 있으면 끝까지 재생한 뒤 파괴한다. 없으면 즉시 파괴한다.
+        /// </summary>
+        private static IEnumerator FadeOutAndDestroy(GameObject instance)
+        {
+            if (instance == null)
+            {
+                yield break;
+            }
+
+            var disappear = instance.GetComponent<ITutorialSpawnDisappear>()
+                ?? instance.GetComponentInChildren<ITutorialSpawnDisappear>(true);
+
+            if (disappear != null)
+            {
+                yield return disappear.PlayDisappear();
+            }
+
+            if (instance != null)
+            {
+                Destroy(instance);
             }
         }
 

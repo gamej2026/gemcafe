@@ -29,6 +29,7 @@ namespace GemCafe.Tutorial
         public string action;          // 머신 동작 (end 등)
         public TutorialUiType uiType;  // 대화 UI 표시 방식 (col 7)
         public Vector2 popupAnchor;    // PositionedPopup 전용: 정규화된 화면 위치 (0~1, col 8)
+        public string spawnPrefab;     // 대화 동안 유지할 프리팹의 Resources 경로 (col 9). 비어 있으면 변경 없음.
     }
 
     /// <summary>
@@ -82,6 +83,7 @@ namespace GemCafe.Tutorial
                 int actionIndex = hasIllustColumn ? 7 : 6;
                 int uiTypeIndex = hasIllustColumn ? 8 : 7;
                 int popupPosIndex = hasIllustColumn ? 9 : 8;
+                int spawnPrefabIndex = hasIllustColumn ? 10 : 9;
 
                 var line = new TutorialLine
                 {
@@ -95,6 +97,7 @@ namespace GemCafe.Tutorial
                     action = Get(fields, actionIndex).Trim().ToLowerInvariant(),
                     uiType = ParseUiType(Get(fields, uiTypeIndex)),
                     popupAnchor = ParseVector2(Get(fields, popupPosIndex), new Vector2(0.5f, 0.5f)),
+                    spawnPrefab = NormalizeResourcePath(Get(fields, spawnPrefabIndex)),
                 };
 
                 // 대사가 비어 있는 행은 표시할 내용이 없으므로 건너뛴다.
