@@ -36,6 +36,8 @@ namespace GemCafe.EditorTools
         private const string CustomerDay1Path = "Assets/_Game/Data/Customers/cst_day1.asset";
         private const string CustomerDay2Path = "Assets/_Game/Data/Customers/cst_day2.asset";
         private const string CustomerDay3Path = "Assets/_Game/Data/Customers/cst_day3.asset";
+        private const string MixMinigameConfigPath = "Assets/_Game/Data/MixMinigameConfig.asset";
+        private const string PourMinigameConfigPath = "Assets/_Game/Data/PourMinigameConfig.asset";
         private const string CafeScenePath = "Assets/_Game/Scenes/Cafe.unity";
         private const string LobbyScenePath = "Assets/_Game/Scenes/Lobby.unity";
         private const string Stage1ScenePath = "Assets/_Game/Scenes/Stage1_Riverside.unity";
@@ -79,6 +81,8 @@ namespace GemCafe.EditorTools
             var water = LoadOrCreateAsset<IngredientSO>(WaterPath);
             var syrup = LoadOrCreateAsset<IngredientSO>(SyrupPath);
             var topping = LoadOrCreateAsset<IngredientSO>(ToppingPath);
+            var mixConfig = LoadOrCreateAsset<MixMinigameConfig>(MixMinigameConfigPath);
+            var pourConfig = LoadOrCreateAsset<PourMinigameConfig>(PourMinigameConfigPath);
 
             water.id = "ing_water";
             water.displayName = "삼도천 물";
@@ -164,6 +168,9 @@ namespace GemCafe.EditorTools
             };
             EditorUtility.SetDirty(cstDay3);
 
+            EditorUtility.SetDirty(mixConfig);
+            EditorUtility.SetDirty(pourConfig);
+
             EditorUtility.SetDirty(gameConfig);
             AssetDatabase.SaveAssets();
         }
@@ -186,6 +193,8 @@ namespace GemCafe.EditorTools
             var cstDay1 = AssetDatabase.LoadAssetAtPath<CustomerSO>(CustomerDay1Path);
             var cstDay2 = AssetDatabase.LoadAssetAtPath<CustomerSO>(CustomerDay2Path);
             var cstDay3 = AssetDatabase.LoadAssetAtPath<CustomerSO>(CustomerDay3Path);
+            var mixMinigameConfig = AssetDatabase.LoadAssetAtPath<MixMinigameConfig>(MixMinigameConfigPath);
+            var pourMinigameConfig = AssetDatabase.LoadAssetAtPath<PourMinigameConfig>(PourMinigameConfigPath);
 
             var sprTray = AssetDatabase.LoadAssetAtPath<Sprite>(ResTrayPath);
             var sprPersimmon = AssetDatabase.LoadAssetAtPath<Sprite>(ResPersimmonPath);
@@ -227,6 +236,9 @@ namespace GemCafe.EditorTools
             scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
             scaler.matchWidthOrHeight = 0.5f;
 
+            var worldViewRoot = CreateUIObject("WorldViewRoot", canvasGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
+            worldViewRoot.transform.SetAsFirstSibling();
+
             var hudRoot = CreateUIObject("HUD", canvasGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, Vector2.zero);
             var hud = hudRoot.AddComponent<HUD>();
             var lifeIcons = new Image[3];
@@ -247,7 +259,7 @@ namespace GemCafe.EditorTools
             SetObjectRefArray(hud, "lifeIcons", lifeIcons);
             SetObjectRef(hud, "patienceFill", patienceImage);
 
-            var customerImageGo = CreateUIObject("CustomerImage", canvasGo.transform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(380f, 40f), new Vector2(640f, 820f), new Vector2(0.5f, 0f));
+            var customerImageGo = CreateUIObject("CustomerImage", worldViewRoot.transform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(380f, 40f), new Vector2(640f, 820f), new Vector2(0.5f, 0f));
             var customerImage = customerImageGo.AddComponent<Image>();
             customerImage.color = new Color(0.75f, 0.85f, 0.95f, 1f);
             customerImage.preserveAspect = true;
@@ -295,7 +307,7 @@ namespace GemCafe.EditorTools
             SetObjectRef(dialogueRunner, "view", dialogueView);
             SetObjectRef(dialogueRunner, "speakerView", speakerView);
 
-            var craftingRoot = CreateUIObject("Crafting", canvasGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
+            var craftingRoot = CreateUIObject("Crafting", worldViewRoot.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(960f, 0f), Vector2.zero, new Vector2(0.5f, 0.5f));
 
             // 우상단 트레이 (테이블 탑뷰) — Tray.png
             var trayPanel = CreateUIObject("Tray", craftingRoot.transform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-30f, -30f), new Vector2(1140f, 560f), new Vector2(1f, 1f));
@@ -365,12 +377,109 @@ namespace GemCafe.EditorTools
             SetObjectRef(pestleMixer, "uiCamera", null);
             SetObjectRef(pestleMixer, "pestleRect", pestleGo.GetComponent<RectTransform>());
 
+            var mixRootGo = CreateUIObject("Mix_Root", worldViewRoot.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
+            var mixRootGroup = mixRootGo.AddComponent<CanvasGroup>();
+            mixRootGroup.alpha = 0f;
+            mixRootGroup.interactable = false;
+            mixRootGroup.blocksRaycasts = false;
+
+            var mixHoldAreaGo = CreateUIObject("Mix_HoldArea", mixRootGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
+            var mixHoldAreaImage = mixHoldAreaGo.AddComponent<Image>();
+            mixHoldAreaImage.color = new Color(0f, 0f, 0f, 0f);
+            mixHoldAreaImage.raycastTarget = true;
+            var mixHoldArea = mixHoldAreaGo.AddComponent<HoldInputArea>();
+
+            var mixTrackGo = CreateUIObject("Mix_Track", mixRootGo.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(860f, 0f), new Vector2(160f, 700f), new Vector2(0.5f, 0.5f));
+            var mixTrackImage = mixTrackGo.AddComponent<Image>();
+            mixTrackImage.color = new Color(0.2f, 0.2f, 0.2f, 0.75f);
+
+            var mixBarGo = CreateUIObject("Mix_Bar", mixTrackGo.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(120f, 220f), new Vector2(0.5f, 0.5f));
+            var mixBarImage = mixBarGo.AddComponent<Image>();
+            mixBarImage.color = new Color(0.2f, 0.8f, 0.2f, 0.85f);
+
+            var mixLeafGo = CreateUIObject("Mix_Leaf", mixTrackGo.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 120f), new Vector2(80f, 80f), new Vector2(0.5f, 0.5f));
+            var mixLeafImage = mixLeafGo.AddComponent<Image>();
+            mixLeafImage.color = new Color(0.95f, 0.95f, 0.2f, 1f);
+
+            var mixProgressGo = CreateUIObject("Mix_ProgressFill", mixRootGo.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(700f, 0f), new Vector2(60f, 700f), new Vector2(0.5f, 0.5f));
+            var mixProgressFill = mixProgressGo.AddComponent<Image>();
+            mixProgressFill.color = new Color(0.3f, 0.8f, 1f, 1f);
+            mixProgressFill.type = Image.Type.Filled;
+            mixProgressFill.fillMethod = Image.FillMethod.Vertical;
+            mixProgressFill.fillOrigin = (int)Image.OriginVertical.Bottom;
+            mixProgressFill.fillAmount = 0.4f;
+
+            var mixMinigame = mixRootGo.AddComponent<MixMinigame>();
+            SetObjectRef(mixMinigame, "config", mixMinigameConfig);
+            SetObjectRef(mixMinigame, "root", mixRootGroup);
+            SetObjectRef(mixMinigame, "trackRect", mixTrackGo.GetComponent<RectTransform>());
+            SetObjectRef(mixMinigame, "barRect", mixBarGo.GetComponent<RectTransform>());
+            SetObjectRef(mixMinigame, "leafRect", mixLeafGo.GetComponent<RectTransform>());
+            SetObjectRef(mixMinigame, "progressFill", mixProgressFill);
+            SetObjectRef(mixMinigame, "holdArea", mixHoldArea);
+
+            var pourRootGo = CreateUIObject("Pour_Root", worldViewRoot.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
+            var pourRootGroup = pourRootGo.AddComponent<CanvasGroup>();
+            pourRootGroup.alpha = 0f;
+            pourRootGroup.interactable = false;
+            pourRootGroup.blocksRaycasts = false;
+
+            var pourHoldAreaGo = CreateUIObject("Pour_HoldArea", pourRootGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
+            var pourHoldAreaImage = pourHoldAreaGo.AddComponent<Image>();
+            pourHoldAreaImage.color = new Color(0f, 0f, 0f, 0f);
+            pourHoldAreaImage.raycastTarget = true;
+            var pourHoldArea = pourHoldAreaGo.AddComponent<HoldInputArea>();
+
+            var pourFillGo = CreateUIObject("Pour_Fill", pourRootGo.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(350f, 160f), new Vector2(240f, 420f), new Vector2(0.5f, 0f));
+            var pourFillImage = pourFillGo.AddComponent<Image>();
+            pourFillImage.color = new Color(0.25f, 0.6f, 0.95f, 1f);
+            pourFillImage.type = Image.Type.Filled;
+            pourFillImage.fillMethod = Image.FillMethod.Vertical;
+            pourFillImage.fillOrigin = (int)Image.OriginVertical.Bottom;
+            pourFillImage.fillAmount = 0f;
+
+            var pourTargetBandGo = CreateUIObject("Pour_TargetBand", pourFillGo.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(220f, 100f), new Vector2(0.5f, 0.5f));
+            var pourTargetBandImage = pourTargetBandGo.AddComponent<Image>();
+            pourTargetBandImage.color = new Color(1f, 0.85f, 0.2f, 0.45f);
+
+            var pourTeapotGo = CreateUIObject("Pour_Teapot", pourRootGo.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(720f, 510f), new Vector2(180f, 140f), new Vector2(0.5f, 0.5f));
+            var pourTeapotImage = pourTeapotGo.AddComponent<Image>();
+            pourTeapotImage.color = new Color(0.45f, 0.3f, 0.2f, 1f);
+
+            var pourMinigame = pourRootGo.AddComponent<PourMinigame>();
+            SetObjectRef(pourMinigame, "config", pourMinigameConfig);
+            SetObjectRef(pourMinigame, "root", pourRootGroup);
+            SetObjectRef(pourMinigame, "fillImage", pourFillImage);
+            SetObjectRef(pourMinigame, "targetBandRect", pourTargetBandGo.GetComponent<RectTransform>());
+            SetObjectRef(pourMinigame, "teapotRect", pourTeapotGo.GetComponent<RectTransform>());
+            SetObjectRef(pourMinigame, "holdArea", pourHoldArea);
+
+            var teawareGo = CreateUIObject("Teaware", worldViewRoot.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(1270f, 340f), new Vector2(180f, 140f), new Vector2(0.5f, 0.5f));
+            var teawareImage = teawareGo.AddComponent<Image>();
+            teawareImage.color = new Color(0.55f, 0.4f, 0.25f, 1f);
+
+            var teawareGuideGo = CreateUIObject("Teaware_Guide", teawareGo.transform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 70f), new Vector2(220f, 56f), new Vector2(0.5f, 0.5f));
+            var teawareGuideText = teawareGuideGo.AddComponent<Text>();
+            ApplyDefaultText(teawareGuideText, "다기를 누르세요", 24, TextAnchor.MiddleCenter, Color.white);
+            teawareGuideGo.SetActive(false);
+
+            var teawarePour = teawareGo.AddComponent<TeawarePour>();
+
             var craftingControllerGo = new GameObject("CraftingController");
             craftingControllerGo.transform.SetParent(craftingRoot.transform, false);
             var craftingController = craftingControllerGo.AddComponent<CraftingController>();
             SetObjectRef(craftingController, "tray", trayController);
             SetObjectRef(craftingController, "bowl", bowlReceiver);
             SetObjectRef(craftingController, "pestle", pestleMixer);
+            SetObjectRef(craftingController, "mixMinigame", mixMinigame);
+            SetObjectRef(craftingController, "pourMinigame", pourMinigame);
+            SetObjectRef(craftingController, "teaware", teawarePour);
+
+            SetObjectRef(pestleMixer, "controller", craftingController);
+            SetObjectRef(teawarePour, "controller", craftingController);
+            SetObjectRef(teawarePour, "guideHint", teawareGuideGo);
+            SetObjectRef(teawarePour, "pourAnimator", null);
+            SetFloat(teawarePour, "pourDuration", 1.2f);
 
             var popupManagerGo = new GameObject("PopupManager");
             popupManagerGo.transform.SetParent(canvasGo.transform, false);
@@ -427,6 +536,117 @@ namespace GemCafe.EditorTools
             resultToastRoot.interactable = false;
             resultToastRoot.blocksRaycasts = false;
 
+            var drinkPopupRootGo = CreateUIObject("DrinkPopup_Root", canvasGo.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 180f), new Vector2(560f, 300f), new Vector2(0.5f, 0.5f));
+            var drinkPopupRoot = drinkPopupRootGo.AddComponent<CanvasGroup>();
+            drinkPopupRoot.alpha = 0f;
+            drinkPopupRoot.interactable = false;
+            drinkPopupRoot.blocksRaycasts = false;
+
+            var drinkPopupImageGo = CreateUIObject("DrinkImage", drinkPopupRootGo.transform, new Vector2(0.5f, 0.55f), new Vector2(0.5f, 0.55f), Vector2.zero, new Vector2(200f, 200f), new Vector2(0.5f, 0.5f));
+            var drinkPopupImage = drinkPopupImageGo.AddComponent<Image>();
+            drinkPopupImage.color = new Color(0.85f, 0.95f, 1f, 1f);
+
+            var drinkPopupSparkleGo = CreateUIObject("Sparkle", drinkPopupRootGo.transform, new Vector2(0.5f, 0.55f), new Vector2(0.5f, 0.55f), Vector2.zero, new Vector2(260f, 260f), new Vector2(0.5f, 0.5f));
+            var drinkPopupSparkleImage = drinkPopupSparkleGo.AddComponent<Image>();
+            drinkPopupSparkleImage.color = new Color(1f, 1f, 0.5f, 0.25f);
+
+            var drinkPopupNameGo = CreateUIObject("NameLabel", drinkPopupRootGo.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 30f), new Vector2(520f, 60f), new Vector2(0.5f, 0.5f));
+            var drinkPopupNameLabel = drinkPopupNameGo.AddComponent<Text>();
+            ApplyDefaultText(drinkPopupNameLabel, string.Empty, 40, TextAnchor.MiddleCenter, Color.white);
+
+            var drinkPopup = drinkPopupRootGo.AddComponent<DrinkPopup>();
+            SetObjectRef(drinkPopup, "root", drinkPopupRoot);
+            SetObjectRef(drinkPopup, "drinkImage", drinkPopupImage);
+            SetObjectRef(drinkPopup, "sparkle", drinkPopupSparkleGo);
+            SetObjectRef(drinkPopup, "nameLabel", drinkPopupNameLabel);
+
+            var serveSequenceGo = new GameObject("ServeSequence", typeof(RectTransform), typeof(Animator), typeof(ServeSequence));
+            serveSequenceGo.transform.SetParent(canvasGo.transform, false);
+            var serveSequenceAnimator = serveSequenceGo.GetComponent<Animator>();
+            var serveSequence = serveSequenceGo.GetComponent<ServeSequence>();
+            SetObjectRef(serveSequence, "serveAnimator", serveSequenceAnimator);
+            SetString(serveSequence, "offerTrigger", "Offer");
+            SetString(serveSequence, "drinkTrigger", "Drink");
+            SetFloat(serveSequence, "stepDuration", 1f);
+
+            var coinGainRootGo = CreateUIObject("CoinGain_Root", canvasGo.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 140f), new Vector2(700f, 360f), new Vector2(0.5f, 0.5f));
+            var coinGainRoot = coinGainRootGo.AddComponent<CanvasGroup>();
+            coinGainRoot.alpha = 0f;
+            coinGainRoot.interactable = false;
+            coinGainRoot.blocksRaycasts = false;
+            var coinGainBg = coinGainRootGo.AddComponent<Image>();
+            coinGainBg.color = new Color(0f, 0f, 0f, 0.65f);
+
+            var coinGainImageGo = CreateUIObject("CoinImage", coinGainRootGo.transform, new Vector2(0.5f, 0.7f), new Vector2(0.5f, 0.7f), Vector2.zero, new Vector2(140f, 140f), new Vector2(0.5f, 0.5f));
+            var coinGainImage = coinGainImageGo.AddComponent<Image>();
+            coinGainImage.color = new Color(1f, 0.9f, 0.25f, 1f);
+
+            var coinGainMessageGo = CreateUIObject("MessageText", coinGainRootGo.transform, new Vector2(0.5f, 0.4f), new Vector2(0.5f, 0.4f), Vector2.zero, new Vector2(620f, 80f), new Vector2(0.5f, 0.5f));
+            var coinGainMessageText = coinGainMessageGo.AddComponent<Text>();
+            ApplyDefaultText(coinGainMessageText, string.Empty, 34, TextAnchor.MiddleCenter, Color.white);
+
+            var coinGainNextGo = CreateUIObject("NextButton", coinGainRootGo.transform, new Vector2(0.5f, 0.12f), new Vector2(0.5f, 0.12f), Vector2.zero, new Vector2(180f, 64f), new Vector2(0.5f, 0.5f));
+            var coinGainNextImage = coinGainNextGo.AddComponent<Image>();
+            coinGainNextImage.color = new Color(0.25f, 0.45f, 0.8f, 1f);
+            var coinGainNextButton = coinGainNextGo.AddComponent<Button>();
+            var coinGainNextTextGo = CreateUIObject("Text", coinGainNextGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
+            var coinGainNextText = coinGainNextTextGo.AddComponent<Text>();
+            ApplyDefaultText(coinGainNextText, "다음", 24, TextAnchor.MiddleCenter, Color.white);
+
+            var coinGainScreen = coinGainRootGo.AddComponent<CoinGainScreen>();
+            SetObjectRef(coinGainScreen, "root", coinGainRoot);
+            SetObjectRef(coinGainScreen, "coinImage", coinGainImage);
+            SetObjectRef(coinGainScreen, "messageText", coinGainMessageText);
+            SetObjectRef(coinGainScreen, "nextButton", coinGainNextButton);
+
+            var endingCoinRootGo = CreateUIObject("EndingCoin_Root", canvasGo.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 100f), new Vector2(820f, 420f), new Vector2(0.5f, 0.5f));
+            var endingCoinRoot = endingCoinRootGo.AddComponent<CanvasGroup>();
+            endingCoinRoot.alpha = 0f;
+            endingCoinRoot.interactable = false;
+            endingCoinRoot.blocksRaycasts = false;
+            var endingCoinBg = endingCoinRootGo.AddComponent<Image>();
+            endingCoinBg.color = new Color(0f, 0f, 0f, 0.72f);
+
+            var endingCoinSlots = new Image[3];
+            var endingGreatBadges = new GameObject[3];
+            for (int i = 0; i < 3; i++)
+            {
+                var slotGo = CreateUIObject("CoinSlot_" + (i + 1), endingCoinRootGo.transform, new Vector2(0.5f, 0.68f), new Vector2(0.5f, 0.68f), new Vector2(-180f + (i * 180f), 0f), new Vector2(120f, 120f), new Vector2(0.5f, 0.5f));
+                var slotImage = slotGo.AddComponent<Image>();
+                slotImage.color = new Color(1f, 0.9f, 0.25f, 1f);
+                endingCoinSlots[i] = slotImage;
+
+                var badgeGo = CreateUIObject("GreatBadge", slotGo.transform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 30f), new Vector2(100f, 40f), new Vector2(0.5f, 0.5f));
+                var badgeImage = badgeGo.AddComponent<Image>();
+                badgeImage.color = new Color(1f, 0.25f, 0.25f, 0.9f);
+                var badgeText = badgeGo.AddComponent<Text>();
+                ApplyDefaultText(badgeText, "GREAT", 20, TextAnchor.MiddleCenter, Color.white);
+                badgeGo.SetActive(false);
+                endingGreatBadges[i] = badgeGo;
+            }
+
+            var endingCoinMessageGo = CreateUIObject("MessageText", endingCoinRootGo.transform, new Vector2(0.5f, 0.36f), new Vector2(0.5f, 0.36f), Vector2.zero, new Vector2(760f, 80f), new Vector2(0.5f, 0.5f));
+            var endingCoinMessageText = endingCoinMessageGo.AddComponent<Text>();
+            ApplyDefaultText(endingCoinMessageText, string.Empty, 30, TextAnchor.MiddleCenter, Color.white);
+
+            var endingCoinNextGo = CreateUIObject("NextButton", endingCoinRootGo.transform, new Vector2(0.5f, 0.12f), new Vector2(0.5f, 0.12f), Vector2.zero, new Vector2(180f, 64f), new Vector2(0.5f, 0.5f));
+            var endingCoinNextImage = endingCoinNextGo.AddComponent<Image>();
+            endingCoinNextImage.color = new Color(0.25f, 0.45f, 0.8f, 1f);
+            var endingCoinNextButton = endingCoinNextGo.AddComponent<Button>();
+            var endingCoinNextTextGo = CreateUIObject("Text", endingCoinNextGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
+            var endingCoinNextText = endingCoinNextTextGo.AddComponent<Text>();
+            ApplyDefaultText(endingCoinNextText, "다음", 24, TextAnchor.MiddleCenter, Color.white);
+
+            var endingCoinSummary = endingCoinRootGo.AddComponent<EndingCoinSummary>();
+            SetObjectRef(endingCoinSummary, "root", endingCoinRoot);
+            SetObjectRefArray(endingCoinSummary, "coinSlots", endingCoinSlots);
+            SetObjectRefArray(endingCoinSummary, "greatBadges", new UnityEngine.Object[] { endingGreatBadges[0], endingGreatBadges[1], endingGreatBadges[2] });
+            SetObjectRef(endingCoinSummary, "messageText", endingCoinMessageText);
+            SetObjectRef(endingCoinSummary, "nextButton", endingCoinNextButton);
+
+            SetObjectRef(craftingController, "drinkPopup", drinkPopup);
+            SetObjectRef(craftingController, "serveSequence", serveSequence);
+
             var transitionGo = new GameObject("ScreenTransition", typeof(RectTransform));
             transitionGo.transform.SetParent(canvasGo.transform, false);
             var screenTransition = transitionGo.AddComponent<ScreenTransition>();
@@ -437,7 +657,14 @@ namespace GemCafe.EditorTools
             SetObjectRef(screenTransition, "panel", transitionRect);
             SetVector2(screenTransition, "offscreenRight", new Vector2(2200f, 0f));
             SetVector2(screenTransition, "onscreen", new Vector2(0f, 0f));
+            SetObjectRef(screenTransition, "viewRoot", worldViewRoot.GetComponent<RectTransform>());
+            SetVector2(screenTransition, "customerViewPos", new Vector2(0f, 0f));
+            SetVector2(screenTransition, "craftViewPos", new Vector2(-960f, 0f));
+            SetFloat(screenTransition, "viewSwitchDuration", 0.5f);
             transitionRect.anchoredPosition = new Vector2(2200f, 0f);
+            worldViewRoot.GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, 0f);
+
+            SetObjectRef(craftingController, "dualView", screenTransition);
 
             var spawnerGo = new GameObject("CustomerSpawner", typeof(CustomerSpawner));
             var spawner = spawnerGo.GetComponent<CustomerSpawner>();
@@ -453,6 +680,8 @@ namespace GemCafe.EditorTools
             SetObjectRef(dayManager, "patience", patienceTimer);
             SetObjectRef(dayManager, "resultToast", resultToast);
             SetObjectRef(dayManager, "craftTransition", screenTransition);
+            SetObjectRef(dayManager, "coinGainScreen", coinGainScreen);
+            SetObjectRef(dayManager, "endingCoinSummary", endingCoinSummary);
             SetObjectRefList(dayManager, "allCustomers", new[] { cstDay1, cstDay2, cstDay3 });
             SetBool(dayManager, "forceServiceStateOnStart", true);
 

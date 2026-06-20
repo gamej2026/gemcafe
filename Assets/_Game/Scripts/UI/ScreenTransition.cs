@@ -4,6 +4,12 @@ using UnityEngine;
 
 namespace GemCafe.UI
 {
+    public enum CafeView
+    {
+        Customer,
+        Craft
+    }
+
     public class ScreenTransition : MonoBehaviour
     {
         [SerializeField] private RectTransform panel;
@@ -12,9 +18,14 @@ namespace GemCafe.UI
         [SerializeField] private Vector2 onscreen;
         [SerializeField] private float duration = 0.4f;
         [SerializeField] private float fadeDuration = 0.4f;
+        [SerializeField] private RectTransform viewRoot;
+        [SerializeField] private Vector2 customerViewPos;
+        [SerializeField] private Vector2 craftViewPos;
+        [SerializeField] private float viewSwitchDuration = 0.5f;
 
         private Coroutine _slideRoutine;
         private Coroutine _fadeRoutine;
+        private Coroutine _viewRoutine;
 
         public void SlideIn(Action onComplete = null)
         {
@@ -34,6 +45,19 @@ namespace GemCafe.UI
         public void FadeIn(Action onComplete = null)
         {
             StartFade(1f, 0f, false, onComplete);
+        }
+
+        public void SwitchTo(CafeView view, Action onComplete = null)
+        {
+            if (_viewRoutine != null)
+            {
+                StopCoroutine(_viewRoutine);
+                _viewRoutine = null;
+            }
+
+            var to = view == CafeView.Customer ? customerViewPos : craftViewPos;
+            var from = viewRoot != null ? viewRoot.anchoredPosition : to;
+            _viewRoutine = StartCoroutine(ViewRoutine(from, to, onComplete));
         }
 
         private void StartSlide(Vector2 from, Vector2 to, Action onComplete)
@@ -125,6 +149,38 @@ namespace GemCafe.UI
 
             fadeGroup.blocksRaycasts = blockAtEnd;
             _fadeRoutine = null;
+            onComplete?.Invoke();
+        }
+
+        private IEnumerator ViewRoutine(Vector2 from, Vector2 to, Action onComplete)
+        {
+            if (viewRoot == null)
+            {
+                _viewRoutine = null;
+                onComplete?.Invoke();
+                yield break;
+            }
+
+            var time = viewSwitchDuration > 0f ? viewSwitchDuration : 0f;
+            if (time <= 0f)
+            {
+                viewRoot.anchoredPosition = to;
+                _viewRoutine = null;
+                onComplete?.Invoke();
+                yield break;
+            }
+
+            var elapsed = 0f;
+            while (elapsed < time)
+            {
+                elapsed += Time.deltaTime;
+                var t = Mathf.Clamp01(elapsed / time);
+                viewRoot.anchoredPosition = Vector2.Lerp(from, to, t);
+                yield return null;
+            }
+
+            viewRoot.anchoredPosition = to;
+            _viewRoutine = null;
             onComplete?.Invoke();
         }
     }

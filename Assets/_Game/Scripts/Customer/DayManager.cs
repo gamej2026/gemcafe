@@ -20,6 +20,7 @@ namespace GemCafe.Customer
         [SerializeField] private DrinkPopup drinkPopup;
         [SerializeField] private ServeSequence serveSequence;
         [SerializeField] private CoinGainScreen coinGainScreen;
+        [SerializeField] private EndingCoinSummary endingCoinSummary;
         [SerializeField] private List<CustomerSO> allCustomers;
         [SerializeField] private int fareReward = 10;
         [SerializeField] private bool forceServiceStateOnStart;
@@ -184,16 +185,6 @@ namespace GemCafe.Customer
 
             SetServiceSub(ServiceSubState.Crafting);
 
-            if (craftTransition != null)
-            {
-                craftTransition.SlideIn(() =>
-                {
-                    BeginCraftForCurrentCustomer();
-                    craftTransition.SlideOut();
-                });
-                return;
-            }
-
             BeginCraftForCurrentCustomer();
         }
 
@@ -272,24 +263,6 @@ namespace GemCafe.Customer
                 crafting.EndCraft();
             }
 
-            if (drinkPopup != null)
-            {
-                Sprite sprite = null;
-                drinkPopup.Show(sprite, () => PlayServe(result));
-                return;
-            }
-
-            PlayServe(result);
-        }
-
-        private void PlayServe(DrinkResult result)
-        {
-            if (serveSequence != null)
-            {
-                serveSequence.Play(() => ShowResultReaction(result));
-                return;
-            }
-
             ShowResultReaction(result);
         }
 
@@ -336,7 +309,15 @@ namespace GemCafe.Customer
             {
                 var kind = ResolveEndingKind();
                 gm?.SetEndingKind(kind);
-                gm?.StateMachine.TryTransition(GameState.Ending);
+
+                if (endingCoinSummary != null)
+                {
+                    endingCoinSummary.Show(TotalCoins, GreatCoins, () => gm?.StateMachine.TryTransition(GameState.Ending));
+                }
+                else
+                {
+                    gm?.StateMachine.TryTransition(GameState.Ending);
+                }
             }
             else
             {
