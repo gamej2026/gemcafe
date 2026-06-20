@@ -51,8 +51,10 @@
   <ItemGroup>
     <Compile Include="Assets\_Game\Scripts\UI\LobbyMenu.cs" />
     <Compile Include="Assets\_Game\Scripts\Data\RecipeSO.cs" />
+    <Compile Include="Assets\_Game\Scripts\Ending\EndingDirector.cs" />
     <Compile Include="Assets\_Game\Scripts\UI\HUD.cs" />
     <Compile Include="Assets\_Game\Scripts\Crafting\PourMinigame.cs" />
+    <Compile Include="Assets\_Game\Scripts\Ending\EndingCsvLoader.cs" />
     <Compile Include="Assets\_Game\Scripts\Core\ServiceSubState.cs" />
     <Compile Include="Assets\_Game\Scripts\Crafting\TeawarePour.cs" />
     <Compile Include="Assets\_Game\Scripts\Customer\DayManager.cs" />
@@ -73,13 +75,15 @@
     <Compile Include="Assets\_Game\Scripts\UI\ServeSequence.cs" />
     <Compile Include="Assets\_Game\Scripts\Core\EventBus.cs" />
     <Compile Include="Assets\_Game\Scripts\UI\EndingCoinSummary.cs" />
+    <Compile Include="Assets\_Game\Scripts\UI\OrderRecallPopup.cs" />
     <Compile Include="Assets\_Game\Scripts\UI\ScreenTransition.cs" />
     <Compile Include="Assets\_Game\Scripts\Core\SceneRouter.cs" />
     <Compile Include="Assets\_Game\Scripts\Dialogue\DialogueView.cs" />
+    <Compile Include="Assets\_Game\Scripts\Ending\EndingFlow.cs" />
     <Compile Include="Assets\_Game\Scripts\Data\DrinkResult.cs" />
     <Compile Include="Assets\_Game\Scripts\UI\Popup.cs" />
+    <Compile Include="Assets\_Game\Scripts\Dialogue\InteractableDialogueCsvLoader.cs" />
     <Compile Include="Assets\_Game\Scripts\Data\IngredientCategory.cs" />
-    <Compile Include="Assets\_Game\Scripts\UI\EndingSequencePlayer.cs" />
     <Compile Include="Assets\_Game\Scripts\UI\ResultToast.cs" />
     <Compile Include="Assets\_Game\Scripts\Stage\SpriteAlphaFlicker.cs" />
     <Compile Include="Assets\_Game\Scripts\Dialogue\BargeInBubble.cs" />
@@ -110,6 +114,7 @@
     <Compile Include="Assets\_Game\Scripts\Player\CameraFollow.cs" />
     <Compile Include="Assets\_Game\Scripts\UI\PopupType.cs" />
     <Compile Include="Assets\_Game\Scripts\Core\SaveSystem.cs" />
+    <Compile Include="Assets\_Game\Scripts\Ending\EndingBeat.cs" />
     <Compile Include="Assets\_Game\Scripts\UI\DayIntro.cs" />
     <Compile Include="Assets\_Game\Scripts\Core\GameConfig.cs" />
     <Compile Include="Assets\_Game\Scripts\Debug\Stage1DebugOverlay.cs" />

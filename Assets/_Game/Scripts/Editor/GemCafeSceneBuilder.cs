@@ -643,6 +643,53 @@ namespace GemCafe.EditorTools
 
             SetObjectRefArray(popupManager, "popups", popupArray);
 
+            // 손님 주문 대사 다시보기 — 토글 팝업
+            var orderRecallGo = CreateUIObject("Popup_OrderRecall", canvasGo.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(800f, 520f), new Vector2(0.5f, 0.5f));
+            var orderRecallCg = orderRecallGo.AddComponent<CanvasGroup>();
+            var orderRecallPopup = orderRecallGo.AddComponent<OrderRecallPopup>();
+
+            var orderRecallDimGo = CreateUIObject("Dim", orderRecallGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
+            orderRecallDimGo.transform.SetAsFirstSibling();
+            var orderRecallDimImage = orderRecallDimGo.AddComponent<Image>();
+            orderRecallDimImage.color = new Color(0f, 0f, 0f, 0.55f);
+            orderRecallDimImage.raycastTarget = false;
+
+            var orderRecallPanelGo = CreateUIObject("Panel", orderRecallGo.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(680f, 440f), new Vector2(0.5f, 0.5f));
+            var orderRecallPanelImage = orderRecallPanelGo.AddComponent<Image>();
+            orderRecallPanelImage.color = new Color(0.18f, 0.16f, 0.22f, 1f);
+
+            var orderRecallTitleGo = CreateUIObject("Title", orderRecallPanelGo.transform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -20f), new Vector2(-40f, 60f), new Vector2(0.5f, 1f));
+            var orderRecallTitle = orderRecallTitleGo.AddComponent<Text>();
+            ApplyDefaultText(orderRecallTitle, "손님 주문 다시보기", 32, TextAnchor.MiddleCenter, Color.white);
+
+            var orderRecallContentGo = CreateUIObject("Content", orderRecallPanelGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(0f, 0f), new Vector2(-60f, -160f), new Vector2(0.5f, 0.5f));
+            var orderRecallContent = orderRecallContentGo.AddComponent<Text>();
+            ApplyDefaultText(orderRecallContent, "", 26, TextAnchor.UpperLeft, Color.white);
+
+            var orderRecallCloseGo = CreateUIObject("CloseButton", orderRecallPanelGo.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 24f), new Vector2(180f, 56f), new Vector2(0.5f, 0f));
+            var orderRecallCloseImage = orderRecallCloseGo.AddComponent<Image>();
+            orderRecallCloseImage.color = new Color(0.8f, 0.2f, 0.2f, 1f);
+            var orderRecallCloseButton = orderRecallCloseGo.AddComponent<Button>();
+            var orderRecallCloseTextGo = CreateUIObject("Text", orderRecallCloseGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
+            var orderRecallCloseText = orderRecallCloseTextGo.AddComponent<Text>();
+            ApplyDefaultText(orderRecallCloseText, "닫기", 24, TextAnchor.MiddleCenter, Color.white);
+
+            // Crafting(제작 공간) 상단 토글 버튼 "UI 대화 다시보기"
+            var orderRecallToggleGo = CreateUIObject("Btn_OrderRecall", craftingRoot.transform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -30f), new Vector2(360f, 64f), new Vector2(0.5f, 1f));
+            var orderRecallToggleImage = orderRecallToggleGo.AddComponent<Image>();
+            orderRecallToggleImage.color = new Color(0.25f, 0.45f, 0.8f, 1f);
+            var orderRecallToggleButton = orderRecallToggleGo.AddComponent<Button>();
+            var orderRecallToggleTextGo = CreateUIObject("Text", orderRecallToggleGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
+            var orderRecallToggleText = orderRecallToggleTextGo.AddComponent<Text>();
+            ApplyDefaultText(orderRecallToggleText, "UI 대화 다시보기", 26, TextAnchor.MiddleCenter, Color.white);
+
+            SetObjectRef(orderRecallPopup, "root", orderRecallCg);
+            SetObjectRef(orderRecallPopup, "toggleButton", orderRecallToggleButton);
+            SetObjectRef(orderRecallPopup, "closeButton", orderRecallCloseButton);
+            SetObjectRef(orderRecallPopup, "dim", orderRecallDimImage);
+            SetObjectRef(orderRecallPopup, "contentText", orderRecallContent);
+            orderRecallPopup.Close();
+
             var resultToastGo = CreateUIObject("ResultToast", canvasGo.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 250f), new Vector2(520f, 120f), new Vector2(0.5f, 0.5f));
             var resultToast = resultToastGo.AddComponent<ResultToast>();
             var resultToastRoot = resultToastGo.AddComponent<CanvasGroup>();
