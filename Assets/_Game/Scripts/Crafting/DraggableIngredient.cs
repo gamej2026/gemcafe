@@ -102,7 +102,7 @@ namespace GemCafe.Crafting
             }
         }
 
-        public void Settle()
+        public void Settle(RectTransform slot = null)
         {
             _droppedIntoBowl = true;
             _settled = true;
@@ -110,6 +110,15 @@ namespace GemCafe.Crafting
             if (_cg != null)
             {
                 _cg.blocksRaycasts = false;
+            }
+
+            if (slot != null && _rectTransform != null)
+            {
+                transform.SetParent(slot, false);
+                _rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+                _rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+                _rectTransform.pivot = new Vector2(0.5f, 0.5f);
+                _rectTransform.anchoredPosition = Vector2.zero;
             }
         }
 

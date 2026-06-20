@@ -11,6 +11,7 @@ namespace GemCafe.Crafting
         [SerializeField] private RectTransform bowlRect;
         [SerializeField] private Camera uiCamera;
         [SerializeField] private int maxContents = 3;
+        [SerializeField] private RectTransform[] slots = new RectTransform[3];
 
         private readonly List<IngredientSO> _contents = new();
 
@@ -50,8 +51,19 @@ namespace GemCafe.Crafting
                 return;
             }
 
+            var slot = ResolveSlot(_contents.Count);
             Add(draggable.Ingredient);
-            draggable.Settle();
+            draggable.Settle(slot);
+        }
+
+        private RectTransform ResolveSlot(int index)
+        {
+            if (slots == null || index < 0 || index >= slots.Length)
+            {
+                return null;
+            }
+
+            return slots[index];
         }
 
         public void Add(IngredientSO ingredient)

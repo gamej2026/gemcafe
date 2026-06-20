@@ -462,6 +462,23 @@ namespace GemCafe.EditorTools
             SetObjectRef(bowlReceiver, "bowlRect", bowlGo.GetComponent<RectTransform>());
             SetObjectRef(bowlReceiver, "uiCamera", null);
 
+            // 재료가 순서대로(1,2,3) 놓이는 고정 슬롯 3개
+            var bowlSlots = new UnityEngine.Object[3];
+            float[] slotX = { -340f, 0f, 340f };
+            for (int s = 0; s < 3; s++)
+            {
+                var slotGo = CreateUIObject(
+                    "Slot_" + (s + 1),
+                    bowlGo.transform,
+                    new Vector2(0.5f, 0.5f),
+                    new Vector2(0.5f, 0.5f),
+                    new Vector2(slotX[s], 0f),
+                    new Vector2(200f, 200f),
+                    new Vector2(0.5f, 0.5f));
+                bowlSlots[s] = slotGo.GetComponent<RectTransform>();
+            }
+            SetObjectRefArray(bowlReceiver, "slots", bowlSlots);
+
             var bowlLabelGo = CreateUIObject("CupLabel", bowlGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
             var bowlLabel = bowlLabelGo.AddComponent<Text>();
             ApplyDefaultText(bowlLabel, "음료 보이는 곳 (컵)", 40, TextAnchor.MiddleCenter, Color.white);
