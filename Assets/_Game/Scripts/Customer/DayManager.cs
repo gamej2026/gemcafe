@@ -274,9 +274,7 @@ namespace GemCafe.Customer
 
             if (drinkPopup != null)
             {
-                var sprite = _currentCustomer != null && _currentCustomer.targetRecipe != null
-                    ? null
-                    : null;
+                Sprite sprite = null;
                 drinkPopup.Show(sprite, () => PlayServe(result));
                 return;
             }
