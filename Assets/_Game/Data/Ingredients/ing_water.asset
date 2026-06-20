@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: GemCafe::GemCafe.Data.IngredientSO
   id: ing_water
   displayName: "\uC0BC\uB3C4\uCC9C \uBB3C"
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 629818079b0499d40a81f6789397a13a, type: 3}
   category: 0

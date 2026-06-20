@@ -14,14 +14,31 @@ namespace GemCafe.UI
             EventBus.OnLivesChanged += HandleLives;
             EventBus.OnPatienceChanged += HandlePatience;
 
-            var gm = GameManager.Instance;
-            HandleLives(gm != null && gm.Lives != null ? gm.Lives.Current : 0);
+            RefreshLives();
+        }
+
+        private void Start()
+        {
+            RefreshLives();
         }
 
         private void OnDisable()
         {
             EventBus.OnLivesChanged -= HandleLives;
             EventBus.OnPatienceChanged -= HandlePatience;
+        }
+
+        private void RefreshLives()
+        {
+            var gm = GameManager.Instance;
+            if (gm == null || gm.Lives == null)
+            {
+                // GameManager가 아직 초기화되지 않았으면 아이콘을 끄지 않고
+                // Start 시점에 다시 갱신한다. (early OnEnable로 인한 오프 방지)
+                return;
+            }
+
+            HandleLives(gm.Lives.Current);
         }
 
         private void HandleLives(int lives)

@@ -15,6 +15,7 @@ namespace GemCafe.Crafting
         private Transform _originParent;
         private CanvasGroup _cg;
         private bool _droppedIntoBowl;
+        private bool _settled;
         private RectTransform _rectTransform;
 
         public IngredientSO Ingredient => ingredient;
@@ -44,6 +45,11 @@ namespace GemCafe.Crafting
 
         public void OnBeginDrag(PointerEventData eventData)
         {
+            if (_settled)
+            {
+                return;
+            }
+
             _droppedIntoBowl = false;
             _originParent = transform.parent;
 
@@ -62,7 +68,7 @@ namespace GemCafe.Crafting
 
         public void OnDrag(PointerEventData eventData)
         {
-            if (_rectTransform == null || canvas == null)
+            if (_settled || _rectTransform == null || canvas == null)
             {
                 return;
             }
@@ -78,6 +84,11 @@ namespace GemCafe.Crafting
 
         public void OnEndDrag(PointerEventData eventData)
         {
+            if (_settled)
+            {
+                return;
+            }
+
             if (_cg != null)
             {
                 _cg.blocksRaycasts = true;
@@ -89,13 +100,27 @@ namespace GemCafe.Crafting
             }
         }
 
-        public void MarkDropped()
+        public void Settle()
         {
             _droppedIntoBowl = true;
+            _settled = true;
+
+            if (_cg != null)
+            {
+                _cg.blocksRaycasts = false;
+            }
         }
 
         public void ReturnToOrigin()
         {
+            _settled = false;
+            _droppedIntoBowl = false;
+
+            if (_cg != null)
+            {
+                _cg.blocksRaycasts = true;
+            }
+
             if (_originParent != null)
             {
                 transform.SetParent(_originParent, false);

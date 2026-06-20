@@ -40,6 +40,16 @@ namespace GemCafe.EditorTools
         private const string LobbyScenePath = "Assets/_Game/Scenes/Lobby.unity";
         private const string Stage1ScenePath = "Assets/_Game/Scenes/Stage1_Riverside.unity";
 
+        private const string ResTrayPath = "Assets/Resource/Tray.png";
+        private const string ResRockPath = "Assets/Resource/Ingredient_0.png";     // 돌
+        private const string ResGinsengPath = "Assets/Resource/Ingredient_1.png";  // 인삼
+        private const string ResPersimmonPath = "Assets/Resource/Ingredient_2.png"; // 곶감
+
+        private static readonly string[] ResourceSpritePaths =
+        {
+            ResTrayPath, ResRockPath, ResGinsengPath, ResPersimmonPath
+        };
+
         [MenuItem("GemCafe/Build/0. Build All")]
         public static void BuildAll()
         {
@@ -60,6 +70,11 @@ namespace GemCafe.EditorTools
             EnsureFolder(RecipesDir);
             EnsureFolder(CustomersDir);
 
+            EnsureSpriteImports();
+            var sprWaterIcon = AssetDatabase.LoadAssetAtPath<Sprite>(ResPersimmonPath); // 곶감
+            var sprSyrupIcon = AssetDatabase.LoadAssetAtPath<Sprite>(ResRockPath);       // 돌
+            var sprToppingIcon = AssetDatabase.LoadAssetAtPath<Sprite>(ResGinsengPath);  // 인삼
+
             var gameConfig = LoadOrCreateAsset<GameConfig>(GameConfigPath);
             var water = LoadOrCreateAsset<IngredientSO>(WaterPath);
             var syrup = LoadOrCreateAsset<IngredientSO>(SyrupPath);
@@ -68,16 +83,19 @@ namespace GemCafe.EditorTools
             water.id = "ing_water";
             water.displayName = "삼도천 물";
             water.category = IngredientCategory.Base;
+            water.icon = sprWaterIcon;
             EditorUtility.SetDirty(water);
 
             syrup.id = "ing_syrup";
             syrup.displayName = "시럽";
             syrup.category = IngredientCategory.Syrup;
+            syrup.icon = sprSyrupIcon;
             EditorUtility.SetDirty(syrup);
 
             topping.id = "ing_topping";
             topping.displayName = "고명";
             topping.category = IngredientCategory.Topping;
+            topping.icon = sprToppingIcon;
             EditorUtility.SetDirty(topping);
 
             var rcpDay1 = LoadOrCreateAsset<RecipeSO>(RecipeDay1Path);
@@ -169,6 +187,11 @@ namespace GemCafe.EditorTools
             var cstDay2 = AssetDatabase.LoadAssetAtPath<CustomerSO>(CustomerDay2Path);
             var cstDay3 = AssetDatabase.LoadAssetAtPath<CustomerSO>(CustomerDay3Path);
 
+            var sprTray = AssetDatabase.LoadAssetAtPath<Sprite>(ResTrayPath);
+            var sprPersimmon = AssetDatabase.LoadAssetAtPath<Sprite>(ResPersimmonPath);
+            var sprRock = AssetDatabase.LoadAssetAtPath<Sprite>(ResRockPath);
+            var sprGinseng = AssetDatabase.LoadAssetAtPath<Sprite>(ResGinsengPath);
+
             var eventSystemGo = new GameObject("EventSystem", typeof(EventSystem), typeof(StandaloneInputModule));
 
             var cameraGo = new GameObject("Main Camera", typeof(Camera));
@@ -224,9 +247,10 @@ namespace GemCafe.EditorTools
             SetObjectRefArray(hud, "lifeIcons", lifeIcons);
             SetObjectRef(hud, "patienceFill", patienceImage);
 
-            var customerImageGo = CreateUIObject("CustomerImage", canvasGo.transform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -180f), new Vector2(300f, 300f), new Vector2(0.5f, 1f));
+            var customerImageGo = CreateUIObject("CustomerImage", canvasGo.transform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(380f, 40f), new Vector2(640f, 820f), new Vector2(0.5f, 0f));
             var customerImage = customerImageGo.AddComponent<Image>();
             customerImage.color = new Color(0.75f, 0.85f, 0.95f, 1f);
+            customerImage.preserveAspect = true;
 
             var dialogueRoot = CreateUIObject("Dialogue", canvasGo.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 20f), new Vector2(1500f, 250f), new Vector2(0.5f, 0f));
             var dialoguePanelImage = dialogueRoot.AddComponent<Image>();
@@ -258,18 +282,10 @@ namespace GemCafe.EditorTools
             var speakerViewGo = new GameObject("SpeakerView", typeof(RectTransform));
             speakerViewGo.transform.SetParent(canvasGo.transform, false);
             var speakerView = speakerViewGo.AddComponent<SpeakerView>();
-            var leftPortraitGo = CreateUIObject("LeftPortrait", speakerViewGo.transform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(180f, 260f), new Vector2(220f, 300f), new Vector2(0f, 0f));
-            var leftPortrait = leftPortraitGo.AddComponent<Image>();
-            leftPortrait.color = new Color(0.3f, 0.65f, 1f, 1f);
-            var rightPortraitGo = CreateUIObject("RightPortrait", speakerViewGo.transform, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-180f, 260f), new Vector2(220f, 300f), new Vector2(1f, 0f));
-            var rightPortrait = rightPortraitGo.AddComponent<Image>();
-            rightPortrait.color = new Color(1f, 0.65f, 0.2f, 1f);
             var dimGo = CreateUIObject("BackgroundDim", speakerViewGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
             dimGo.transform.SetAsFirstSibling();
             var backgroundDim = dimGo.AddComponent<Image>();
             backgroundDim.color = new Color(0f, 0f, 0f, 0.35f);
-            SetObjectRef(speakerView, "leftPortrait", leftPortrait);
-            SetObjectRef(speakerView, "rightPortrait", rightPortrait);
             SetObjectRef(speakerView, "backgroundDim", backgroundDim);
             SetString(speakerView, "leftSpeakerId", "주인공");
 
@@ -280,35 +296,45 @@ namespace GemCafe.EditorTools
             SetObjectRef(dialogueRunner, "speakerView", speakerView);
 
             var craftingRoot = CreateUIObject("Crafting", canvasGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
-            var trayPanel = CreateUIObject("Tray", craftingRoot.transform, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(200f, 0f), new Vector2(360f, 500f), new Vector2(0f, 0.5f));
+
+            // 우상단 트레이 (테이블 탑뷰) — Tray.png
+            var trayPanel = CreateUIObject("Tray", craftingRoot.transform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-30f, -30f), new Vector2(1140f, 560f), new Vector2(1f, 1f));
             var trayImage = trayPanel.AddComponent<Image>();
-            trayImage.color = new Color(0.15f, 0.2f, 0.25f, 0.9f);
+            trayImage.sprite = sprTray;
+            trayImage.color = Color.white;
+            trayImage.preserveAspect = false;
+            trayImage.raycastTarget = false;
 
             var trayController = trayPanel.AddComponent<TrayController>();
             SetObjectRef(trayController, "panel", trayPanel.GetComponent<RectTransform>());
-            SetVector2(trayController, "openAnchoredPos", new Vector2(200f, 0f));
-            SetVector2(trayController, "closedAnchoredPos", new Vector2(-380f, 0f));
+            SetVector2(trayController, "openAnchoredPos", new Vector2(-30f, -30f));
+            SetVector2(trayController, "closedAnchoredPos", new Vector2(1200f, -30f));
 
+            // 트레이 위 재료 3종: 곶감(좌상) / 돌(좌하) / 인삼(우)
             var ingredientSOs = new[] { ingWater, ingSyrup, ingTopping };
-            var ingredientNames = new[] { "물", "시럽", "고명" };
-            var ingredientColors = new[]
+            var ingredientSprites = new[] { sprPersimmon, sprRock, sprGinseng };
+            var ingredientPositions = new[]
             {
-                new Color(0.3f, 0.7f, 1f, 1f),
-                new Color(0.95f, 0.45f, 0.2f, 1f),
-                new Color(0.35f, 0.85f, 0.35f, 1f)
+                new Vector2(-330f, 70f),
+                new Vector2(-330f, -150f),
+                new Vector2(380f, -10f)
+            };
+            var ingredientSizes = new[]
+            {
+                new Vector2(300f, 240f),
+                new Vector2(330f, 220f),
+                new Vector2(250f, 330f)
             };
 
             for (int i = 0; i < 3; i++)
             {
-                var ingGo = CreateUIObject("Ingredient_" + (i + 1), trayPanel.transform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -70f - i * 130f), new Vector2(260f, 110f), new Vector2(0.5f, 1f));
+                var ingGo = CreateUIObject("Ingredient_" + i, trayPanel.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), ingredientPositions[i], ingredientSizes[i], new Vector2(0.5f, 0.5f));
                 var ingImg = ingGo.AddComponent<Image>();
-                ingImg.color = ingredientColors[i];
+                ingImg.sprite = ingredientSprites[i];
+                ingImg.color = Color.white;
+                ingImg.preserveAspect = true;
                 var ingCg = ingGo.AddComponent<CanvasGroup>();
                 ingCg.blocksRaycasts = true;
-
-                var ingLabelGo = CreateUIObject("Name", ingGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
-                var ingLabel = ingLabelGo.AddComponent<Text>();
-                ApplyDefaultText(ingLabel, ingredientNames[i], 26, TextAnchor.MiddleCenter, Color.black);
 
                 var draggable = ingGo.AddComponent<DraggableIngredient>();
                 SetObjectRef(draggable, "ingredient", ingredientSOs[i]);
@@ -316,14 +342,21 @@ namespace GemCafe.EditorTools
                 SetObjectRef(draggable, "iconImage", ingImg);
             }
 
-            var bowlGo = CreateUIObject("Bowl", craftingRoot.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(120f, -100f), new Vector2(260f, 170f), new Vector2(0.5f, 0.5f));
+            // 우하단 컵(사발) — 재료 드롭 타깃 "음료 보이는 곳 (컵)"
+            var bowlGo = CreateUIObject("Bowl", craftingRoot.transform, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-30f, 30f), new Vector2(1140f, 470f), new Vector2(1f, 0f));
             var bowlImage = bowlGo.AddComponent<Image>();
-            bowlImage.color = new Color(0.8f, 0.75f, 0.6f, 1f);
+            bowlImage.color = new Color(0.30f, 0.55f, 0.95f, 1f);
             var bowlReceiver = bowlGo.AddComponent<BowlReceiver>();
             SetObjectRef(bowlReceiver, "bowlRect", bowlGo.GetComponent<RectTransform>());
             SetObjectRef(bowlReceiver, "uiCamera", null);
 
-            var pestleGo = CreateUIObject("Pestle", craftingRoot.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(360f, -50f), new Vector2(90f, 210f), new Vector2(0.5f, 0.5f));
+            var bowlLabelGo = CreateUIObject("CupLabel", bowlGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
+            var bowlLabel = bowlLabelGo.AddComponent<Text>();
+            ApplyDefaultText(bowlLabel, "음료 보이는 곳 (컵)", 40, TextAnchor.MiddleCenter, Color.white);
+            bowlLabel.raycastTarget = false;
+
+            // 막자 (섞기 도구) — 컵에 드롭하면 제조 완료
+            var pestleGo = CreateUIObject("Pestle", craftingRoot.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(360f, 60f), new Vector2(110f, 260f), new Vector2(0.5f, 0f));
             var pestleImage = pestleGo.AddComponent<Image>();
             pestleImage.color = new Color(0.45f, 0.3f, 0.2f, 1f);
             var pestleMixer = pestleGo.AddComponent<PestleMixer>();
@@ -785,6 +818,42 @@ namespace GemCafe.EditorTools
 
             list.Add(new EditorBuildSettingsScene(scenePath, true));
             pathSet.Add(scenePath);
+        }
+
+        private static void EnsureSpriteImports()
+        {
+            foreach (var path in ResourceSpritePaths)
+            {
+                var importer = AssetImporter.GetAtPath(path) as TextureImporter;
+                if (importer == null)
+                {
+                    continue;
+                }
+
+                bool changed = false;
+                if (importer.textureType != TextureImporterType.Sprite)
+                {
+                    importer.textureType = TextureImporterType.Sprite;
+                    changed = true;
+                }
+
+                if (importer.spriteImportMode != SpriteImportMode.Single)
+                {
+                    importer.spriteImportMode = SpriteImportMode.Single;
+                    changed = true;
+                }
+
+                if (!importer.alphaIsTransparency)
+                {
+                    importer.alphaIsTransparency = true;
+                    changed = true;
+                }
+
+                if (changed)
+                {
+                    importer.SaveAndReimport();
+                }
+            }
         }
 
         private static T LoadOrCreateAsset<T>(string path) where T : ScriptableObject

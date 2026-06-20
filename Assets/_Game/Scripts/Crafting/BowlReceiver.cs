@@ -45,8 +45,7 @@ namespace GemCafe.Crafting
             }
 
             Add(draggable.Ingredient);
-            draggable.MarkDropped();
-            dragObject.SetActive(false);
+            draggable.Settle();
         }
 
         public void Add(IngredientSO ingredient)

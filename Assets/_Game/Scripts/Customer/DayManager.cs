@@ -177,7 +177,11 @@ namespace GemCafe.Customer
 
             if (craftTransition != null)
             {
-                craftTransition.SlideIn(() => BeginCraftForCurrentCustomer());
+                craftTransition.SlideIn(() =>
+                {
+                    BeginCraftForCurrentCustomer();
+                    craftTransition.SlideOut();
+                });
                 return;
             }
 
@@ -266,7 +270,6 @@ namespace GemCafe.Customer
                 spawner.Clear();
             }
 
-            craftTransition?.SlideOut();
             NextCustomer();
         }
 
