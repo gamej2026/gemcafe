@@ -289,7 +289,7 @@ Transform:
   m_GameObject: {fileID: 206779571}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalPosition: {x: -0.23000002, y: -2.25, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -454,7 +454,7 @@ Transform:
   m_GameObject: {fileID: 312306771}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.77, y: -2.25, z: 0}
+  m_LocalPosition: {x: 3.36, y: -2.87, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -523,7 +523,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 193
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: 0c3530aa17a06154e89c1f6ad42a8542, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 6315c72b8b201e3418f0889827569ea5, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -1183,9 +1183,9 @@ MonoBehaviour:
   - speakerId: "\uB9C8\uB2D8"
     text: "\uC88B\uC544, \uC548\uC73C\uB85C \uB4E4\uC5B4\uC624\uAC8C."
     portrait: {fileID: 0}
-  outlineTarget: {fileID: 0}
-  outlineMaterial: {fileID: 0}
-  normalMaterial: {fileID: 0}
+  outlineTarget: {fileID: 1113293175}
+  outlineMaterial: {fileID: 2100000, guid: 7c2e6c1655b8b7f40a4c9635575731b1, type: 2}
+  normalMaterial: {fileID: 2100000, guid: b17e93813d7009940abcefdea54e7931, type: 2}
   highlightVisual: {fileID: 1411471747}
 --- !u!4 &1113293173
 Transform:
@@ -1196,7 +1196,7 @@ Transform:
   m_GameObject: {fileID: 1113293171}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 7.77, y: -2.25, z: 0}
+  m_LocalPosition: {x: 19.11, y: -1.62, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1241,7 +1241,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1.28, y: 1.28}
+    oldSize: {x: 5.12, y: 5.12}
     newSize: {x: 0.16, y: 0.16}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -1298,8 +1298,8 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 193
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: cd445672ce788594b80b48a36700919b, type: 3}
-  m_Color: {r: 1, g: 0.65, b: 0.2, a: 1}
+  m_Sprite: {fileID: 21300000, guid: 628c5c9d915ed5f409e52b5287734a17, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -2423,7 +2423,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!212 &1627251771
 SpriteRenderer:
   serializedVersion: 2
@@ -2986,9 +2986,9 @@ MonoBehaviour:
     text: "\uC800 \uC704 \uB2E4\uBC29\uC5D0 \uB9C8\uB2D8\uC744 \uCC3E\uC544\uAC00
       \uBCF4\uAC8C."
     portrait: {fileID: 0}
-  outlineTarget: {fileID: 0}
-  outlineMaterial: {fileID: 0}
-  normalMaterial: {fileID: 0}
+  outlineTarget: {fileID: 2033616936}
+  outlineMaterial: {fileID: 2100000, guid: 7c2e6c1655b8b7f40a4c9635575731b1, type: 2}
+  normalMaterial: {fileID: 2100000, guid: b17e93813d7009940abcefdea54e7931, type: 2}
   highlightVisual: {fileID: 1627251770}
 --- !u!61 &2033616935
 BoxCollider2D:
@@ -3062,7 +3062,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: b17e93813d7009940abcefdea54e7931, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -3104,7 +3104,7 @@ Transform:
   m_GameObject: {fileID: 2033616933}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.23000002, y: -2.25, z: 0}
+  m_LocalPosition: {x: -4.45, y: -2.25, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

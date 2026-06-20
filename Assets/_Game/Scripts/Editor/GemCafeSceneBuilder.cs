@@ -38,6 +38,11 @@ namespace GemCafe.EditorTools
         private const string CustomerDay3Path = "Assets/_Game/Data/Customers/cst_day3.asset";
         private const string MixMinigameConfigPath = "Assets/_Game/Data/MixMinigameConfig.asset";
         private const string PourMinigameConfigPath = "Assets/_Game/Data/PourMinigameConfig.asset";
+
+        private const string ArtMaterialsDir = "Assets/_Game/Art/Materials";
+        private const string OutlineMaterialPath = "Assets/_Game/Art/Materials/NPCOutline.mat";
+        private const string NormalMaterialPath = "Assets/_Game/Art/Materials/NPCNormal.mat";
+        private const string OutlineShaderName = "GemCafe/SpriteOutline";
         private const string CafeScenePath = "Assets/_Game/Scenes/Cafe.unity";
         private const string LobbyScenePath = "Assets/_Game/Scenes/Lobby.unity";
         private const string Stage1ScenePath = "Assets/_Game/Scenes/Stage1_Riverside.unity";
@@ -924,6 +929,16 @@ namespace GemCafe.EditorTools
             manimHighlightGo.SetActive(false);
             SetObjectRef(manimInteractable, "highlightVisual", manimHighlightGo);
 
+            // 근접 시 NPC 테두리 발광(아웃라인 셰이더) 연결.
+            var outlineMaterial = EnsureOutlineMaterial();
+            var normalSpriteMaterial = EnsureNormalSpriteMaterial();
+            SetObjectRef(dolsoeInteractable, "outlineTarget", dolsoeSprite);
+            SetObjectRef(dolsoeInteractable, "outlineMaterial", outlineMaterial);
+            SetObjectRef(dolsoeInteractable, "normalMaterial", normalSpriteMaterial);
+            SetObjectRef(manimInteractable, "outlineTarget", manimSprite);
+            SetObjectRef(manimInteractable, "outlineMaterial", outlineMaterial);
+            SetObjectRef(manimInteractable, "normalMaterial", normalSpriteMaterial);
+
             var canvasGo = new GameObject("Canvas", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
             var canvas = canvasGo.GetComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
@@ -1085,6 +1100,48 @@ namespace GemCafe.EditorTools
                     importer.SaveAndReimport();
                 }
             }
+        }
+
+        private static Material EnsureOutlineMaterial()
+        {
+            var shader = Shader.Find(OutlineShaderName);
+            var material = AssetDatabase.LoadAssetAtPath<Material>(OutlineMaterialPath);
+            if (material == null)
+            {
+                if (shader == null)
+                {
+                    Debug.LogWarning("GemCafeSceneBuilder: '" + OutlineShaderName + "' shader not found; outline material skipped.");
+                    return null;
+                }
+
+                EnsureFolder(ArtMaterialsDir);
+                material = new Material(shader);
+                AssetDatabase.CreateAsset(material, OutlineMaterialPath);
+            }
+            else if (shader != null)
+            {
+                material.shader = shader;
+            }
+
+            material.SetColor("_OutlineColor", new Color(1f, 0.92f, 0.3f, 1f));
+            material.SetFloat("_OutlineSize", 2.5f);
+            material.SetFloat("_OutlineGlow", 1.9f);
+            EditorUtility.SetDirty(material);
+            return material;
+        }
+
+        private static Material EnsureNormalSpriteMaterial()
+        {
+            var material = AssetDatabase.LoadAssetAtPath<Material>(NormalMaterialPath);
+            if (material == null)
+            {
+                EnsureFolder(ArtMaterialsDir);
+                material = new Material(Shader.Find("Sprites/Default"));
+                AssetDatabase.CreateAsset(material, NormalMaterialPath);
+                EditorUtility.SetDirty(material);
+            }
+
+            return material;
         }
 
         private static T LoadOrCreateAsset<T>(string path) where T : ScriptableObject
