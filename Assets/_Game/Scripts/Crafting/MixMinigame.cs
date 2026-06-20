@@ -70,6 +70,30 @@ namespace GemCafe.Crafting
             IsRunning = true;
         }
 
+        /// <summary>
+        /// 미니게임을 시작하지 않고 UI 비주얼만 초기 상태로 정렬한다.
+        /// 포커스 연출에서 미리보기로 UI를 보여줄 때 사용한다. (alpha는 건드리지 않음)
+        /// </summary>
+        public void PrepareVisuals()
+        {
+            if (config == null)
+            {
+                return;
+            }
+
+            _progress = Mathf.Clamp01(config.startProgress);
+            _barVelocity = 0f;
+            _time = 0f;
+
+            CenterBar();
+            UpdateLeaf();
+
+            if (progressFill != null)
+            {
+                progressFill.fillAmount = _progress;
+            }
+        }
+
         public void Cancel()
         {
             IsRunning = false;
@@ -159,7 +183,7 @@ namespace GemCafe.Crafting
             }
 
             IsRunning = false;
-            SetVisible(false);
+            // UI는 즉시 숨기지 않는다. 포커스 연출(MixFocusController)이 천천히 페이드 아웃한다.
 
             var successCb = _onSuccess;
             var failCb = _onFail;

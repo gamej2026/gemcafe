@@ -56,6 +56,7 @@
     <Compile Include="Assets\_Game\Scripts\Crafting\PourMinigame.cs" />
     <Compile Include="Assets\_Game\Scripts\Ending\EndingCsvLoader.cs" />
     <Compile Include="Assets\_Game\Scripts\Core\ServiceSubState.cs" />
+    <Compile Include="Assets\_Game\Scripts\Crafting\MixFocusController.cs" />
     <Compile Include="Assets\_Game\Scripts\Crafting\TeawarePour.cs" />
     <Compile Include="Assets\_Game\Scripts\Customer\DayManager.cs" />
     <Compile Include="Assets\_Game\Scripts\Stage\Stage1Director.cs" />

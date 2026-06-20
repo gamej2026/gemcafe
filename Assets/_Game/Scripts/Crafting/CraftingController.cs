@@ -9,6 +9,7 @@ namespace GemCafe.Crafting
     {
         None,
         IngredientSelect,
+        MixPrep,
         MixMinigame,
         PourPrep,
         PourMinigame,
@@ -22,6 +23,7 @@ namespace GemCafe.Crafting
         [SerializeField] private BowlReceiver bowl;
         [SerializeField] private PestleMixer pestle;
         [SerializeField] private MixMinigame mixMinigame;
+        [SerializeField] private MixFocusController mixFocus;
         [SerializeField] private PourMinigame pourMinigame;
         [SerializeField] private TeawarePour teaware;
         [SerializeField] private DrinkPopup drinkPopup;
@@ -82,6 +84,11 @@ namespace GemCafe.Crafting
                 mixMinigame.Cancel();
             }
 
+            if (mixFocus != null)
+            {
+                mixFocus.CancelImmediate();
+            }
+
             if (pourMinigame != null)
             {
                 pourMinigame.Cancel();
@@ -124,6 +131,11 @@ namespace GemCafe.Crafting
                 mixMinigame.Cancel();
             }
 
+            if (mixFocus != null)
+            {
+                mixFocus.CancelImmediate();
+            }
+
             if (pourMinigame != null)
             {
                 pourMinigame.Cancel();
@@ -132,7 +144,7 @@ namespace GemCafe.Crafting
 
         public void OnPestleClicked()
         {
-            if (CurrentStage != CraftStage.IngredientSelect || bowl == null || bowl.Contents.Count < 3)
+            if (CurrentStage != CraftStage.IngredientSelect || bowl == null || bowl.Contents.Count < 2)
             {
                 return;
             }
@@ -142,6 +154,29 @@ namespace GemCafe.Crafting
             if (pestle != null)
             {
                 pestle.SetInteractable(false);
+            }
+
+            if (mixMinigame != null)
+            {
+                mixMinigame.PrepareVisuals();
+            }
+
+            CurrentStage = CraftStage.MixPrep;
+
+            if (mixFocus != null)
+            {
+                mixFocus.BeginFocus(BeginMixMinigame);
+                return;
+            }
+
+            BeginMixMinigame();
+        }
+
+        private void BeginMixMinigame()
+        {
+            if (CurrentStage != CraftStage.MixPrep)
+            {
+                return;
             }
 
             CurrentStage = CraftStage.MixMinigame;
@@ -179,7 +214,7 @@ namespace GemCafe.Crafting
                 return;
             }
 
-            pestle.SetInteractable(bowl.Contents.Count >= 3);
+            pestle.SetInteractable(bowl.Contents.Count >= 2);
         }
 
         private void HandleMixSuccess()
@@ -190,7 +225,7 @@ namespace GemCafe.Crafting
             }
 
             _mixSucceeded = true;
-            EnterPourPrep();
+            FinishMixFocus();
         }
 
         private void HandleMixFail()
@@ -201,6 +236,17 @@ namespace GemCafe.Crafting
             }
 
             _mixSucceeded = false;
+            FinishMixFocus();
+        }
+
+        private void FinishMixFocus()
+        {
+            if (mixFocus != null)
+            {
+                mixFocus.EndFocus(EnterPourPrep);
+                return;
+            }
+
             EnterPourPrep();
         }
 

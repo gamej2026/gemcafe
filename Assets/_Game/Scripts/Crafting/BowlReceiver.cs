@@ -10,7 +10,7 @@ namespace GemCafe.Crafting
     {
         [SerializeField] private RectTransform bowlRect;
         [SerializeField] private Camera uiCamera;
-        [SerializeField] private int maxContents = 3;
+        [SerializeField] private int maxContents = 2;
         [SerializeField] private RectTransform[] slots = new RectTransform[3];
 
         private readonly List<IngredientSO> _contents = new();

@@ -630,6 +630,42 @@ namespace GemCafe.EditorTools
             SetObjectRef(teawarePour, "pourAnimator", null);
             SetFloat(teawarePour, "pourDuration", 1.2f);
 
+            // 섞기 미니게임 포커스 연출 (Bowl 확대 + 디밍 + 시작 버튼)
+            var mixDimGo = CreateUIObject("MixDimOverlay", canvasGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
+            var mixDimImage = mixDimGo.AddComponent<Image>();
+            mixDimImage.color = new Color(0f, 0f, 0f, 1f);
+            mixDimImage.raycastTarget = true;
+            var mixDimCanvas = mixDimGo.AddComponent<Canvas>();
+            mixDimCanvas.overrideSorting = true;
+            mixDimCanvas.sortingOrder = 50;
+            mixDimGo.AddComponent<GraphicRaycaster>();
+            var mixDimCg = mixDimGo.AddComponent<CanvasGroup>();
+            mixDimCg.alpha = 0f;
+            mixDimCg.interactable = false;
+            mixDimCg.blocksRaycasts = false;
+            mixDimGo.SetActive(false);
+
+            var mixStartBtnGo = CreateUIObject("Btn_MixStart", bowlGo.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -300f), new Vector2(240f, 84f), new Vector2(0.5f, 0.5f));
+            var mixStartBtnImage = mixStartBtnGo.AddComponent<Image>();
+            mixStartBtnImage.color = new Color(0.85f, 0.55f, 0.2f, 1f);
+            mixStartBtnImage.raycastTarget = true;
+            var mixStartButton = mixStartBtnGo.AddComponent<Button>();
+            mixStartButton.targetGraphic = mixStartBtnImage;
+            var mixStartLabelGo = CreateUIObject("Label", mixStartBtnGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
+            var mixStartLabel = mixStartLabelGo.AddComponent<Text>();
+            ApplyDefaultText(mixStartLabel, "시작", 40, TextAnchor.MiddleCenter, Color.white);
+            mixStartLabel.raycastTarget = false;
+            mixStartBtnGo.SetActive(false);
+
+            var mixFocus = craftingControllerGo.AddComponent<MixFocusController>();
+            SetObjectRef(mixFocus, "zoomRoot", worldViewRoot.GetComponent<RectTransform>());
+            SetObjectRef(mixFocus, "focusTarget", bowlGo.GetComponent<RectTransform>());
+            SetObjectRef(mixFocus, "mixUiGroup", mixRootGroup);
+            SetObjectRef(mixFocus, "dimOverlay", mixDimCg);
+            SetObjectRef(mixFocus, "startButtonRoot", mixStartBtnGo);
+            SetObjectRef(mixFocus, "startButton", mixStartButton);
+            SetObjectRef(craftingController, "mixFocus", mixFocus);
+
             var popupManagerGo = new GameObject("PopupManager");
             popupManagerGo.transform.SetParent(canvasGo.transform, false);
             var popupManager = popupManagerGo.AddComponent<PopupManager>();
@@ -1626,9 +1662,9 @@ namespace GemCafe.EditorTools
 
             var sb = new StringBuilder();
             sb.AppendLine("id,day,drinkName,ingredient1,ingredient2,ingredient3,speaker,orderText,imagePath");
-            sb.AppendLine("cst_day1,1,1일차 음료,ing_water,ing_syrup,ing_topping,손님,곳감. 도라지. 삼도천물.,Customers/cst_day1");
-            sb.AppendLine("cst_day2,2,2일차 음료,ing_syrup,ing_ginseng,ing_persimmon,손님,도라지에 염라수염과 처녀귀신을 넣어 다오.,Customers/cst_day2");
-            sb.AppendLine("cst_day3,3,3일차 음료,ing_topping,ing_jujube,ing_chrys,손님,삼도천물에 토끼간과 담배를 곁들여주게.,Customers/cst_day3");
+            sb.AppendLine("cst_day1,1,1일차 음료,곳감,도라지,,손님,곳감. 도라지.,Customers/cst_day1");
+            sb.AppendLine("cst_day2,2,2일차 음료,도라지,염라수염,,손님,도라지에 염라수염을 넣어 다오.,Customers/cst_day2");
+            sb.AppendLine("cst_day3,3,3일차 음료,삼도천물,토끼간,,손님,삼도천물에 토끼간을 곁들여주게.,Customers/cst_day3");
 
             string fullPath = Path.GetFullPath(CustomerCsvAssetPath);
             File.WriteAllText(fullPath, sb.ToString(), new UTF8Encoding(false));

@@ -12,15 +12,17 @@ namespace GemCafe.Customer
     ///
     /// CSV 컬럼(헤더 기준, 순서 무관):
     ///   id, day, drinkName, ingredient1, ingredient2, ingredient3, speaker, orderText, imagePath
-    ///   - ingredientN : IngredientSO.id (예: ing_water) — ingredientPool 에서 매핑
-    ///   - imagePath   : Resources 기준 스프라이트 경로(확장자 제외, 예: Customers/cst_day1)
+    ///   - ingredientN : IngredientSO.displayName (예: 곳감) — ingredientPool 에서 매핑(미일치 시 id 로도 매핑)
+    ///   - imagePath   : 이미지 상대 경로(확장자 제외, 예: Customers/cst_day1).
+    ///                   런타임에 디스크 파일을 우선 직접 읽고(재임포트/재빌드 불필요),
+    ///                   실패 시 Resources 폴백.
     /// </summary>
     public class CustomerCsvTable : MonoBehaviour
     {
         [Tooltip("Resources 기준 CSV 경로 (확장자 제외). 예: InportCsv/CustumersData")]
         [SerializeField] private string resourcePath = "InportCsv/CustumersData";
 
-        [Tooltip("CSV의 재료 id(ingredientN)를 매핑할 재료 풀")]
+        [Tooltip("CSV의 재료 이름(displayName)을 매핑할 재료 풀")]
         [SerializeField] private List<IngredientSO> ingredientPool = new List<IngredientSO>();
 
         public string ResourcePath => resourcePath;
@@ -80,11 +82,7 @@ namespace GemCafe.Customer
             string imagePath = Field(header, row, "imagePath");
             if (!string.IsNullOrWhiteSpace(imagePath))
             {
-                customer.portrait = Resources.Load<Sprite>(imagePath.Trim());
-                if (customer.portrait == null)
-                {
-                    Debug.LogWarning($"[CustomerCsvTable] 이미지를 찾을 수 없습니다: Resources/{imagePath.Trim()}");
-                }
+                customer.portrait = LoadPortrait(imagePath.Trim());
             }
 
             customer.orderDialogue = new[]
@@ -111,6 +109,118 @@ namespace GemCafe.Customer
             return customer;
         }
 
+        /// <summary>
+        /// 손님 초상화를 런타임에 로드한다.
+        /// 1) 디스크 파일을 직접 읽어(재빌드/재임포트 불필요) 우선 사용하고,
+        /// 2) 실패 시 Resources 에 구워진 기본 이미지로 폴백한다.
+        /// imagePath 는 확장자 제외 상대 경로(예: Customers/cst_day1).
+        /// </summary>
+        private Sprite LoadPortrait(string imagePath)
+        {
+            foreach (var fullPath in GetDiskCandidatePaths(imagePath))
+            {
+                var sprite = TryLoadSpriteFromFile(fullPath);
+                if (sprite != null)
+                {
+                    return sprite;
+                }
+            }
+
+            var res = Resources.Load<Sprite>(imagePath);
+            if (res == null)
+            {
+                Debug.LogWarning($"[CustomerCsvTable] 이미지를 찾을 수 없습니다: '{imagePath}' (디스크/Resources 모두 실패)");
+            }
+            return res;
+        }
+
+        /// <summary>imagePath 에 대해 디스크에서 찾아볼 후보 경로들(우선순위 순).</summary>
+        private IEnumerable<string> GetDiskCandidatePaths(string imagePath)
+        {
+            string[] exts = { ".png", ".jpg", ".jpeg" };
+
+            // 1) StreamingAssets/<imagePath>.png  — 빌드 후에도 파일 교체로 즉시 반영
+            foreach (var ext in exts)
+            {
+                yield return System.IO.Path.Combine(Application.streamingAssetsPath, imagePath + ext);
+            }
+
+#if UNITY_EDITOR
+            // 2) (에디터 전용) 원본 Images PNG 를 직접 읽음 — 재임포트 없이 즉시 반영
+            foreach (var ext in exts)
+            {
+                yield return System.IO.Path.Combine(Application.dataPath, "Images", imagePath + ext);
+            }
+#endif
+
+            // 3) 실행파일 옆 ExternalImages/<imagePath>.png — 빌드 외부 오버라이드 폴더
+            foreach (var ext in exts)
+            {
+                yield return System.IO.Path.Combine(Application.dataPath, "..", "ExternalImages", imagePath + ext);
+            }
+        }
+
+        /// <summary>디스크 PNG/JPG 파일을 읽어 Sprite 로 만든다. 없거나 실패하면 null.</summary>
+        private Sprite TryLoadSpriteFromFile(string fullPath)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(fullPath) || !System.IO.File.Exists(fullPath))
+                {
+                    return null;
+                }
+
+                var loadImage = GetLoadImageMethod();
+                if (loadImage == null)
+                {
+                    // ImageConversion 모듈을 사용할 수 없음(빌드에서 스트립 등) → Resources 폴백
+                    return null;
+                }
+
+                var bytes = System.IO.File.ReadAllBytes(fullPath);
+                var tex = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+                if (!(bool)loadImage.Invoke(null, new object[] { tex, bytes }))
+                {
+                    return null;
+                }
+
+                tex.wrapMode = TextureWrapMode.Clamp;
+                return Sprite.Create(
+                    tex,
+                    new Rect(0f, 0f, tex.width, tex.height),
+                    new Vector2(0.5f, 0.5f),
+                    100f);
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning($"[CustomerCsvTable] 이미지 로드 실패: {fullPath} ({e.Message})");
+                return null;
+            }
+        }
+
+        // UnityEngine.ImageConversion.LoadImage(Texture2D, byte[]) 를 리플렉션으로 해석한다.
+        // 이 asmdef 는 ImageConversionModule 을 컴파일 타임에 참조하지 않으므로 직접 호출 대신 리플렉션을 쓴다.
+        private static System.Reflection.MethodInfo _loadImageMethod;
+        private static bool _loadImageResolved;
+
+        private static System.Reflection.MethodInfo GetLoadImageMethod()
+        {
+            if (_loadImageResolved)
+            {
+                return _loadImageMethod;
+            }
+
+            _loadImageResolved = true;
+            var type = System.Type.GetType("UnityEngine.ImageConversion, UnityEngine.ImageConversionModule");
+            if (type != null)
+            {
+                _loadImageMethod = type.GetMethod(
+                    "LoadImage",
+                    new[] { typeof(Texture2D), typeof(byte[]) });
+            }
+            return _loadImageMethod;
+        }
+
         private void AddIngredient(List<IngredientSO> list, string id)
         {
             var ing = ResolveIngredient(id);
@@ -120,18 +230,30 @@ namespace GemCafe.Customer
             }
             else if (!string.IsNullOrWhiteSpace(id))
             {
-                Debug.LogWarning($"[CustomerCsvTable] 재료 id를 찾을 수 없습니다: {id}");
+                Debug.LogWarning($"[CustomerCsvTable] 재료를 찾을 수 없습니다: {id}");
             }
         }
 
-        private IngredientSO ResolveIngredient(string id)
+        private IngredientSO ResolveIngredient(string nameOrId)
         {
-            if (string.IsNullOrWhiteSpace(id) || ingredientPool == null)
+            if (string.IsNullOrWhiteSpace(nameOrId) || ingredientPool == null)
             {
                 return null;
             }
 
-            var key = id.Trim();
+            var key = nameOrId.Trim();
+
+            // 우선 displayName 으로 매칭한다.
+            for (int i = 0; i < ingredientPool.Count; i++)
+            {
+                var ing = ingredientPool[i];
+                if (ing != null && string.Equals(ing.displayName, key, StringComparison.OrdinalIgnoreCase))
+                {
+                    return ing;
+                }
+            }
+
+            // 미일치 시 id 로도 매칭(하위 호환).
             for (int i = 0; i < ingredientPool.Count; i++)
             {
                 var ing = ingredientPool[i];
