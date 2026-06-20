@@ -10,6 +10,7 @@ namespace GemCafe.Core
         public const string SceneLobby = "Lobby";
         public const string SceneStage1 = "Stage1_Riverside";
         public const string SceneCafe = "Cafe";
+        public const string SceneEnding = "Ending";
 
         public bool IsLoading { get; private set; }
 

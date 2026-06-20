@@ -4,6 +4,7 @@ using GemCafe.Core;
 using GemCafe.Crafting;
 using GemCafe.Data;
 using GemCafe.Dialogue;
+using GemCafe.Ending;
 using GemCafe.UI;
 using UnityEngine;
 
@@ -404,11 +405,11 @@ namespace GemCafe.Customer
 
                 if (endingCoinSummary != null)
                 {
-                    endingCoinSummary.Show(TotalCoins, GreatCoins, () => gm?.StateMachine.TryTransition(GameState.Ending));
+                    endingCoinSummary.Show(TotalCoins, GreatCoins, EndingFlow.EnterEndingScene);
                 }
                 else
                 {
-                    gm?.StateMachine.TryTransition(GameState.Ending);
+                    EndingFlow.EnterEndingScene();
                 }
             }
             else

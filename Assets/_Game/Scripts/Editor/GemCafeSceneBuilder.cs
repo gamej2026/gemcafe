@@ -7,6 +7,7 @@ using GemCafe.Crafting;
 using GemCafe.Customer;
 using GemCafe.Data;
 using GemCafe.Dialogue;
+using GemCafe.Ending;
 using GemCafe.Player;
 using GemCafe.Stage;
 using GemCafe.UI;
@@ -51,6 +52,10 @@ namespace GemCafe.EditorTools
         private const string CafeScenePath = "Assets/_Game/Scenes/Cafe.unity";
         private const string LobbyScenePath = "Assets/_Game/Scenes/Lobby.unity";
         private const string Stage1ScenePath = "Assets/_Game/Scenes/Stage1_Riverside.unity";
+        private const string EndingScenePath = "Assets/_Game/Scenes/Ending.unity";
+        private const string ResourcesRoot = "Assets/_Game/Resources";
+        private const string EndingResourcesDir = "Assets/_Game/Resources/Endings";
+        private const string EndingCsvAssetPath = "Assets/_Game/Resources/Endings/ending_dialogue.csv";
 
         private const string ResTrayPath = "Assets/Resource/Tray.png";
         private const string Ing0Path = "Assets/Images/Ingredient/Ingredient_0.png";
@@ -95,6 +100,7 @@ namespace GemCafe.EditorTools
             BuildCafeScene();
             BuildLobbyScene();
             BuildStage1Scene();
+            BuildEndingScene();
             RegisterScenes();
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
@@ -1135,8 +1141,163 @@ namespace GemCafe.EditorTools
             Debug.Log("GemCafeSceneBuilder: Stage1 scene build complete.");
         }
 
+        [MenuItem("GemCafe/Build/6. Build Ending Scene")]
+        public static void BuildEndingScene()
+        {
+            CreateSampleData();
+            ImportEndingCsv();
+            AssetDatabase.SaveAssets();
+
+            Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+
+            var gameConfig = AssetDatabase.LoadAssetAtPath<GameConfig>(GameConfigPath);
+
+            var eventSystemGo = new GameObject("EventSystem", typeof(EventSystem), typeof(StandaloneInputModule));
+
+            var cameraGo = new GameObject("Main Camera", typeof(Camera));
+            cameraGo.tag = "MainCamera";
+            var mainCam = cameraGo.GetComponent<Camera>();
+            mainCam.clearFlags = CameraClearFlags.SolidColor;
+            mainCam.backgroundColor = new Color(0.05f, 0.05f, 0.06f, 1f);
+            mainCam.orthographic = true;
+            mainCam.orthographicSize = 5f;
+            mainCam.nearClipPlane = -10f;
+            mainCam.farClipPlane = 100f;
+            cameraGo.transform.position = new Vector3(0f, 0f, -10f);
+
+            var gameManagerGo = new GameObject("GameManager", typeof(GameManager), typeof(SceneRouter));
+            var gameManager = gameManagerGo.GetComponent<GameManager>();
+            var sceneRouter = gameManagerGo.GetComponent<SceneRouter>();
+            SetObjectRef(gameManager, "config", gameConfig);
+            SetObjectRef(gameManager, "sceneRouter", sceneRouter);
+
+            var audioManagerGo = new GameObject("AudioManager", typeof(AudioManager));
+            var audioManager = audioManagerGo.GetComponent<AudioManager>();
+            var sfxSource = audioManagerGo.AddComponent<AudioSource>();
+            var bgmSource = audioManagerGo.AddComponent<AudioSource>();
+            SetObjectRef(audioManager, "sfxSource", sfxSource);
+            SetObjectRef(audioManager, "bgmSource", bgmSource);
+
+            var canvasGo = new GameObject("Canvas", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
+            var canvas = canvasGo.GetComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            var scaler = canvasGo.GetComponent<CanvasScaler>();
+            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            scaler.referenceResolution = new Vector2(1920f, 1080f);
+            scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+            scaler.matchWidthOrHeight = 0.5f;
+
+            // 배경 (전체 화면, 최하단)
+            var backgroundGo = CreateUIObject("Background", canvasGo.transform, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
+            var backgroundImage = backgroundGo.AddComponent<Image>();
+            backgroundImage.color = new Color(0.12f, 0.12f, 0.14f, 1f);
+            backgroundGo.transform.SetAsFirstSibling();
+
+            // CG (전체 화면, 기본 비활성)
+            var cgGo = CreateUIObject("CG", canvasGo.transform, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
+            var cgImage = cgGo.AddComponent<Image>();
+            cgImage.color = new Color(0.18f, 0.16f, 0.2f, 1f);
+            cgGo.SetActive(false);
+
+            // 스탠딩 일러스트(SpeakerView)
+            var speakerViewGo = new GameObject("SpeakerView", typeof(RectTransform));
+            speakerViewGo.transform.SetParent(canvasGo.transform, false);
+            var speakerView = speakerViewGo.AddComponent<SpeakerView>();
+            var leftPortraitGo = CreateUIObject("LeftPortrait", speakerViewGo.transform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(180f, 260f), new Vector2(220f, 300f), new Vector2(0f, 0f));
+            var leftPortrait = leftPortraitGo.AddComponent<Image>();
+            leftPortrait.color = new Color(0.3f, 0.65f, 1f, 1f);
+            leftPortrait.gameObject.SetActive(false);
+            var rightPortraitGo = CreateUIObject("RightPortrait", speakerViewGo.transform, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-180f, 260f), new Vector2(220f, 300f), new Vector2(1f, 0f));
+            var rightPortrait = rightPortraitGo.AddComponent<Image>();
+            rightPortrait.color = new Color(1f, 0.65f, 0.2f, 1f);
+            rightPortrait.gameObject.SetActive(false);
+            var speakerDimGo = CreateUIObject("BackgroundDim", speakerViewGo.transform, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
+            speakerDimGo.transform.SetAsFirstSibling();
+            var speakerDim = speakerDimGo.AddComponent<Image>();
+            speakerDim.color = new Color(0f, 0f, 0f, 0f);
+            speakerDim.gameObject.SetActive(false);
+            SetObjectRef(speakerView, "leftPortrait", leftPortrait);
+            SetObjectRef(speakerView, "rightPortrait", rightPortrait);
+            SetObjectRef(speakerView, "backgroundDim", speakerDim);
+            SetString(speakerView, "leftSpeakerId", "주인공");
+
+            // 대화창(DialogueView)
+            var dialogueRoot = CreateUIObject("Dialogue", canvasGo.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 20f), new Vector2(1500f, 250f), new Vector2(0.5f, 0f));
+            var dialoguePanelImage = dialogueRoot.AddComponent<Image>();
+            dialoguePanelImage.color = new Color(0f, 0f, 0f, 0.7f);
+            var dialogueCanvasGroup = dialogueRoot.AddComponent<CanvasGroup>();
+
+            var speakerNameGo = CreateUIObject("SpeakerName", dialogueRoot.transform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(20f, -15f), new Vector2(360f, 40f), new Vector2(0f, 1f));
+            var speakerNameText = speakerNameGo.AddComponent<Text>();
+            ApplyDefaultText(speakerNameText, "마님", 28, TextAnchor.UpperLeft, Color.white);
+
+            var bodyTextGo = CreateUIObject("Body", dialogueRoot.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(20f, 20f), new Vector2(-180f, -80f), new Vector2(0f, 0f));
+            var bodyText = bodyTextGo.AddComponent<Text>();
+            ApplyDefaultText(bodyText, string.Empty, 30, TextAnchor.UpperLeft, Color.white);
+
+            var nextButtonGo = CreateUIObject("NextButton", dialogueRoot.transform, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-20f, 20f), new Vector2(140f, 54f), new Vector2(1f, 0f));
+            var nextButtonImage = nextButtonGo.AddComponent<Image>();
+            nextButtonImage.color = new Color(0.25f, 0.45f, 0.8f, 1f);
+            var nextButton = nextButtonGo.AddComponent<Button>();
+            var nextTextGo = CreateUIObject("Text", nextButtonGo.transform, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
+            var nextText = nextTextGo.AddComponent<Text>();
+            ApplyDefaultText(nextText, "다음", 24, TextAnchor.MiddleCenter, Color.white);
+
+            var dialogueView = dialogueRoot.AddComponent<DialogueView>();
+            SetObjectRef(dialogueView, "root", dialogueCanvasGroup);
+            SetObjectRef(dialogueView, "speakerNameText", speakerNameText);
+            SetObjectRef(dialogueView, "bodyText", bodyText);
+            SetObjectRef(dialogueView, "nextButton", nextButton);
+
+            // 화면 효과 오버레이 (전체 화면, 최상단)
+            var effectGo = CreateUIObject("EffectOverlay", canvasGo.transform, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
+            var effectOverlay = effectGo.AddComponent<Image>();
+            effectOverlay.color = new Color(0f, 0f, 0f, 0f);
+            effectOverlay.raycastTarget = false;
+            effectGo.transform.SetAsLastSibling();
+
+            // 엔딩 디렉터
+            var directorGo = new GameObject("EndingDirector", typeof(EndingDirector));
+            var director = directorGo.GetComponent<EndingDirector>();
+            SetObjectRef(director, "backgroundImage", backgroundImage);
+            SetObjectRef(director, "cgImage", cgImage);
+            SetObjectRef(director, "effectOverlay", effectOverlay);
+            SetObjectRef(director, "dialogueView", dialogueView);
+            SetObjectRef(director, "speakerView", speakerView);
+
+            EnsureFolder(ScenesDir);
+            EditorSceneManager.SaveScene(scene, EndingScenePath);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+
+            Debug.Log("GemCafeSceneBuilder: Ending scene build complete.");
+        }
+
+        [MenuItem("GemCafe/Build/7. Import Ending CSV")]
+        public static void ImportEndingCsv()
+        {
+            var projectRoot = Path.GetDirectoryName(Application.dataPath);
+            var src = Path.Combine(projectRoot, "Doc", "엔딩 대사.csv");
+            if (!File.Exists(src))
+            {
+                Debug.LogWarning("GemCafeSceneBuilder.ImportEndingCsv: 원본 CSV를 찾을 수 없습니다: " + src);
+                return;
+            }
+
+            EnsureFolder(ResourcesRoot);
+            EnsureFolder(EndingResourcesDir);
+
+            var destFull = Path.GetFullPath(EndingCsvAssetPath);
+            File.Copy(src, destFull, true);
+            AssetDatabase.ImportAsset(EndingCsvAssetPath);
+            AssetDatabase.Refresh();
+
+            Debug.Log("GemCafeSceneBuilder: Ending CSV import complete -> " + EndingCsvAssetPath);
+        }
+
         [MenuItem("GemCafe/Build/3. Register Scenes In Build")]
         public static void RegisterScenes()
+
         {
             var existing = new List<EditorBuildSettingsScene>(EditorBuildSettings.scenes ?? Array.Empty<EditorBuildSettingsScene>());
             var paths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -1157,6 +1318,7 @@ namespace GemCafe.EditorTools
 
             AddSceneIfExists(existing, paths, Stage1ScenePath);
             AddSceneIfExists(existing, paths, CafeScenePath);
+            AddSceneIfExists(existing, paths, EndingScenePath);
 
             EditorBuildSettings.scenes = existing.ToArray();
             AssetDatabase.SaveAssets();

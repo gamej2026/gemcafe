@@ -14,5 +14,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Game/Scenes/Stage1_Riverside.unity
     guid: b010466c9471a48a49693ce77270dc3a
+  - enabled: 1
+    path: Assets/_Game/Scenes/Ending.unity
+    guid: 6d699fdcc03ac5844918ca7e2941d17d
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0

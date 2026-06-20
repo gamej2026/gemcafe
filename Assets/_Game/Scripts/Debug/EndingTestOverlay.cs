@@ -1,6 +1,6 @@
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
 using GemCafe.Core;
-using GemCafe.UI;
+using GemCafe.Ending;
 using UnityEngine;
 
 namespace GemCafe.DebugTools
@@ -77,7 +77,7 @@ namespace GemCafe.DebugTools
 
         private static void Trigger(EndingKind kind, int totalCoins, int greatCoins)
         {
-            EndingSequencePlayer.TriggerTest(kind, totalCoins, greatCoins);
+            EndingFlow.Trigger(kind, totalCoins, greatCoins);
         }
 
         private void OnGUI()

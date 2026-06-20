@@ -1,5 +1,5 @@
 using GemCafe.Core;
-using GemCafe.UI;
+using GemCafe.Ending;
 using UnityEditor;
 using UnityEngine;
 
@@ -49,7 +49,7 @@ namespace GemCafe.EditorTools
                 return;
             }
 
-            EndingSequencePlayer.TriggerTest(kind, totalCoins, greatCoins);
+            EndingFlow.Trigger(kind, totalCoins, greatCoins);
         }
     }
 }
