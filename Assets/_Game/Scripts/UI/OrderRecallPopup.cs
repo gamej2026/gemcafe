@@ -21,6 +21,9 @@ namespace GemCafe.UI
 
         public bool IsOpen { get; private set; }
 
+        /// <summary>튜토리얼 강조용: 주문 회상 토글 버튼의 RectTransform.</summary>
+        public RectTransform ToggleRect => toggleButton != null ? toggleButton.transform as RectTransform : null;
+
         private string _orderText = string.Empty;
 
         private void Awake()

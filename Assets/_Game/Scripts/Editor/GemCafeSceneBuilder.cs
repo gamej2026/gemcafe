@@ -10,6 +10,7 @@ using GemCafe.Dialogue;
 using GemCafe.Ending;
 using GemCafe.Player;
 using GemCafe.Stage;
+using GemCafe.Tutorial;
 using GemCafe.UI;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -53,6 +54,7 @@ namespace GemCafe.EditorTools
         private const string LobbyScenePath = "Assets/_Game/Scenes/Lobby.unity";
         private const string Stage1ScenePath = "Assets/_Game/Scenes/Stage1_Riverside.unity";
         private const string CafeDialogScenePath = "Assets/_Game/Scenes/cafe_dialog.unity";
+        private const string CafeTutorialScenePath = "Assets/_Game/Scenes/cafe_tutorial.unity";
         private const string EndingScenePath = "Assets/_Game/Scenes/Ending.unity";
         private const string PrefabsDir = "Assets/_Game/Prefabs";
         private const string DialogueSystemPrefabPath = "Assets/_Game/Prefabs/DialogueSystem.prefab";
@@ -106,6 +108,7 @@ namespace GemCafe.EditorTools
             BuildEndingScene();
             BuildDialogueSystemPrefab();
             BuildCafeDialogScene();
+            BuildCafeTutorialScene();
             RegisterScenes();
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
@@ -1652,6 +1655,40 @@ namespace GemCafe.EditorTools
             Debug.Log("GemCafeSceneBuilder: CafeDialog scene build complete.");
         }
 
+        [MenuItem("GemCafe/Build/2b. Build Cafe Tutorial Scene")]
+        public static void BuildCafeTutorialScene()
+        {
+            // 튜토리얼 씬은 의도적으로 거의 비어 둔다: CafeTutorialDirector 하나만 둔다.
+            // 이 감독이 실제 Cafe 씬을 Additive 로 띄워 배경/강조 앵커로 사용하고,
+            // 카메라/EventSystem/GameManager 는 Cafe 씬이 제공하므로 중복을 피한다.
+            Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+
+            var directorGo = new GameObject("CafeTutorialDirector", typeof(CafeTutorialDirector));
+            var director = directorGo.GetComponent<CafeTutorialDirector>();
+            SetString(director, "cafeSceneName", "Cafe");
+            SetString(director, "csvResourcePath", "Cafe/cafe_tutorial");
+            SetFloat(director, "dimAlpha", 0.72f);
+
+            EnsureFolder(ScenesDir);
+            EditorSceneManager.SaveScene(scene, CafeTutorialScenePath);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+
+            // 새로 생성된 씬의 실제 guid 로 브의 세팅 항목을 정리한다(오래된 guid 제거).
+            var list = new List<EditorBuildSettingsScene>(EditorBuildSettings.scenes ?? Array.Empty<EditorBuildSettingsScene>());
+            list.RemoveAll(s => string.Equals(s.path, CafeTutorialScenePath, StringComparison.OrdinalIgnoreCase));
+            if (File.Exists(Path.GetFullPath(CafeTutorialScenePath)))
+            {
+                list.Add(new EditorBuildSettingsScene(CafeTutorialScenePath, true));
+            }
+
+            EditorBuildSettings.scenes = list.ToArray();
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+
+            Debug.Log("GemCafeSceneBuilder: CafeTutorial scene build complete.");
+        }
+
         [MenuItem("GemCafe/Build/3. Register Scenes In Build")]
         public static void RegisterScenes()
 
@@ -1675,6 +1712,7 @@ namespace GemCafe.EditorTools
 
             AddSceneIfExists(existing, paths, Stage1ScenePath);
             AddSceneIfExists(existing, paths, CafeDialogScenePath);
+            AddSceneIfExists(existing, paths, CafeTutorialScenePath);
             AddSceneIfExists(existing, paths, CafeScenePath);
             AddSceneIfExists(existing, paths, EndingScenePath);
 

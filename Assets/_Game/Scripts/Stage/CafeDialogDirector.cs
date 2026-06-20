@@ -16,6 +16,8 @@ namespace GemCafe.Stage
         [SerializeField] private string dialogueCsvKey = "카페";
         // 대화 상대(마님)가 화면 오른쪽, 주인공은 왼쪽에 표시된다.
         [SerializeField] private bool partnerOnRight = true;
+        // cafe_dialog 가 끝난 뒤 카페 튜토리얼로 진입할지 여부. 기본은 진입(=skip 아님).
+        [SerializeField] private bool skipTutorial = false;
 
         private bool _transitioned;
 
@@ -47,7 +49,10 @@ namespace GemCafe.Stage
                 return;
             }
 
-            gm.Router.Load(SceneRouter.SceneCafe);
+            // 기본적으로 cafe_dialog 가 끝나면 카페 튜토리얼 씬으로 진입한다.
+            // 튜토리얼 씬이 실제 Cafe 씬을 Additive 로 띄워 배경으로 쓰고,
+            // 끝나면 스스로 깨끗한 Cafe 로 전환한다.
+            gm.Router.Load(skipTutorial ? SceneRouter.SceneCafe : SceneRouter.SceneCafeTutorial);
         }
     }
 }

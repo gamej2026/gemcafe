@@ -11,6 +11,7 @@ namespace GemCafe.Core
         public const string SceneLobby = "Lobby";
         public const string SceneStage1 = "Stage1_Riverside";
         public const string SceneCafeDialog = "cafe_dialog";
+        public const string SceneCafeTutorial = "cafe_tutorial";
         public const string SceneCafe = "Cafe";
         public const string SceneEnding = "Ending";
 

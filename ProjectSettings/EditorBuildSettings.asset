@@ -20,5 +20,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Game/Scenes/cafe_dialog.unity
     guid: 73a0955d14915624394e07d23244db54
+  - enabled: 1
+    path: Assets/_Game/Scenes/cafe_tutorial.unity
+    guid: 1c9c73889a332c841abc319f3d8a4a88
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0

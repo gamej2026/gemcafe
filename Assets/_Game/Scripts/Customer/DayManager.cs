@@ -5,6 +5,7 @@ using GemCafe.Crafting;
 using GemCafe.Data;
 using GemCafe.Dialogue;
 using GemCafe.Ending;
+using GemCafe.Tutorial;
 using GemCafe.UI;
 using UnityEngine;
 
@@ -62,6 +63,13 @@ namespace GemCafe.Customer
 
         private void Start()
         {
+            // 튜토리얼 중에는 Cafe 가 Additive 배경으로만 떠 있으므로
+            // 실제 서비스를 자동 시작하지 않는다(손님/저장 없음).
+            if (TutorialContext.IsActive)
+            {
+                return;
+            }
+
             var gm = GameManager.Instance;
             if (forceServiceStateOnStart && gm != null && gm.StateMachine.Current != GameState.ServiceLoop)
             {
@@ -142,6 +150,12 @@ namespace GemCafe.Customer
 
         private void SaveProgress()
         {
+            // 튜토리얼 진행 결과는 절대 저장하지 않는다(안전망).
+            if (TutorialContext.IsActive)
+            {
+                return;
+            }
+
             var data = new SaveData
             {
                 day = CurrentDay,
@@ -393,6 +407,12 @@ namespace GemCafe.Customer
 
         private void EndDay()
         {
+            // 튜토리얼 중에는 하루 종료/엔딩/저장 로직을 타지 않는다.
+            if (TutorialContext.IsActive)
+            {
+                return;
+            }
+
             var gm = GameManager.Instance;
             gm?.StateMachine.TryTransition(GameState.DayEnd);
             EventBus.RaiseDayCompleted(CurrentDay);
