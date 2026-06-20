@@ -1544,7 +1544,8 @@ MonoBehaviour:
     text: "...\uB124."
     portrait: {fileID: 0}
   - speakerId: "\uB3CC\uC1E0"
-    text: "\uC800 \uC704 \uB2E4\uBC29\uC5D0 \uB9C8\uB2D8\uC744 \uCC3E\uC544\uAC00 \uBCF4\uAC8C."
+    text: "\uC800 \uC704 \uB2E4\uBC29\uC5D0 \uB9C8\uB2D8\uC744 \uCC3E\uC544\uAC00
+      \uBCF4\uAC8C."
     portrait: {fileID: 21300000, guid: e4edd66d9828b1f4ead22e41423c7a76, type: 3}
   outlineTarget: {fileID: 1286356927}
   outlineMaterial: {fileID: 2100000, guid: 7c2e6c1655b8b7f40a4c9635575731b1, type: 2}
@@ -1647,7 +1648,7 @@ SpriteRenderer:
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: bc546826ba128eb4e88cc283c675cd01, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_FlipX: 0
+  m_FlipX: 1
   m_FlipY: 0
   m_DrawMode: 0
   m_Size: {x: 38.57, y: 5.405073}
@@ -2097,7 +2098,7 @@ Transform:
   m_GameObject: {fileID: 1496378267}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.61, y: -2.21, z: 0}
+  m_LocalPosition: {x: -4.66, y: -2.21, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2663,7 +2664,8 @@ MonoBehaviour:
   displayName: "\uB9C8\uB2D8"
   dialogue:
   - speakerId: "\uB9C8\uB2D8"
-    text: "\uC5B4\uC11C \uC624\uAC8C. \uC77C\uC190\uC774 \uD544\uC694\uD558\uB358 \uCC38\uC774\uC57C."
+    text: "\uC5B4\uC11C \uC624\uAC8C. \uC77C\uC190\uC774 \uD544\uC694\uD558\uB358
+      \uCC38\uC774\uC57C."
     portrait: {fileID: 21300000, guid: 8535b42cc72f6dc48b8c903a96d467de, type: 3}
   - speakerId: "\uC8FC\uC778\uACF5"
     text: "\uC81C\uAC00 \uB3D5\uACA0\uC2B5\uB2C8\uB2E4."
