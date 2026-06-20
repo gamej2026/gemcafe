@@ -36,6 +36,7 @@ namespace GemCafe.Crafting
             }
 
             ApplyIcon();
+            SetIconAlpha(0f);
         }
 
         private void OnEnable()
@@ -49,6 +50,7 @@ namespace GemCafe.Crafting
             {
                 return;
             }
+            SetIconAlpha(1f);
 
             _droppedIntoBowl = false;
             _originParent = transform.parent;
@@ -130,6 +132,19 @@ namespace GemCafe.Crafting
             {
                 _rectTransform.anchoredPosition = _originAnchored;
             }
+
+            SetIconAlpha(0f);
+        }
+
+        private void SetIconAlpha(float alpha)
+        {
+            if (iconImage == null)
+            {
+                return;
+            }
+
+            Color clr = iconImage.color;
+            iconImage.color = new Color(clr.r, clr.g, clr.b, alpha);
         }
 
         private void ApplyIcon()
