@@ -567,13 +567,10 @@ namespace GemCafe.EditorTools
 
             var pourFillGo = CreateUIObject("Pour_Fill", pourRootGo.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(350f, 160f), new Vector2(240f, 420f), new Vector2(0.5f, 0f));
             var pourFillImage = pourFillGo.AddComponent<Image>();
-            pourFillImage.color = new Color(0.25f, 0.6f, 0.95f, 1f);
-            pourFillImage.sprite = filledSprite;
+            pourFillImage.color = Color.white;
             pourFillImage.raycastTarget = false;
-            pourFillImage.type = Image.Type.Filled;
-            pourFillImage.fillMethod = Image.FillMethod.Vertical;
-            pourFillImage.fillOrigin = (int)Image.OriginVertical.Bottom;
-            pourFillImage.fillAmount = 0f;
+            pourFillImage.type = Image.Type.Simple;
+            pourFillImage.preserveAspect = true;
 
             var pourTargetBandGo = CreateUIObject("Pour_TargetBand", pourFillGo.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(220f, 100f), new Vector2(0.5f, 0.5f));
             var pourTargetBandImage = pourTargetBandGo.AddComponent<Image>();
@@ -592,6 +589,14 @@ namespace GemCafe.EditorTools
             SetObjectRef(pourMinigame, "targetBandRect", pourTargetBandGo.GetComponent<RectTransform>());
             SetObjectRef(pourMinigame, "teapotRect", pourTeapotGo.GetComponent<RectTransform>());
             SetObjectRef(pourMinigame, "holdArea", pourHoldArea);
+
+            // 스프라이트 교체 방식: Images/Cup/1..10.png 순서대로 할당
+            var cupSprites = new UnityEngine.Object[10];
+            for (int i = 0; i < 10; i++)
+            {
+                cupSprites[i] = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Images/Cup/" + (i + 1) + ".png");
+            }
+            SetObjectRefArray(pourMinigame, "cupSprites", cupSprites);
 
             var craftingControllerGo = new GameObject("CraftingController");
             craftingControllerGo.transform.SetParent(craftingRoot.transform, false);
@@ -691,8 +696,18 @@ namespace GemCafe.EditorTools
             var orderRecallToggleText = orderRecallToggleTextGo.AddComponent<Text>();
             ApplyDefaultText(orderRecallToggleText, "UI 대화 다시보기", 26, TextAnchor.MiddleCenter, Color.white);
 
+            // Crafting(제작 공간) 상단 토글 버튼 "레시피 보기"
+            var recipeToggleGo = CreateUIObject("Btn_Recipe", craftingRoot.transform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -104f), new Vector2(360f, 64f), new Vector2(0.5f, 1f));
+            var recipeToggleImage = recipeToggleGo.AddComponent<Image>();
+            recipeToggleImage.color = new Color(0.25f, 0.45f, 0.8f, 1f);
+            var recipeToggleButton = recipeToggleGo.AddComponent<Button>();
+            var recipeToggleCg = recipeToggleGo.AddComponent<CanvasGroup>();
+            var recipeToggleTextGo = CreateUIObject("Text", recipeToggleGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
+            var recipeToggleText = recipeToggleTextGo.AddComponent<Text>();
+            ApplyDefaultText(recipeToggleText, "레시피 보기", 26, TextAnchor.MiddleCenter, Color.white);
+
             // Tray가 완전히 도착한 뒤 페이드인되는 대상들 (Tray/Controller 제외)
-            SetObjectRefArray(trayController, "revealTargets", new UnityEngine.Object[] { bowlCg, pestleCg, orderRecallToggleCg });
+            SetObjectRefArray(trayController, "revealTargets", new UnityEngine.Object[] { bowlCg, pestleCg, orderRecallToggleCg, recipeToggleCg });
 
             SetObjectRef(orderRecallPopup, "root", orderRecallCg);
             SetObjectRef(orderRecallPopup, "toggleButton", orderRecallToggleButton);
@@ -700,6 +715,44 @@ namespace GemCafe.EditorTools
             SetObjectRef(orderRecallPopup, "dim", orderRecallDimImage);
             SetObjectRef(orderRecallPopup, "contentText", orderRecallContent);
             orderRecallPopup.Close();
+
+            // 레시피 보기 — 토글 팝업
+            var recipeViewGo = CreateUIObject("Popup_RecipeView", canvasGo.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(800f, 520f), new Vector2(0.5f, 0.5f));
+            var recipeViewCg = recipeViewGo.AddComponent<CanvasGroup>();
+            var recipePopup = recipeViewGo.AddComponent<RecipePopup>();
+
+            var recipeDimGo = CreateUIObject("Dim", recipeViewGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
+            recipeDimGo.transform.SetAsFirstSibling();
+            var recipeDimImage = recipeDimGo.AddComponent<Image>();
+            recipeDimImage.color = new Color(0f, 0f, 0f, 0.55f);
+            recipeDimImage.raycastTarget = false;
+
+            var recipePanelGo = CreateUIObject("Panel", recipeViewGo.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(680f, 440f), new Vector2(0.5f, 0.5f));
+            var recipePanelImage = recipePanelGo.AddComponent<Image>();
+            recipePanelImage.color = new Color(0.18f, 0.16f, 0.22f, 1f);
+
+            var recipeTitleGo = CreateUIObject("Title", recipePanelGo.transform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -20f), new Vector2(-40f, 60f), new Vector2(0.5f, 1f));
+            var recipeTitle = recipeTitleGo.AddComponent<Text>();
+            ApplyDefaultText(recipeTitle, "레시피 보기", 32, TextAnchor.MiddleCenter, Color.white);
+
+            var recipeContentGo = CreateUIObject("Content", recipePanelGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(0f, 0f), new Vector2(-60f, -160f), new Vector2(0.5f, 0.5f));
+            var recipeContent = recipeContentGo.AddComponent<Text>();
+            ApplyDefaultText(recipeContent, "", 26, TextAnchor.UpperLeft, Color.white);
+
+            var recipeCloseGo = CreateUIObject("CloseButton", recipePanelGo.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 24f), new Vector2(180f, 56f), new Vector2(0.5f, 0f));
+            var recipeCloseImage = recipeCloseGo.AddComponent<Image>();
+            recipeCloseImage.color = new Color(0.8f, 0.2f, 0.2f, 1f);
+            var recipeCloseButton = recipeCloseGo.AddComponent<Button>();
+            var recipeCloseTextGo = CreateUIObject("Text", recipeCloseGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
+            var recipeCloseText = recipeCloseTextGo.AddComponent<Text>();
+            ApplyDefaultText(recipeCloseText, "닫기", 24, TextAnchor.MiddleCenter, Color.white);
+
+            SetObjectRef(recipePopup, "root", recipeViewCg);
+            SetObjectRef(recipePopup, "toggleButton", recipeToggleButton);
+            SetObjectRef(recipePopup, "closeButton", recipeCloseButton);
+            SetObjectRef(recipePopup, "dim", recipeDimImage);
+            SetObjectRef(recipePopup, "contentText", recipeContent);
+            recipePopup.Close();
 
             var resultToastGo = CreateUIObject("ResultToast", canvasGo.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 250f), new Vector2(520f, 120f), new Vector2(0.5f, 0.5f));
             var resultToast = resultToastGo.AddComponent<ResultToast>();

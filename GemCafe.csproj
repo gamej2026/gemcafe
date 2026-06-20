@@ -61,6 +61,7 @@
     <Compile Include="Assets\_Game\Scripts\Stage\Stage1Director.cs" />
     <Compile Include="Assets\_Game\Scripts\Crafting\TrayController.cs" />
     <Compile Include="Assets\_Game\Scripts\Core\CoinType.cs" />
+    <Compile Include="Assets\_Game\Scripts\UI\RecipePopup.cs" />
     <Compile Include="Assets\_Game\Scripts\Debug\EndingTestOverlay.cs" />
     <Compile Include="Assets\_Game\Scripts\Customer\LivesSystem.cs" />
     <Compile Include="Assets\_Game\Scripts\Core\KoreanFontApplier.cs" />
@@ -96,6 +97,7 @@
     <Compile Include="Assets\_Game\Scripts\Data\Taste.cs" />
     <Compile Include="Assets\_Game\Scripts\Data\PourMinigameConfig.cs" />
     <Compile Include="Assets\_Game\Scripts\Player\Interactor.cs" />
+    <Compile Include="Assets\_Game\Scripts\Stage\CafeDialogDirector.cs" />
     <Compile Include="Assets\_Game\Scripts\Core\EndingKind.cs" />
     <Compile Include="Assets\_Game\Scripts\Debug\RecipeEvaluatorSelfCheck.cs" />
     <Compile Include="Assets\_Game\Scripts\Core\AudioManager.cs" />

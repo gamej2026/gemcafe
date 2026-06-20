@@ -14,12 +14,24 @@ namespace GemCafe.Crafting
         [SerializeField] private RectTransform teapotRect;
         [SerializeField] private HoldInputArea holdArea;
 
+        [Header("Sprite 교체 방식 (Images/Cup 1..N 순서)")]
+        [SerializeField] private Sprite[] cupSprites;
+
+        [Tooltip("각 스프라이트에서 다음 스프라이트로 넘어가기까지의 대기 시간(초). 비어있거나 0 이하면 기본 대기시간을 사용한다.")]
+        [SerializeField] private float[] holdDurations;
+
+        [SerializeField] private float defaultHoldDuration = 0.2f;
+
+        [Header("성공 판정 범위 (이미지 번호, 1-based, 양끝 포함)")]
+        [SerializeField] private int successMin = 6;
+        [SerializeField] private int successMax = 8;
+
         private Action _onSuccess;
         private Action _onFail;
-        private float _level;
-        private float _releaseTimer;
+        private float _holdTime;
+        private int _index;
+        private bool _hasHeld;
         private bool _wasHolding;
-        private bool _isConfirming;
 
         public bool IsRunning { get; private set; }
 
@@ -30,44 +42,20 @@ namespace GemCafe.Crafting
                 return;
             }
 
-            var dt = Time.deltaTime;
             var isHolding = holdArea != null && holdArea.IsHolding;
 
             if (isHolding)
             {
-                _isConfirming = false;
-                _level += config.fillSpeed * dt;
+                _hasHeld = true;
+                _holdTime += Time.deltaTime;
+                UpdateSpriteIndex();
             }
 
-            if (fillImage != null)
+            // 홀드 후 손을 뗼 때(마우스를 뗼 때) 즉시 판정한다.
+            if (_hasHeld && _wasHolding && !isHolding)
             {
-                fillImage.fillAmount = Mathf.Clamp01(_level);
-            }
-
-            if (config.overflowFail)
-            {
-                if (_level > 1f)
-                {
-                    Finish(false);
-                    return;
-                }
-            }
-
-            if (_wasHolding && !isHolding)
-            {
-                _isConfirming = true;
-                _releaseTimer = 0f;
-            }
-
-            if (_isConfirming && !isHolding)
-            {
-                _releaseTimer += dt;
-                var delay = Mathf.Max(0f, config.confirmDelay);
-                if (_releaseTimer >= delay)
-                {
-                    EvaluateCurrentLevel();
-                    return;
-                }
+                Evaluate();
+                return;
             }
 
             _wasHolding = isHolding;
@@ -78,28 +66,26 @@ namespace GemCafe.Crafting
             _onSuccess = onSuccess;
             _onFail = onFail;
 
-            if (config == null)
-            {
-                IsRunning = false;
-                SetVisible(false);
-                var failCb = _onFail;
-                _onSuccess = null;
-                _onFail = null;
-                failCb?.Invoke();
-                return;
-            }
-
-            _level = 0f;
-            _releaseTimer = 0f;
-            _isConfirming = false;
+            _holdTime = 0f;
+            _index = -1;
+            _hasHeld = false;
             _wasHolding = holdArea != null && holdArea.IsHolding;
+
+            // 기존 타깃 밴드(채우기 방식 UI)는 스프라이트 교체 방식에서는 사용하지 않는다.
+            if (targetBandRect != null)
+            {
+                targetBandRect.gameObject.SetActive(false);
+            }
 
             if (fillImage != null)
             {
-                fillImage.fillAmount = 0f;
+                fillImage.type = Image.Type.Simple;
+                fillImage.preserveAspect = true;
+                fillImage.color = Color.white;
             }
 
-            LayoutTargetBand();
+            ApplySprite(0, true);
+
             SetVisible(true);
             IsRunning = true;
         }
@@ -112,12 +98,71 @@ namespace GemCafe.Crafting
             SetVisible(false);
         }
 
-        private void EvaluateCurrentLevel()
+        private void UpdateSpriteIndex()
         {
-            var min = config.targetMin;
-            var max = config.targetMax;
-            var clampedLevel = Mathf.Clamp01(_level);
-            var success = clampedLevel >= min && clampedLevel <= max;
+            if (cupSprites == null || cupSprites.Length == 0)
+            {
+                return;
+            }
+
+            var idx = 0;
+            var cumulative = 0f;
+            var steps = cupSprites.Length - 1;
+            for (var i = 0; i < steps; i++)
+            {
+                cumulative += GetHoldDuration(i);
+                if (_holdTime >= cumulative)
+                {
+                    idx = i + 1;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            ApplySprite(idx, false);
+        }
+
+        private float GetHoldDuration(int spriteIndex)
+        {
+            if (holdDurations != null && spriteIndex < holdDurations.Length && holdDurations[spriteIndex] > 0f)
+            {
+                return holdDurations[spriteIndex];
+            }
+
+            return Mathf.Max(0.0001f, defaultHoldDuration);
+        }
+
+        private void ApplySprite(int idx, bool force)
+        {
+            if (cupSprites == null || cupSprites.Length == 0)
+            {
+                return;
+            }
+
+            idx = Mathf.Clamp(idx, 0, cupSprites.Length - 1);
+            if (!force && idx == _index)
+            {
+                return;
+            }
+
+            _index = idx;
+
+            if (fillImage != null)
+            {
+                fillImage.sprite = cupSprites[idx];
+                fillImage.enabled = cupSprites[idx] != null;
+            }
+        }
+
+        private void Evaluate()
+        {
+            // 이미지 번호(1-based)가 성공 범위 안이면 성공.
+            var number = _index + 1;
+            var min = Mathf.Min(successMin, successMax);
+            var max = Mathf.Max(successMin, successMax);
+            var success = number >= min && number <= max;
             Finish(success);
         }
 
@@ -143,38 +188,6 @@ namespace GemCafe.Crafting
             }
 
             failCb?.Invoke();
-        }
-
-        private void LayoutTargetBand()
-        {
-            if (targetBandRect == null)
-            {
-                return;
-            }
-
-            var min = Mathf.Clamp01(config.targetMin);
-            var max = Mathf.Clamp01(config.targetMax);
-            if (max < min)
-            {
-                var swap = min;
-                min = max;
-                max = swap;
-            }
-
-            var parentHeight = 0f;
-            var parentRect = targetBandRect.parent as RectTransform;
-            if (parentRect != null)
-            {
-                parentHeight = parentRect.rect.height;
-            }
-
-            var size = targetBandRect.sizeDelta;
-            size.y = parentHeight * (max - min);
-            targetBandRect.sizeDelta = size;
-
-            var pos = targetBandRect.anchoredPosition;
-            pos.y = parentHeight * (min + max - 1f) * 0.5f;
-            targetBandRect.anchoredPosition = pos;
         }
 
         private void SetVisible(bool visible)
