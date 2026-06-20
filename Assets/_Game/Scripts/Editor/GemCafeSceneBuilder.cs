@@ -457,6 +457,22 @@ namespace GemCafe.EditorTools
                 SetObjectRef(draggable, "ingredient", ingredientSOs[i]);
                 SetObjectRef(draggable, "canvas", canvas);
                 SetObjectRef(draggable, "iconImage", ingImg);
+
+                // 재료 네임태그 범위(영역) + 하단 라벨
+                var nameTagAreaGo = CreateUIObject("NameTagArea", ingGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
+                var nameTagAreaImg = nameTagAreaGo.AddComponent<Image>();
+                nameTagAreaImg.color = new Color(0f, 0f, 0f, 0f);
+                nameTagAreaImg.raycastTarget = true;
+                var nameTag = nameTagAreaGo.AddComponent<IngredientNameTag>();
+
+                var nameTagLabelGo = CreateUIObject("NameTagLabel", ingGo.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, -30f), new Vector2(260f, 56f), new Vector2(0.5f, 1f));
+                var nameTagLabel = nameTagLabelGo.AddComponent<Text>();
+                ApplyDefaultText(nameTagLabel, string.Empty, 26, TextAnchor.UpperCenter, Color.white);
+                nameTagLabel.raycastTarget = false;
+                nameTagLabel.enabled = false;
+
+                SetObjectRef(nameTag, "ingredient", draggable);
+                SetObjectRef(nameTag, "label", nameTagLabel);
             }
 
             // 우하단 컵(사발) — 재료 드롭 타깃 "음료 보이는 곳 (컵)"

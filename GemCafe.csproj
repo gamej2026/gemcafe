@@ -99,6 +99,7 @@
     <Compile Include="Assets\_Game\Scripts\Player\Interactor.cs" />
     <Compile Include="Assets\_Game\Scripts\Stage\CafeDialogDirector.cs" />
     <Compile Include="Assets\_Game\Scripts\Core\EndingKind.cs" />
+    <Compile Include="Assets\_Game\Scripts\Crafting\IngredientNameTag.cs" />
     <Compile Include="Assets\_Game\Scripts\Debug\RecipeEvaluatorSelfCheck.cs" />
     <Compile Include="Assets\_Game\Scripts\Core\AudioManager.cs" />
     <Compile Include="Assets\_Game\Scripts\Core\GameStateMachine.cs" />

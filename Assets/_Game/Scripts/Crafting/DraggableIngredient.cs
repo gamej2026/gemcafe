@@ -16,7 +16,13 @@ namespace GemCafe.Crafting
         private CanvasGroup _cg;
         private bool _droppedIntoBowl;
         private bool _settled;
+        private bool _isDragging;
         private RectTransform _rectTransform;
+
+        private static int _draggingCount;
+
+        /// <summary>현재 어떤 재료라도 픽업(드래그)되어 있으면 true.</summary>
+        public static bool IsAnyDragging => _draggingCount > 0;
 
         public IngredientSO Ingredient => ingredient;
 
@@ -44,6 +50,15 @@ namespace GemCafe.Crafting
             ApplyIcon();
         }
 
+        private void OnDisable()
+        {
+            if (_isDragging)
+            {
+                _isDragging = false;
+                _draggingCount = Mathf.Max(0, _draggingCount - 1);
+            }
+        }
+
         public void OnBeginDrag(PointerEventData eventData)
         {
             if (_settled)
@@ -51,6 +66,12 @@ namespace GemCafe.Crafting
                 return;
             }
             SetIconAlpha(1f);
+
+            if (!_isDragging)
+            {
+                _isDragging = true;
+                _draggingCount++;
+            }
 
             _droppedIntoBowl = false;
             _originParent = transform.parent;
@@ -86,6 +107,12 @@ namespace GemCafe.Crafting
 
         public void OnEndDrag(PointerEventData eventData)
         {
+            if (_isDragging)
+            {
+                _isDragging = false;
+                _draggingCount = Mathf.Max(0, _draggingCount - 1);
+            }
+
             if (_settled)
             {
                 return;
