@@ -48,14 +48,27 @@ public class BuildScript
     private static string[] GetScenePathsFromSettings()
     {
         EditorBuildSettingsScene[] scenes = EditorBuildSettings.scenes;
-        string[] scenePaths = new string[scenes.Length];
+        var scenePaths = new System.Collections.Generic.List<string>(scenes.Length);
 
         for (int i = 0; i < scenes.Length; i++)
         {
-            scenePaths[i] = scenes[i].path;
+            // 비활성화된 씬은 빌드 대상에서 제외한다.
+            if (!scenes[i].enabled)
+            {
+                continue;
+            }
+
+            // 빌드 설정에 남아있지만 실제 파일이 없는 씬은 건너뛴다(빌드 실패 방지).
+            if (!File.Exists(scenes[i].path))
+            {
+                UnityEngine.Debug.LogWarning($"Skipping missing scene: {scenes[i].path}");
+                continue;
+            }
+
+            scenePaths.Add(scenes[i].path);
         }
 
-        return scenePaths;
+        return scenePaths.ToArray();
     }
 
     private static void UpdateBuildInfo()
