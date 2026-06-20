@@ -1767,7 +1767,9 @@ MonoBehaviour:
   continueButton: {fileID: 1596438918}
   settingsButton: {fileID: 312306772}
   quitButton: {fileID: 206779572}
+  creditsButton: {fileID: 0}
   popupManager: {fileID: 1627251771}
+  creditsPopup: {fileID: 0}
 --- !u!1 &1449673217
 GameObject:
   m_ObjectHideFlags: 0
@@ -2469,7 +2471,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 0
+  m_Interactable: 1
   m_TargetGraphic: {fileID: 1700000007}
   m_OnClick:
     m_PersistentCalls:
@@ -2487,7 +2489,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.25, g: 0.45, b: 0.8, a: 1}
+  m_Color: {r: 0.2509804, g: 0.4509804, b: 0.8, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
