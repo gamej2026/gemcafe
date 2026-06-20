@@ -8,12 +8,12 @@ namespace GemCafe.Core
     /// <summary>
     /// WebGL 빌드에는 OS 폰트 폴백이 없어 Unity 내장(Arial/LegacyRuntime) 폰트로는
     /// 한글 글리프가 렌더링되지 않는다. 이 클래스는 프로젝트에 임베드된 한글 폰트
-    /// (Resources/Fonts/NanumGothic)를 모든 UI <see cref="Text"/>에 런타임으로 적용해
+    /// (Resources/Fonts/ChosunCentennial_ttf)를 모든 UI <see cref="Text"/>에 런타임으로 적용해
     /// 씬에 미리 배치된 Text와 코드로 동적 생성되는 Text 모두에서 한글이 보이도록 한다.
     /// </summary>
     public static class KoreanFontApplier
     {
-        private const string FontResourcePath = "Fonts/NanumGothic";
+        private const string FontResourcePath = "Fonts/ChosunCentennial_ttf";
 
         private static Font _font;
         private static bool _loaded;
