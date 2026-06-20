@@ -334,24 +334,32 @@ namespace GemCafe.Crafting
 
         private void FinishPourFocus()
         {
+            // 결과를 미리 계산해 대성공일 때만 따르기 이펙트를 재생한다.
+            _pendingResult = EvaluateResult();
+
             if (pourFocus != null)
             {
-                pourFocus.EndFocus(FinishCraft);
+                pourFocus.EndFocus(FinishCraft, _pendingResult == DrinkResult.GreatSuccess);
                 return;
             }
 
             FinishCraft();
         }
 
+        private DrinkResult EvaluateResult()
+        {
+            int minigameSuccessCount = (_mixSucceeded ? 1 : 0) + (_pourSucceeded ? 1 : 0);
+            return RecipeEvaluator.Evaluate(
+                bowl != null ? bowl.Contents : null,
+                _targetRecipe,
+                minigameSuccessCount);
+        }
+
         private void FinishCraft()
         {
             CurrentStage = CraftStage.DrinkComplete;
 
-            int minigameSuccessCount = (_mixSucceeded ? 1 : 0) + (_pourSucceeded ? 1 : 0);
-            _pendingResult = RecipeEvaluator.Evaluate(
-                bowl != null ? bowl.Contents : null,
-                _targetRecipe,
-                minigameSuccessCount);
+            _pendingResult = EvaluateResult();
 
             var drinkName = _targetRecipe != null ? _targetRecipe.drinkName : string.Empty;
             if (drinkPopup != null)

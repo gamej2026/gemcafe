@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: GemCafe::GemCafe.Data.IngredientSO
   id: ing_persimmon
   displayName: "\uCC98\uB140\uADC0\uC2E0"
-  icon: {fileID: 21300000, guid: 88d1b164f26f1ec45aa227133b6e8923, type: 3}
+  icon: {fileID: 21300000, guid: 77b464417a1635e49972a43ed357fda8, type: 3}
   category: 2
   taste: 0

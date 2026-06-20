@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: GemCafe::GemCafe.Data.IngredientSO
   id: ing_ginseng
   displayName: "\uC5FC\uB77C\uC218\uC5FC"
-  icon: {fileID: 21300000, guid: 5538a726a53e7574fb293c8e1f72fefb, type: 3}
+  icon: {fileID: 21300000, guid: cea0fc65d9dd15f4d839a7b282997ce9, type: 3}
   category: 2
   taste: 0

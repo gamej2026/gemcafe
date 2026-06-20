@@ -48,6 +48,7 @@ namespace GemCafe.Crafting
 
         private Coroutine _routine;
         private bool _active;
+        private bool _playEffect;
 
         public void BeginFocus(Action onStartPressed)
         {
@@ -89,8 +90,10 @@ namespace GemCafe.Crafting
             _routine = StartCoroutine(FocusRoutine());
         }
 
-        public void EndFocus(Action onComplete)
+        public void EndFocus(Action onComplete, bool playEffect)
         {
+            _playEffect = playEffect;
+
             if (zoomRoot == null || !_hasBase)
             {
                 onComplete?.Invoke();
@@ -259,32 +262,32 @@ namespace GemCafe.Crafting
             zoomRoot.localScale = finishScale;
             zoomRoot.anchoredPosition = finishPos;
 
-            // 2) Pour Effect 재생 (파티클 시스템이 비어있으면 재생 스킵)
-            if (pourEffect != null)
+            // 2) Pour Effect 재생 — 결과가 대성공일 때만 재생한다. (파티클 미할당 시 스킵)
+            if (_playEffect && pourEffect != null)
             {
                 pourEffect.Play();
-            }
 
-            // 페이드 아웃(복귀)을 시작하기 effectStopLeadTime초 전에 이펙트를 정지한다.
-            // → 페이드 아웃이 시작될 때는 이미 이펙트가 화면에 보이지 않는다.
-            float hold = Mathf.Max(0f, effectHoldDuration);
-            float effectStopAt = Mathf.Clamp(hold - Mathf.Max(0f, effectStopLeadTime), 0f, hold);
-            bool effectStopped = false;
-            float ht = 0f;
-            while (ht < hold)
-            {
-                ht += Time.deltaTime;
-                if (!effectStopped && ht >= effectStopAt)
+                // 페이드 아웃(복귀)을 시작하기 effectStopLeadTime초 전에 이펙트를 정지한다.
+                // → 페이드 아웃이 시작될 때는 이미 이펙트가 화면에 보이지 않는다.
+                float hold = Mathf.Max(0f, effectHoldDuration);
+                float effectStopAt = Mathf.Clamp(hold - Mathf.Max(0f, effectStopLeadTime), 0f, hold);
+                bool effectStopped = false;
+                float ht = 0f;
+                while (ht < hold)
                 {
-                    if (pourEffect != null) pourEffect.StopAndClear();
-                    effectStopped = true;
+                    ht += Time.deltaTime;
+                    if (!effectStopped && ht >= effectStopAt)
+                    {
+                        pourEffect.StopAndClear();
+                        effectStopped = true;
+                    }
+                    yield return null;
                 }
-                yield return null;
-            }
 
-            if (!effectStopped && pourEffect != null)
-            {
-                pourEffect.StopAndClear();
+                if (!effectStopped)
+                {
+                    pourEffect.StopAndClear();
+                }
             }
 
             // 3) 원래 화면으로 천천히 이동하면서 미니게임 페이드아웃 + 디밍 원상복구
