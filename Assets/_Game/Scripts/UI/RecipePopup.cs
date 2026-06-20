@@ -15,6 +15,8 @@ namespace GemCafe.UI
         [SerializeField] private Button closeButton;
         [SerializeField] private Image dim;
         [SerializeField] private Text contentText;
+        [Tooltip("내용이 길 때 스크롤하기 위한 스크롤뷰. 열 때 맨 위로 이동시킨다.")]
+        [SerializeField] private ScrollRect scrollRect;
 
         [TextArea(5, 20)]
         [SerializeField]
@@ -80,6 +82,12 @@ namespace GemCafe.UI
 
             SetVisible(true);
             IsOpen = true;
+
+            if (scrollRect != null)
+            {
+                Canvas.ForceUpdateCanvases();
+                scrollRect.verticalNormalizedPosition = 1f;
+            }
         }
 
         public void Close()

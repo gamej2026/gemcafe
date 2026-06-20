@@ -875,9 +875,31 @@ namespace GemCafe.EditorTools
             var recipeTitle = recipeTitleGo.AddComponent<Text>();
             ApplyDefaultText(recipeTitle, "레시피 보기", 32, TextAnchor.MiddleCenter, Color.white);
 
-            var recipeContentGo = CreateUIObject("Content", recipePanelGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(0f, 0f), new Vector2(-60f, -160f), new Vector2(0.5f, 0.5f));
+            // 레시피 내용 스크롤뷰 (텍스트가 길면 스크롤). 배경은 투명 — 양피지 패널이 비치도록.
+            var recipeScrollGo = CreateUIObject("ScrollView", recipePanelGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(0f, -10f), new Vector2(-60f, -200f), new Vector2(0.5f, 0.5f));
+            var recipeScrollBg = recipeScrollGo.AddComponent<Image>();
+            recipeScrollBg.color = new Color(0f, 0f, 0f, 0f);
+            var recipeScroll = recipeScrollGo.AddComponent<ScrollRect>();
+            recipeScroll.horizontal = false;
+            recipeScroll.vertical = true;
+            recipeScroll.movementType = ScrollRect.MovementType.Clamped;
+            recipeScroll.scrollSensitivity = 24f;
+
+            var recipeViewportGo = CreateUIObject("Viewport", recipeScrollGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
+            var recipeViewportImage = recipeViewportGo.AddComponent<Image>();
+            recipeViewportImage.color = new Color(1f, 1f, 1f, 0.004f);
+            recipeViewportGo.AddComponent<RectMask2D>();
+            var recipeViewportRt = recipeViewportGo.GetComponent<RectTransform>();
+
+            var recipeContentGo = CreateUIObject("Content", recipeViewportGo.transform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, 0f), new Vector2(-32f, 0f), new Vector2(0.5f, 1f));
             var recipeContent = recipeContentGo.AddComponent<Text>();
             ApplyDefaultText(recipeContent, "", 26, TextAnchor.UpperLeft, Color.white);
+            recipeContent.verticalOverflow = VerticalWrapMode.Overflow;
+            var recipeContentFitter = recipeContentGo.AddComponent<ContentSizeFitter>();
+            recipeContentFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            recipeScroll.viewport = recipeViewportRt;
+            recipeScroll.content = recipeContentGo.GetComponent<RectTransform>();
 
             var recipeCloseGo = CreateUIObject("CloseButton", recipePanelGo.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 24f), new Vector2(180f, 56f), new Vector2(0.5f, 0f));
             var recipeCloseImage = recipeCloseGo.AddComponent<Image>();
@@ -892,6 +914,7 @@ namespace GemCafe.EditorTools
             SetObjectRef(recipePopup, "closeButton", recipeCloseButton);
             SetObjectRef(recipePopup, "dim", recipeDimImage);
             SetObjectRef(recipePopup, "contentText", recipeContent);
+            SetObjectRef(recipePopup, "scrollRect", recipeScroll);
             recipePopup.Close();
 
             var resultToastGo = CreateUIObject("ResultToast", canvasGo.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 250f), new Vector2(520f, 120f), new Vector2(0.5f, 0.5f));
