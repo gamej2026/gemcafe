@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\_Game\Scripts\UI\LobbyMenu.cs" />
+    <Compile Include="Assets\_Game\Scripts\Tutorial\CafeTutorialDirector.cs" />
     <Compile Include="Assets\_Game\Scripts\Data\RecipeSO.cs" />
     <Compile Include="Assets\_Game\Scripts\Ending\EndingDirector.cs" />
     <Compile Include="Assets\_Game\Scripts\UI\HUD.cs" />
@@ -85,6 +86,7 @@
     <Compile Include="Assets\_Game\Scripts\Data\DrinkResult.cs" />
     <Compile Include="Assets\_Game\Scripts\UI\Popup.cs" />
     <Compile Include="Assets\_Game\Scripts\Dialogue\InteractableDialogueCsvLoader.cs" />
+    <Compile Include="Assets\_Game\Scripts\Tutorial\TutorialContext.cs" />
     <Compile Include="Assets\_Game\Scripts\Data\IngredientCategory.cs" />
     <Compile Include="Assets\_Game\Scripts\UI\ResultToast.cs" />
     <Compile Include="Assets\_Game\Scripts\Stage\SpriteAlphaFlicker.cs" />
@@ -109,6 +111,7 @@
     <Compile Include="Assets\_Game\Scripts\Crafting\MixAnimation.cs" />
     <Compile Include="Assets\_Game\Scripts\Crafting\DraggableIngredient.cs" />
     <Compile Include="Assets\_Game\Scripts\Customer\CustomerCsvTable.cs" />
+    <Compile Include="Assets\_Game\Scripts\Tutorial\CafeTutorialCsvLoader.cs" />
     <Compile Include="Assets\_Game\Scripts\Crafting\BowlReceiver.cs" />
     <Compile Include="Assets\_Game\Scripts\Data\DialogueLine.cs" />
     <Compile Include="Assets\_Game\Scripts\Data\CustomerSO.cs" />

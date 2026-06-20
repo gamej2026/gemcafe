@@ -10,8 +10,11 @@ namespace GemCafe.Dialogue
         [SerializeField] private Image leftPortrait;
         [SerializeField] private Image rightPortrait;
         [SerializeField] private Image backgroundDim;
+        [SerializeField] private RectTransform dialogueRect;
         [SerializeField] private Vector2 leftStandingPosition = new Vector2(180f, 260f);
         [SerializeField] private Vector2 rightStandingPosition = new Vector2(-180f, 260f);
+        [SerializeField] private bool alignPortraitAboveDialogue;
+        [SerializeField] private float portraitBottomMargin = 20f;
         [SerializeField] private float dimAlpha = 0.3f;   
         [SerializeField] private Color activeColor = Color.white;
         [SerializeField] private Color dimColor = new Color(0.4f, 0.4f, 0.4f, 1f);
@@ -24,6 +27,11 @@ namespace GemCafe.Dialogue
         private bool _partnerOnRight = true;
 
         private void Awake()
+        {
+            ApplyPortraitLayout();
+        }
+
+        private void OnValidate()
         {
             ApplyPortraitLayout();
         }
@@ -168,7 +176,21 @@ namespace GemCafe.Dialogue
             rect.anchorMin = left ? LeftAnchor : RightAnchor;
             rect.anchorMax = left ? LeftAnchor : RightAnchor;
             rect.pivot = BottomCenterPivot;
-            rect.anchoredPosition = left ? leftStandingPosition : rightStandingPosition;
+            rect.anchoredPosition = GetStandingPosition(left);
+        }
+
+        private Vector2 GetStandingPosition(bool left)
+        {
+            Vector2 pos = left ? leftStandingPosition : rightStandingPosition;
+
+            if (!alignPortraitAboveDialogue || dialogueRect == null)
+            {
+                return pos;
+            }
+
+            float dialogueTop = dialogueRect.anchoredPosition.y + (dialogueRect.sizeDelta.y * (1f - dialogueRect.pivot.y));
+            pos.y = dialogueTop + portraitBottomMargin;
+            return pos;
         }
     }
      
