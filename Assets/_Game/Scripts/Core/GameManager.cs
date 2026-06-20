@@ -19,6 +19,8 @@ namespace GemCafe.Core
         public int ContinueStartTotalCoins { get; private set; }
         public int ContinueStartGreatCoins { get; private set; }
         public EndingKind PendingEnding { get; private set; } = EndingKind.B;
+        public int PendingTotalCoins { get; private set; }
+        public int PendingGreatCoins { get; private set; }
 
         private void Awake()
         {
@@ -83,6 +85,13 @@ namespace GemCafe.Core
         public void SetEndingKind(EndingKind kind)
         {
             PendingEnding = kind;
+        }
+
+        public void SetEndingResult(EndingKind kind, int totalCoins, int greatCoins)
+        {
+            PendingEnding = kind;
+            PendingTotalCoins = Mathf.Max(0, totalCoins);
+            PendingGreatCoins = Mathf.Max(0, greatCoins);
         }
 
         public void QuitGame()

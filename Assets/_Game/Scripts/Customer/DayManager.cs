@@ -354,7 +354,7 @@ namespace GemCafe.Customer
             if (CurrentDay >= total)
             {
                 var kind = ResolveEndingKind();
-                gm?.SetEndingKind(kind);
+                gm?.SetEndingResult(kind, TotalCoins, GreatCoins);
 
                 if (endingCoinSummary != null)
                 {
@@ -387,12 +387,8 @@ namespace GemCafe.Customer
                 return EndingKind.B;
             }
 
-            if (TotalCoins == 0)
-            {
-                return EndingKind.C;
-            }
-
-            return EndingKind.B;
+            // 코인이 3개 미만(0~2)이면 뱃삯을 못 벌어 배드엔딩으로 분기.
+            return EndingKind.C;
         }
 
         private void SetServiceSub(ServiceSubState s)
