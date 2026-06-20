@@ -41,7 +41,7 @@ public class ClickCounter : MonoBehaviour
         textGo.transform.SetParent(canvasGo.transform, false);
 
         label = textGo.AddComponent<Text>();
-        label.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        label.font = GemCafe.Core.KoreanFontApplier.Font ?? Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
         label.fontSize = 32;
         label.fontStyle = FontStyle.Bold;
         label.color = Color.white;

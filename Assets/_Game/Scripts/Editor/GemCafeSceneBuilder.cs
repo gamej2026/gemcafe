@@ -48,8 +48,8 @@ namespace GemCafe.EditorTools
         private const string Stage1ScenePath = "Assets/_Game/Scenes/Stage1_Riverside.unity";
 
         private const string ResTrayPath = "Assets/Resource/Tray.png";
-        private const string ResRockPath = "Assets/Resource/Ingredient_0.png";     // ëŒ
-        private const string ResGinsengPath = "Assets/Resource/Ingredient_1.png";  // ì¸ì‚¼
+        private const string ResRockPath = "Assets/Resource/Ingredient_0.png";     // ?Œ
+        private const string ResGinsengPath = "Assets/Resource/Ingredient_1.png";  // ?¸?‚¼
         private const string ResPersimmonPath = "Assets/Resource/Ingredient_2.png"; // ê³¶ê°
 
         private static readonly string[] ResourceSpritePaths =
@@ -79,8 +79,8 @@ namespace GemCafe.EditorTools
 
             EnsureSpriteImports();
             var sprWaterIcon = AssetDatabase.LoadAssetAtPath<Sprite>(ResPersimmonPath); // ê³¶ê°
-            var sprSyrupIcon = AssetDatabase.LoadAssetAtPath<Sprite>(ResRockPath);       // ëŒ
-            var sprToppingIcon = AssetDatabase.LoadAssetAtPath<Sprite>(ResGinsengPath);  // ì¸ì‚¼
+            var sprSyrupIcon = AssetDatabase.LoadAssetAtPath<Sprite>(ResRockPath);       // ?Œ
+            var sprToppingIcon = AssetDatabase.LoadAssetAtPath<Sprite>(ResGinsengPath);  // ?¸?‚¼
 
             var gameConfig = LoadOrCreateAsset<GameConfig>(GameConfigPath);
             var water = LoadOrCreateAsset<IngredientSO>(WaterPath);
@@ -90,13 +90,13 @@ namespace GemCafe.EditorTools
             var pourConfig = LoadOrCreateAsset<PourMinigameConfig>(PourMinigameConfigPath);
 
             water.id = "ing_water";
-            water.displayName = "ì‚¼ë„ì²œ ë¬¼";
+            water.displayName = "?‚¼?„ì²? ë¬?";
             water.category = IngredientCategory.Base;
             water.icon = sprWaterIcon;
             EditorUtility.SetDirty(water);
 
             syrup.id = "ing_syrup";
-            syrup.displayName = "ì‹œëŸ½";
+            syrup.displayName = "?‹œ?Ÿ½";
             syrup.category = IngredientCategory.Syrup;
             syrup.icon = sprSyrupIcon;
             EditorUtility.SetDirty(syrup);
@@ -109,19 +109,19 @@ namespace GemCafe.EditorTools
 
             var rcpDay1 = LoadOrCreateAsset<RecipeSO>(RecipeDay1Path);
             rcpDay1.id = "rcp_day1";
-            rcpDay1.drinkName = "1ì¼ì°¨ ìŒë£Œ";
+            rcpDay1.drinkName = "1?¼ì°? ?Œë£?";
             rcpDay1.ingredients = new[] { water, syrup };
             EditorUtility.SetDirty(rcpDay1);
 
             var rcpDay2 = LoadOrCreateAsset<RecipeSO>(RecipeDay2Path);
             rcpDay2.id = "rcp_day2";
-            rcpDay2.drinkName = "2ì¼ì°¨ ìŒë£Œ";
+            rcpDay2.drinkName = "2?¼ì°? ?Œë£?";
             rcpDay2.ingredients = new[] { water, syrup, topping };
             EditorUtility.SetDirty(rcpDay2);
 
             var rcpDay3 = LoadOrCreateAsset<RecipeSO>(RecipeDay3Path);
             rcpDay3.id = "rcp_day3";
-            rcpDay3.drinkName = "3ì¼ì°¨ ìŒë£Œ";
+            rcpDay3.drinkName = "3?¼ì°? ?Œë£?";
             rcpDay3.ingredients = new[] { water, topping };
             EditorUtility.SetDirty(rcpDay3);
 
@@ -134,8 +134,8 @@ namespace GemCafe.EditorTools
             {
                 new DialogueLine
                 {
-                    speakerId = "ì†ë‹˜",
-                    text = "ì‚¼ë„ì²œ ë¬¼ì— ì‹œëŸ½ ë„£ì–´ì£¼ê²Œ.",
+                    speakerId = "?†?‹˜",
+                    text = "?‚¼?„ì²? ë¬¼ì— ?‹œ?Ÿ½ ?„£?–´ì£¼ê²Œ.",
                     portrait = null
                 }
             };
@@ -150,8 +150,8 @@ namespace GemCafe.EditorTools
             {
                 new DialogueLine
                 {
-                    speakerId = "ì†ë‹˜",
-                    text = "ì˜¤ëŠ˜ì€ ê³ ëª…ê¹Œì§€ ì˜¬ë ¤ì£¼ê²Œ.",
+                    speakerId = "?†?‹˜",
+                    text = "?˜¤?Š˜??? ê³ ëª…ê¹Œì?? ?˜¬? ¤ì£¼ê²Œ.",
                     portrait = null
                 }
             };
@@ -166,8 +166,8 @@ namespace GemCafe.EditorTools
             {
                 new DialogueLine
                 {
-                    speakerId = "ì†ë‹˜",
-                    text = "ì‹œëŸ½ì€ ë¹¼ê³  ë¬¼ê³¼ ê³ ëª…ìœ¼ë¡œ ë¶€íƒí•˜ë„¤.",
+                    speakerId = "?†?‹˜",
+                    text = "?‹œ?Ÿ½??? ë¹¼ê³  ë¬¼ê³¼ ê³ ëª…?œ¼ë¡? ë¶??ƒ?•˜?„¤.",
                     portrait = null
                 }
             };
@@ -276,7 +276,7 @@ namespace GemCafe.EditorTools
 
             var speakerNameGo = CreateUIObject("SpeakerName", dialogueRoot.transform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(20f, -15f), new Vector2(220f, 40f), new Vector2(0f, 1f));
             var speakerNameText = speakerNameGo.AddComponent<Text>();
-            ApplyDefaultText(speakerNameText, "ì†ë‹˜", 28, TextAnchor.UpperLeft, Color.white);
+            ApplyDefaultText(speakerNameText, "?†?‹˜", 28, TextAnchor.UpperLeft, Color.white);
 
             var bodyTextGo = CreateUIObject("Body", dialogueRoot.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(20f, 20f), new Vector2(-180f, -80f), new Vector2(0f, 0f));
             var bodyText = bodyTextGo.AddComponent<Text>();
@@ -288,7 +288,7 @@ namespace GemCafe.EditorTools
             var nextButton = nextButtonGo.AddComponent<Button>();
             var nextTextGo = CreateUIObject("Text", nextButtonGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
             var nextText = nextTextGo.AddComponent<Text>();
-            ApplyDefaultText(nextText, "ë‹¤ìŒ", 24, TextAnchor.MiddleCenter, Color.white);
+            ApplyDefaultText(nextText, "?‹¤?Œ", 24, TextAnchor.MiddleCenter, Color.white);
 
             var dialogueView = dialogueRoot.AddComponent<DialogueView>();
             SetObjectRef(dialogueView, "root", dialogueCanvasGroup);
@@ -304,7 +304,7 @@ namespace GemCafe.EditorTools
             var backgroundDim = dimGo.AddComponent<Image>();
             backgroundDim.color = new Color(0f, 0f, 0f, 0.35f);
             SetObjectRef(speakerView, "backgroundDim", backgroundDim);
-            SetString(speakerView, "leftSpeakerId", "ì£¼ì¸ê³µ");
+            SetString(speakerView, "leftSpeakerId", "ì£¼ì¸ê³?");
 
             var dialogueRunnerGo = new GameObject("DialogueRunner");
             dialogueRunnerGo.transform.SetParent(canvasGo.transform, false);
@@ -314,7 +314,7 @@ namespace GemCafe.EditorTools
 
             var craftingRoot = CreateUIObject("Crafting", worldViewRoot.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(960f, 0f), Vector2.zero, new Vector2(0.5f, 0.5f));
 
-            // ìš°ìƒë‹¨ íŠ¸ë ˆì´ (í…Œì´ë¸” íƒ‘ë·°) â€” Tray.png
+            // ?š°?ƒ?‹¨ ?Š¸? ˆ?´ (?…Œ?´ë¸? ?ƒ‘ë·?) ??? Tray.png
             var trayPanel = CreateUIObject("Tray", craftingRoot.transform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-30f, -30f), new Vector2(1140f, 560f), new Vector2(1f, 1f));
             var trayImage = trayPanel.AddComponent<Image>();
             trayImage.sprite = sprTray;
@@ -327,7 +327,7 @@ namespace GemCafe.EditorTools
             SetVector2(trayController, "openAnchoredPos", new Vector2(-30f, -30f));
             SetVector2(trayController, "closedAnchoredPos", new Vector2(1200f, -30f));
 
-            // íŠ¸ë ˆì´ ìœ„ ì¬ë£Œ 3ì¢…: ê³¶ê°(ì¢Œìƒ) / ëŒ(ì¢Œí•˜) / ì¸ì‚¼(ìš°)
+            // ?Š¸? ˆ?´ ?œ„ ?¬ë£? 3ì¢?: ê³¶ê°(ì¢Œìƒ) / ?Œ(ì¢Œí•˜) / ?¸?‚¼(?š°)
             var ingredientSOs = new[] { ingWater, ingSyrup, ingTopping };
             var ingredientSprites = new[] { sprPersimmon, sprRock, sprGinseng };
             var ingredientPositions = new[]
@@ -359,7 +359,7 @@ namespace GemCafe.EditorTools
                 SetObjectRef(draggable, "iconImage", ingImg);
             }
 
-            // ìš°í•˜ë‹¨ ì»µ(ì‚¬ë°œ) â€” ì¬ë£Œ ë“œë¡­ íƒ€ê¹ƒ "ìŒë£Œ ë³´ì´ëŠ” ê³³ (ì»µ)"
+            // ?š°?•˜?‹¨ ì»?(?‚¬ë°?) ??? ?¬ë£? ?“œë¡? ???ê¹? "?Œë£? ë³´ì´?Š” ê³? (ì»?)"
             var bowlGo = CreateUIObject("Bowl", craftingRoot.transform, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-30f, 30f), new Vector2(1140f, 470f), new Vector2(1f, 0f));
             var bowlImage = bowlGo.AddComponent<Image>();
             bowlImage.color = new Color(0.30f, 0.55f, 0.95f, 1f);
@@ -369,10 +369,10 @@ namespace GemCafe.EditorTools
 
             var bowlLabelGo = CreateUIObject("CupLabel", bowlGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
             var bowlLabel = bowlLabelGo.AddComponent<Text>();
-            ApplyDefaultText(bowlLabel, "ìŒë£Œ ë³´ì´ëŠ” ê³³ (ì»µ)", 40, TextAnchor.MiddleCenter, Color.white);
+            ApplyDefaultText(bowlLabel, "?Œë£? ë³´ì´?Š” ê³? (ì»?)", 40, TextAnchor.MiddleCenter, Color.white);
             bowlLabel.raycastTarget = false;
 
-            // ë§‰ì (ì„ê¸° ë„êµ¬) â€” ì»µì— ë“œë¡­í•˜ë©´ ì œì¡° ì™„ë£Œ
+            // ë§‰ì (?„ê¸? ?„êµ?) ??? ì»µì— ?“œë¡??•˜ë©? ? œì¡? ?™„ë£?
             var pestleGo = CreateUIObject("Pestle", craftingRoot.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(360f, 60f), new Vector2(110f, 260f), new Vector2(0.5f, 0f));
             var pestleImage = pestleGo.AddComponent<Image>();
             pestleImage.color = new Color(0.45f, 0.3f, 0.2f, 1f);
@@ -465,7 +465,7 @@ namespace GemCafe.EditorTools
 
             var teawareGuideGo = CreateUIObject("Teaware_Guide", teawareGo.transform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 70f), new Vector2(220f, 56f), new Vector2(0.5f, 0.5f));
             var teawareGuideText = teawareGuideGo.AddComponent<Text>();
-            ApplyDefaultText(teawareGuideText, "ë‹¤ê¸°ë¥¼ ëˆ„ë¥´ì„¸ìš”", 24, TextAnchor.MiddleCenter, Color.white);
+            ApplyDefaultText(teawareGuideText, "?‹¤ê¸°ë?? ?ˆ„ë¥´ì„¸?š”", 24, TextAnchor.MiddleCenter, Color.white);
             teawareGuideGo.SetActive(false);
 
             var teawarePour = teawareGo.AddComponent<TeawarePour>();
@@ -514,7 +514,7 @@ namespace GemCafe.EditorTools
                 var closeButton = closeButtonGo.AddComponent<Button>();
                 var closeTextGo = CreateUIObject("Text", closeButtonGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
                 var closeText = closeTextGo.AddComponent<Text>();
-                ApplyDefaultText(closeText, "ë‹«ê¸°", 24, TextAnchor.MiddleCenter, Color.white);
+                ApplyDefaultText(closeText, "?‹«ê¸?", 24, TextAnchor.MiddleCenter, Color.white);
 
                 SetEnum(popup, "type", (int)popupTypes[i]);
                 SetObjectRef(popup, "root", popupCg);
@@ -596,7 +596,7 @@ namespace GemCafe.EditorTools
             var coinGainNextButton = coinGainNextGo.AddComponent<Button>();
             var coinGainNextTextGo = CreateUIObject("Text", coinGainNextGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
             var coinGainNextText = coinGainNextTextGo.AddComponent<Text>();
-            ApplyDefaultText(coinGainNextText, "ë‹¤ìŒ", 24, TextAnchor.MiddleCenter, Color.white);
+            ApplyDefaultText(coinGainNextText, "?‹¤?Œ", 24, TextAnchor.MiddleCenter, Color.white);
 
             var coinGainScreen = coinGainRootGo.AddComponent<CoinGainScreen>();
             SetObjectRef(coinGainScreen, "root", coinGainRoot);
@@ -640,7 +640,7 @@ namespace GemCafe.EditorTools
             var endingCoinNextButton = endingCoinNextGo.AddComponent<Button>();
             var endingCoinNextTextGo = CreateUIObject("Text", endingCoinNextGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
             var endingCoinNextText = endingCoinNextTextGo.AddComponent<Text>();
-            ApplyDefaultText(endingCoinNextText, "ë‹¤ìŒ", 24, TextAnchor.MiddleCenter, Color.white);
+            ApplyDefaultText(endingCoinNextText, "?‹¤?Œ", 24, TextAnchor.MiddleCenter, Color.white);
 
             var endingCoinSummary = endingCoinRootGo.AddComponent<EndingCoinSummary>();
             SetObjectRef(endingCoinSummary, "root", endingCoinRoot);
@@ -745,7 +745,7 @@ namespace GemCafe.EditorTools
 
             var titleGo = CreateUIObject("Title", canvasGo.transform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -160f), new Vector2(900f, 120f), new Vector2(0.5f, 1f));
             var titleText = titleGo.AddComponent<Text>();
-            ApplyDefaultText(titleText, "ì‚¼ë„ì²œ ë‹¤ë°©", 64, TextAnchor.MiddleCenter, Color.white);
+            ApplyDefaultText(titleText, "?‚¼?„ì²? ?‹¤ë°?", 64, TextAnchor.MiddleCenter, Color.white);
 
             var newGameButtonGo = CreateUIObject("NewGameButton", canvasGo.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 110f), new Vector2(360f, 72f), new Vector2(0.5f, 0.5f));
             var newGameButtonImage = newGameButtonGo.AddComponent<Image>();
@@ -753,7 +753,7 @@ namespace GemCafe.EditorTools
             var newGameButton = newGameButtonGo.AddComponent<Button>();
             var newGameTextGo = CreateUIObject("Text", newGameButtonGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
             var newGameText = newGameTextGo.AddComponent<Text>();
-            ApplyDefaultText(newGameText, "ìƒˆ ê²Œì„", 24, TextAnchor.MiddleCenter, Color.white);
+            ApplyDefaultText(newGameText, "?ƒˆ ê²Œì„", 24, TextAnchor.MiddleCenter, Color.white);
 
             var continueButtonGo = CreateUIObject("ContinueButton", canvasGo.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 20f), new Vector2(360f, 72f), new Vector2(0.5f, 0.5f));
             var continueButtonImage = continueButtonGo.AddComponent<Image>();
@@ -761,7 +761,7 @@ namespace GemCafe.EditorTools
             var continueButton = continueButtonGo.AddComponent<Button>();
             var continueTextGo = CreateUIObject("Text", continueButtonGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
             var continueText = continueTextGo.AddComponent<Text>();
-            ApplyDefaultText(continueText, "ì´ì–´í•˜ê¸°", 24, TextAnchor.MiddleCenter, Color.white);
+            ApplyDefaultText(continueText, "?´?–´?•˜ê¸?", 24, TextAnchor.MiddleCenter, Color.white);
 
             var settingsButtonGo = CreateUIObject("SettingsButton", canvasGo.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -70f), new Vector2(360f, 72f), new Vector2(0.5f, 0.5f));
             var settingsButtonImage = settingsButtonGo.AddComponent<Image>();
@@ -769,7 +769,7 @@ namespace GemCafe.EditorTools
             var settingsButton = settingsButtonGo.AddComponent<Button>();
             var settingsTextGo = CreateUIObject("Text", settingsButtonGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
             var settingsText = settingsTextGo.AddComponent<Text>();
-            ApplyDefaultText(settingsText, "ì„¤ì •", 24, TextAnchor.MiddleCenter, Color.white);
+            ApplyDefaultText(settingsText, "?„¤? •", 24, TextAnchor.MiddleCenter, Color.white);
 
             var quitButtonGo = CreateUIObject("QuitButton", canvasGo.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -160f), new Vector2(360f, 72f), new Vector2(0.5f, 0.5f));
             var quitButtonImage = quitButtonGo.AddComponent<Image>();
@@ -807,7 +807,7 @@ namespace GemCafe.EditorTools
                 var closeButton = closeButtonGo.AddComponent<Button>();
                 var closeTextGo = CreateUIObject("Text", closeButtonGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
                 var closeText = closeTextGo.AddComponent<Text>();
-                ApplyDefaultText(closeText, "ë‹«ê¸°", 24, TextAnchor.MiddleCenter, Color.white);
+                ApplyDefaultText(closeText, "?‹«ê¸?", 24, TextAnchor.MiddleCenter, Color.white);
 
                 SetEnum(popup, "type", (int)popupTypes[i]);
                 SetObjectRef(popup, "root", popupCg);
@@ -893,12 +893,12 @@ namespace GemCafe.EditorTools
             dolsoeCollider.isTrigger = true;
             dolsoeCollider.size = Vector2.one;
             var dolsoeInteractable = dolsoeGo.GetComponent<Interactable>();
-            SetString(dolsoeInteractable, "displayName", "ëŒì‡ ");
+            SetString(dolsoeInteractable, "displayName", "?Œ?‡ ");
             SetDialogueLines(dolsoeInteractable, "dialogue", new[]
             {
-                ("ëŒì‡ ", "ì´ë³´ê²Œ, ì‚¼ë„ì²œì„ ê±´ë„ˆë ¤ëŠ”ê°€?"),
-                ("ì£¼ì¸ê³µ", "...ë„¤."),
-                ("ëŒì‡ ", "ì € ìœ„ ë‹¤ë°©ì— ë§ˆë‹˜ì„ ì°¾ì•„ê°€ ë³´ê²Œ.")
+                ("?Œ?‡ ", "?´ë³´ê²Œ, ?‚¼?„ì²œì„ ê±´ë„ˆ? ¤?Š”ê°??"),
+                ("ì£¼ì¸ê³?", "...?„¤."),
+                ("?Œ?‡ ", "??? ?œ„ ?‹¤ë°©ì— ë§ˆë‹˜?„ ì°¾ì•„ê°? ë³´ê²Œ.")
             });
             var dolsoeHighlightGo = new GameObject("Highlight", typeof(SpriteRenderer));
             dolsoeHighlightGo.transform.SetParent(dolsoeGo.transform, false);
@@ -918,9 +918,9 @@ namespace GemCafe.EditorTools
             SetString(manimInteractable, "displayName", "ë§ˆë‹˜");
             SetDialogueLines(manimInteractable, "dialogue", new[]
             {
-                ("ë§ˆë‹˜", "ì–´ì„œ ì˜¤ê²Œ. ì¼ì†ì´ í•„ìš”í•˜ë˜ ì°¸ì´ì•¼."),
-                ("ì£¼ì¸ê³µ", "ì œê°€ ë•ê² ìŠµë‹ˆë‹¤."),
-                ("ë§ˆë‹˜", "ì¢‹ì•„, ì•ˆìœ¼ë¡œ ë“¤ì–´ì˜¤ê²Œ.")
+                ("ë§ˆë‹˜", "?–´?„œ ?˜¤ê²?. ?¼?†?´ ?•„?š”?•˜?˜ ì°¸ì´?•¼."),
+                ("ì£¼ì¸ê³?", "? œê°? ?•ê² ìŠµ?‹ˆ?‹¤."),
+                ("ë§ˆë‹˜", "ì¢‹ì•„, ?•ˆ?œ¼ë¡? ?“¤?–´?˜¤ê²?.")
             });
             var manimHighlightGo = new GameObject("Highlight", typeof(SpriteRenderer));
             manimHighlightGo.transform.SetParent(manimGo.transform, false);
@@ -929,7 +929,7 @@ namespace GemCafe.EditorTools
             manimHighlightGo.SetActive(false);
             SetObjectRef(manimInteractable, "highlightVisual", manimHighlightGo);
 
-            // ê·¼ì ‘ ì‹œ NPC í…Œë‘ë¦¬ ë°œê´‘(ì•„ì›ƒë¼ì¸ ì…°ì´ë”) ì—°ê²°.
+            // ê·¼ì ‘ ?‹œ NPC ?…Œ?‘ë¦? ë°œê´‘(?•„?›ƒ?¼?¸ ?…°?´?”) ?—°ê²?.
             var outlineMaterial = EnsureOutlineMaterial();
             var normalSpriteMaterial = EnsureNormalSpriteMaterial();
             SetObjectRef(dolsoeInteractable, "outlineTarget", dolsoeSprite);
@@ -964,7 +964,7 @@ namespace GemCafe.EditorTools
 
             var speakerNameGo = CreateUIObject("SpeakerName", dialogueRoot.transform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(20f, -15f), new Vector2(220f, 40f), new Vector2(0f, 1f));
             var speakerNameText = speakerNameGo.AddComponent<Text>();
-            ApplyDefaultText(speakerNameText, "ì†ë‹˜", 28, TextAnchor.UpperLeft, Color.white);
+            ApplyDefaultText(speakerNameText, "?†?‹˜", 28, TextAnchor.UpperLeft, Color.white);
 
             var bodyTextGo = CreateUIObject("Body", dialogueRoot.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(20f, 20f), new Vector2(-180f, -80f), new Vector2(0f, 0f));
             var bodyText = bodyTextGo.AddComponent<Text>();
@@ -976,7 +976,7 @@ namespace GemCafe.EditorTools
             var nextButton = nextButtonGo.AddComponent<Button>();
             var nextTextGo = CreateUIObject("Text", nextButtonGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
             var nextText = nextTextGo.AddComponent<Text>();
-            ApplyDefaultText(nextText, "ë‹¤ìŒ", 24, TextAnchor.MiddleCenter, Color.white);
+            ApplyDefaultText(nextText, "?‹¤?Œ", 24, TextAnchor.MiddleCenter, Color.white);
 
             var dialogueView = dialogueRoot.AddComponent<DialogueView>();
             SetObjectRef(dialogueView, "root", dialogueCanvasGroup);
@@ -1000,7 +1000,7 @@ namespace GemCafe.EditorTools
             SetObjectRef(speakerView, "leftPortrait", leftPortrait);
             SetObjectRef(speakerView, "rightPortrait", rightPortrait);
             SetObjectRef(speakerView, "backgroundDim", backgroundDim);
-            SetString(speakerView, "leftSpeakerId", "ì£¼ì¸ê³µ");
+            SetString(speakerView, "leftSpeakerId", "ì£¼ì¸ê³?");
 
             var dialogueRunnerGo = new GameObject("DialogueRunner");
             dialogueRunnerGo.transform.SetParent(canvasGo.transform, false);
@@ -1193,13 +1193,18 @@ namespace GemCafe.EditorTools
             return go;
         }
 
+        private const string KoreanFontPath = "Assets/_Game/Resources/Fonts/NanumGothic.ttf";
+
         private static void ApplyDefaultText(Text text, string content, int fontSize, TextAnchor alignment, Color color)
         {
             text.text = content;
             text.fontSize = fontSize;
             text.alignment = alignment;
             text.color = color;
-            text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            // WebGL¿¡´Â OS ÆùÆ® Æú¹éÀÌ ¾ø¾î ³»Àå Arial·Î´Â ÇÑ±ÛÀÌ º¸ÀÌÁö ¾ÊÀ¸¹Ç·Î
+            // ÀÓº£µåµÈ ÇÑ±Û ÆùÆ®¸¦ Á÷Á¢ º£ÀÌÅ©ÇÑ´Ù. ÆùÆ®°¡ ¾øÀ¸¸é ³»Àå ÆùÆ®·Î Æú¹é.
+            var koreanFont = AssetDatabase.LoadAssetAtPath<Font>(KoreanFontPath);
+            text.font = koreanFont != null ? koreanFont : Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             text.horizontalOverflow = HorizontalWrapMode.Wrap;
             text.verticalOverflow = VerticalWrapMode.Truncate;
         }
