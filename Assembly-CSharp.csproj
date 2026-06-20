@@ -53,6 +53,9 @@
     <Compile Include="Assets\Scripts\ClickCounter.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\_Game\Art\Shaders\SpriteOutline.shader" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="UnityEngine">
       <HintPath>E:\Unity\6000.3.18f1\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>
       <Private>False</Private>

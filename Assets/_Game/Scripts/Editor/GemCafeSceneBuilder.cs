@@ -47,28 +47,10 @@ namespace GemCafe.EditorTools
         private const string LobbyScenePath = "Assets/_Game/Scenes/Lobby.unity";
         private const string Stage1ScenePath = "Assets/_Game/Scenes/Stage1_Riverside.unity";
 
-        // Stage1 빌더가 생성/관리하는 루트 오브젝트 이름. 빌드 시 이 이름들만 교체하고
-        // 그 외 수동으로 추가한 오브젝트(프리팹 등)는 그대로 보존한다.
-        private static readonly string[] Stage1ManagedRootNames =
-        {
-            "EventSystem",
-            "GameManager",
-            "AudioManager",
-            "Player",
-            "Main Camera",
-            "NPC_Dolsoe",
-            "NPC_Manim",
-            "Canvas",
-            "Stage1Director"
-        };
-
         private const string ResTrayPath = "Assets/Resource/Tray.png";
         private const string ResRockPath = "Assets/Resource/Ingredient_0.png";     // 돌
         private const string ResGinsengPath = "Assets/Resource/Ingredient_1.png";  // 인삼
         private const string ResPersimmonPath = "Assets/Resource/Ingredient_2.png"; // 곶감
-
-        private const string IllustDolsoePath = "Assets/Images/dolsoe_illust.png"; // 돌쇠 대화 일러스트
-        private const string IllustManimPath = "Assets/Images/manim_illust.png";   // 마님 대화 일러스트
 
         private static readonly string[] ResourceSpritePaths =
         {
@@ -264,14 +246,6 @@ namespace GemCafe.EditorTools
 
             var hudRoot = CreateUIObject("HUD", canvasGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, Vector2.zero);
             var hud = hudRoot.AddComponent<HUD>();
-            var lifeIcons = new Image[3];
-            for (int i = 0; i < 3; i++)
-            {
-                var iconGo = CreateUIObject("LifeIcon_" + (i + 1), hudRoot.transform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(20f + i * 70f, -20f), new Vector2(56f, 56f), new Vector2(0f, 1f));
-                var iconImage = iconGo.AddComponent<Image>();
-                iconImage.color = Color.red;
-                lifeIcons[i] = iconImage;
-            }
 
             var patienceGo = CreateUIObject("PatienceFill", hudRoot.transform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(250f, -20f), new Vector2(360f, 32f), new Vector2(0f, 1f));
             var patienceImage = patienceGo.AddComponent<Image>();
@@ -279,8 +253,19 @@ namespace GemCafe.EditorTools
             patienceImage.type = Image.Type.Filled;
             patienceImage.fillMethod = Image.FillMethod.Horizontal;
             patienceImage.fillAmount = 1f;
-            SetObjectRefArray(hud, "lifeIcons", lifeIcons);
             SetObjectRef(hud, "patienceFill", patienceImage);
+
+            var coinSprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Knob.psd");
+            var coinSlots = new Image[3];
+            for (int i = 0; i < 3; i++)
+            {
+                var slotGo = CreateUIObject("CoinSlot_" + (i + 1), hudRoot.transform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(36f + (i * 72f), -24f), new Vector2(60f, 60f), new Vector2(0f, 1f));
+                var slotImage = slotGo.AddComponent<Image>();
+                slotImage.sprite = coinSprite;
+                slotImage.color = new Color(0.2f, 0.2f, 0.22f, 0.5f);
+                coinSlots[i] = slotImage;
+            }
+            SetObjectRefArray(hud, "coinSlots", coinSlots);
 
             var customerImageGo = CreateUIObject("CustomerImage", worldViewRoot.transform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(380f, 40f), new Vector2(640f, 820f), new Vector2(0.5f, 0f));
             var customerImage = customerImageGo.AddComponent<Image>();
@@ -390,6 +375,14 @@ namespace GemCafe.EditorTools
             ApplyDefaultText(bowlLabel, "음료 보이는 곳 (컵)", 40, TextAnchor.MiddleCenter, Color.white);
             bowlLabel.raycastTarget = false;
 
+            // 다기(Teaware) == 사발(Bowl): 동일한 컵 오브젝트가 따르기 클릭 대상도 겸한다
+            var teawarePour = bowlGo.AddComponent<TeawarePour>();
+            var teawareGuideGo = CreateUIObject("Teaware_Guide", bowlGo.transform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -40f), new Vector2(300f, 56f), new Vector2(0.5f, 0.5f));
+            var teawareGuideText = teawareGuideGo.AddComponent<Text>();
+            ApplyDefaultText(teawareGuideText, "다기를 누르세요", 24, TextAnchor.MiddleCenter, Color.white);
+            teawareGuideText.raycastTarget = false;
+            teawareGuideGo.SetActive(false);
+
             // 막자 (섞기 도구) — 컵에 드롭하면 제조 완료
             var pestleGo = CreateUIObject("Pestle", craftingRoot.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(360f, 60f), new Vector2(110f, 260f), new Vector2(0.5f, 0f));
             var pestleImage = pestleGo.AddComponent<Image>();
@@ -476,17 +469,6 @@ namespace GemCafe.EditorTools
             SetObjectRef(pourMinigame, "targetBandRect", pourTargetBandGo.GetComponent<RectTransform>());
             SetObjectRef(pourMinigame, "teapotRect", pourTeapotGo.GetComponent<RectTransform>());
             SetObjectRef(pourMinigame, "holdArea", pourHoldArea);
-
-            var teawareGo = CreateUIObject("Teaware", worldViewRoot.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(1270f, 340f), new Vector2(180f, 140f), new Vector2(0.5f, 0.5f));
-            var teawareImage = teawareGo.AddComponent<Image>();
-            teawareImage.color = new Color(0.55f, 0.4f, 0.25f, 1f);
-
-            var teawareGuideGo = CreateUIObject("Teaware_Guide", teawareGo.transform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 70f), new Vector2(220f, 56f), new Vector2(0.5f, 0.5f));
-            var teawareGuideText = teawareGuideGo.AddComponent<Text>();
-            ApplyDefaultText(teawareGuideText, "다기를 누르세요", 24, TextAnchor.MiddleCenter, Color.white);
-            teawareGuideGo.SetActive(false);
-
-            var teawarePour = teawareGo.AddComponent<TeawarePour>();
 
             var craftingControllerGo = new GameObject("CraftingController");
             craftingControllerGo.transform.SetParent(craftingRoot.transform, false);
@@ -667,6 +649,19 @@ namespace GemCafe.EditorTools
             SetObjectRef(endingCoinSummary, "messageText", endingCoinMessageText);
             SetObjectRef(endingCoinSummary, "nextButton", endingCoinNextButton);
 
+            var dayIntroRootGo = CreateUIObject("DayIntro_Root", canvasGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
+            var dayIntroRoot = dayIntroRootGo.AddComponent<CanvasGroup>();
+            dayIntroRoot.alpha = 0f;
+            dayIntroRoot.interactable = false;
+            dayIntroRoot.blocksRaycasts = false;
+            var dayIntroTextGo = CreateUIObject("DayText", dayIntroRootGo.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 0f), new Vector2(900f, 240f), new Vector2(0.5f, 0.5f));
+            var dayIntroText = dayIntroTextGo.AddComponent<Text>();
+            ApplyDefaultText(dayIntroText, "1\uC77C\uCC28", 120, TextAnchor.MiddleCenter, new Color(0.85f, 0.12f, 0.12f, 1f));
+            var dayIntro = dayIntroRootGo.AddComponent<DayIntro>();
+            SetObjectRef(dayIntro, "root", dayIntroRoot);
+            SetObjectRef(dayIntro, "dayText", dayIntroText);
+            dayIntroRootGo.transform.SetAsLastSibling();
+
             SetObjectRef(craftingController, "drinkPopup", drinkPopup);
             SetObjectRef(craftingController, "serveSequence", serveSequence);
 
@@ -705,6 +700,7 @@ namespace GemCafe.EditorTools
             SetObjectRef(dayManager, "craftTransition", screenTransition);
             SetObjectRef(dayManager, "coinGainScreen", coinGainScreen);
             SetObjectRef(dayManager, "endingCoinSummary", endingCoinSummary);
+            SetObjectRef(dayManager, "dayIntro", dayIntro);
             SetObjectRefList(dayManager, "allCustomers", new[] { cstDay1, cstDay2, cstDay3 });
             SetBool(dayManager, "forceServiceStateOnStart", true);
 
@@ -861,15 +857,9 @@ namespace GemCafe.EditorTools
             CreateSampleData();
             AssetDatabase.SaveAssets();
 
-            // 기존 씬이 있으면 열어서 수동 추가 오브젝트를 보존하고, 없으면 새 씬을 만든다.
-            // 빌더가 관리하는 루트만 제거한 뒤 다시 생성하므로 수동 프리팹은 변경되지 않는다.
-            Scene scene = OpenOrCreateScene(Stage1ScenePath);
-            DestroyManagedRoots(scene, Stage1ManagedRootNames);
+            Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
             var gameConfig = AssetDatabase.LoadAssetAtPath<GameConfig>(GameConfigPath);
-
-            var sprDolsoeIllust = AssetDatabase.LoadAssetAtPath<Sprite>(IllustDolsoePath);
-            var sprManimIllust = AssetDatabase.LoadAssetAtPath<Sprite>(IllustManimPath);
 
             var eventSystemGo = new GameObject("EventSystem", typeof(EventSystem), typeof(StandaloneInputModule));
 
@@ -924,8 +914,6 @@ namespace GemCafe.EditorTools
                 ("주인공", "...네."),
                 ("돌쇠", "저 위 다방에 마님을 찾아가 보게.")
             });
-            // 돌쇠가 말하는 라인(0, 2)에 돌쇠 일러스트를 표시한다.
-            SetDialoguePortrait(dolsoeInteractable, "dialogue", sprDolsoeIllust, 0, 2);
             var dolsoeHighlightGo = new GameObject("Highlight", typeof(SpriteRenderer));
             dolsoeHighlightGo.transform.SetParent(dolsoeGo.transform, false);
             var dolsoeHighlightSprite = dolsoeHighlightGo.GetComponent<SpriteRenderer>();
@@ -948,8 +936,6 @@ namespace GemCafe.EditorTools
                 ("주인공", "제가 돕겠습니다."),
                 ("마님", "좋아, 안으로 들어오게.")
             });
-            // 마님이 말하는 라인(0, 2)에 마님 일러스트를 표시한다.
-            SetDialoguePortrait(manimInteractable, "dialogue", sprManimIllust, 0, 2);
             var manimHighlightGo = new GameObject("Highlight", typeof(SpriteRenderer));
             manimHighlightGo.transform.SetParent(manimGo.transform, false);
             var manimHighlightSprite = manimHighlightGo.GetComponent<SpriteRenderer>();
@@ -1021,7 +1007,6 @@ namespace GemCafe.EditorTools
             var rightPortraitGo = CreateUIObject("RightPortrait", speakerViewGo.transform, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-180f, 260f), new Vector2(220f, 300f), new Vector2(1f, 0f));
             var rightPortrait = rightPortraitGo.AddComponent<Image>();
             rightPortrait.color = new Color(1f, 0.65f, 0.2f, 1f);
-            rightPortrait.preserveAspect = true;
             var dimGo = CreateUIObject("BackgroundDim", speakerViewGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
             dimGo.transform.SetAsFirstSibling();
             var backgroundDim = dimGo.AddComponent<Image>();
@@ -1042,10 +1027,6 @@ namespace GemCafe.EditorTools
             SetObjectRef(director, "interactor", interactor);
             SetObjectRef(director, "dialogueRunner", dialogueRunner);
             SetObjectRef(director, "exitInteractable", manimInteractable);
-
-            // 대화 UI는 시작 시 꺼져 있어야 한다. 대화 재생 시 런타임에서 다시 켜진다.
-            dialogueRoot.SetActive(false);
-            speakerViewGo.SetActive(false);
 
             EnsureFolder(ScenesDir);
             EditorSceneManager.SaveScene(scene, Stage1ScenePath);
@@ -1097,35 +1078,6 @@ namespace GemCafe.EditorTools
 
             list.Add(new EditorBuildSettingsScene(scenePath, true));
             pathSet.Add(scenePath);
-        }
-
-        // 씬 파일이 있으면 열고(수동 추가 오브젝트 보존), 없으면 빈 씬을 새로 만든다.
-        private static Scene OpenOrCreateScene(string scenePath)
-        {
-            if (File.Exists(Path.GetFullPath(scenePath)))
-            {
-                return EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Single);
-            }
-
-            return EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-        }
-
-        // 빌더가 관리하는 이름의 루트 오브젝트만 제거한다. 그 외 오브젝트는 보존된다.
-        private static void DestroyManagedRoots(Scene scene, string[] managedRootNames)
-        {
-            if (!scene.IsValid())
-            {
-                return;
-            }
-
-            var nameSet = new HashSet<string>(managedRootNames, StringComparer.Ordinal);
-            foreach (var root in scene.GetRootGameObjects())
-            {
-                if (root != null && nameSet.Contains(root.name))
-                {
-                    UnityEngine.Object.DestroyImmediate(root);
-                }
-            }
         }
 
         private static void EnsureSpriteImports()
@@ -1255,18 +1207,13 @@ namespace GemCafe.EditorTools
             return go;
         }
 
-        private const string KoreanFontPath = "Assets/_Game/Resources/Fonts/NanumGothic.ttf";
-
         private static void ApplyDefaultText(Text text, string content, int fontSize, TextAnchor alignment, Color color)
         {
             text.text = content;
             text.fontSize = fontSize;
             text.alignment = alignment;
             text.color = color;
-            // WebGL에서는 OS 폰트에 접근할 수 없어 Arial로는 한글이 깨지므로
-            // 임베디드 한글 폰트를 직접 마크한다. 폰트가 없으면 기본 폰트로 대체.
-            var koreanFont = AssetDatabase.LoadAssetAtPath<Font>(KoreanFontPath);
-            text.font = koreanFont != null ? koreanFont : Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             text.horizontalOverflow = HorizontalWrapMode.Wrap;
             text.verticalOverflow = VerticalWrapMode.Truncate;
         }
@@ -1383,50 +1330,6 @@ namespace GemCafe.EditorTools
                 el.FindPropertyRelative("speakerId").stringValue = lines[i].speakerId;
                 el.FindPropertyRelative("text").stringValue = lines[i].text;
                 el.FindPropertyRelative("portrait").objectReferenceValue = null;
-            }
-
-            so.ApplyModifiedPropertiesWithoutUndo();
-        }
-
-        private static void SetDialogueLines(UnityEngine.Object target, string propertyName, (string speakerId, string text, Sprite portrait)[] lines)
-        {
-            var so = new SerializedObject(target);
-            var property = so.FindProperty(propertyName);
-            if (property == null)
-            {
-                throw new InvalidOperationException("Property not found: " + propertyName + " on " + target.GetType().Name);
-            }
-
-            property.arraySize = lines != null ? lines.Length : 0;
-            for (int i = 0; i < property.arraySize; i++)
-            {
-                var el = property.GetArrayElementAtIndex(i);
-                el.FindPropertyRelative("speakerId").stringValue = lines[i].speakerId;
-                el.FindPropertyRelative("text").stringValue = lines[i].text;
-                el.FindPropertyRelative("portrait").objectReferenceValue = lines[i].portrait;
-            }
-
-            so.ApplyModifiedPropertiesWithoutUndo();
-        }
-
-        // 지정한 라인 인덱스의 대화 일러스트(portrait)만 설정한다. 화자 측 텍스트는 건드리지 않는다.
-        private static void SetDialoguePortrait(UnityEngine.Object target, string propertyName, Sprite portrait, params int[] lineIndices)
-        {
-            var so = new SerializedObject(target);
-            var property = so.FindProperty(propertyName);
-            if (property == null)
-            {
-                throw new InvalidOperationException("Property not found: " + propertyName + " on " + target.GetType().Name);
-            }
-
-            foreach (int idx in lineIndices)
-            {
-                if (idx < 0 || idx >= property.arraySize)
-                {
-                    continue;
-                }
-
-                property.GetArrayElementAtIndex(idx).FindPropertyRelative("portrait").objectReferenceValue = portrait;
             }
 
             so.ApplyModifiedPropertiesWithoutUndo();

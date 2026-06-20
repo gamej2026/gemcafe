@@ -21,6 +21,7 @@ namespace GemCafe.Customer
         [SerializeField] private ServeSequence serveSequence;
         [SerializeField] private CoinGainScreen coinGainScreen;
         [SerializeField] private EndingCoinSummary endingCoinSummary;
+        [SerializeField] private DayIntro dayIntro;
         [SerializeField] private List<CustomerSO> allCustomers;
         [SerializeField] private int fareReward = 10;
         [SerializeField] private bool forceServiceStateOnStart;
@@ -29,6 +30,10 @@ namespace GemCafe.Customer
         private CustomerSO _currentCustomer;
         private bool _resolved;
         private DrinkResult _lastResult;
+        private readonly List<CoinType> _coins = new List<CoinType>();
+        private int _lastIntroDay = -1;
+
+        private const int MaxCoinSlots = 3;
 
         public int CurrentDay { get; private set; } = 1;
         public int Fare { get; private set; }
@@ -89,6 +94,8 @@ namespace GemCafe.Customer
             Fare = Mathf.Max(0, startFare);
             TotalCoins = Mathf.Max(0, startTotalCoins);
             GreatCoins = Mathf.Max(0, startGreatCoins);
+            _lastIntroDay = -1;
+            RebuildCoinSlots();
             BuildQueueForDay(CurrentDay);
             SaveProgress();
 
@@ -99,7 +106,31 @@ namespace GemCafe.Customer
             }
 
             EventBus.RaiseCoinsChanged(TotalCoins);
+            EventBus.RaiseCoinSlotsChanged(_coins);
             NextCustomer();
+        }
+
+        private void RebuildCoinSlots()
+        {
+            _coins.Clear();
+            var normals = Mathf.Max(0, TotalCoins - GreatCoins);
+            var golds = Mathf.Max(0, GreatCoins);
+            for (int i = 0; i < normals && _coins.Count < MaxCoinSlots; i++)
+            {
+                _coins.Add(CoinType.Normal);
+            }
+            for (int i = 0; i < golds && _coins.Count < MaxCoinSlots; i++)
+            {
+                _coins.Add(CoinType.Gold);
+            }
+        }
+
+        private void AddCoinSlot(CoinType type)
+        {
+            if (_coins.Count < MaxCoinSlots)
+            {
+                _coins.Add(type);
+            }
         }
 
         private void SaveProgress()
@@ -147,6 +178,18 @@ namespace GemCafe.Customer
             _resolved = false;
             SetServiceSub(ServiceSubState.CustomerEnter);
 
+            if (dayIntro != null && CurrentDay != _lastIntroDay)
+            {
+                _lastIntroDay = CurrentDay;
+                dayIntro.Show(CurrentDay, SpawnCurrentCustomer);
+                return;
+            }
+
+            SpawnCurrentCustomer();
+        }
+
+        private void SpawnCurrentCustomer()
+        {
             if (spawner == null)
             {
                 OnCustomerArrived();
@@ -232,14 +275,17 @@ namespace GemCafe.Customer
             {
                 TotalCoins++;
                 GreatCoins++;
+                AddCoinSlot(CoinType.Gold);
             }
             else if (result == DrinkResult.Success)
             {
                 TotalCoins++;
+                AddCoinSlot(CoinType.Normal);
             }
 
             _lastResult = result;
             EventBus.RaiseCoinsChanged(TotalCoins);
+            EventBus.RaiseCoinSlotsChanged(_coins);
             ResolveAfterResult(result);
         }
 
