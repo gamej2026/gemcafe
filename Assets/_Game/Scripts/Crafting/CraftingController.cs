@@ -226,6 +226,12 @@ namespace GemCafe.Crafting
                 dualView.SwitchTo(CafeView.Customer);
             }
 
+            // 화면이 이동함과 동시에 Tray를 Close 위치로 이동 + 나머지 오브젝트 페이드 아웃
+            if (tray != null)
+            {
+                tray.Close();
+            }
+
             CurrentStage = CraftStage.PourMinigame;
 
             if (pourMinigame != null)

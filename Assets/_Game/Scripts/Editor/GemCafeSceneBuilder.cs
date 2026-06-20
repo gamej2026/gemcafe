@@ -466,6 +466,7 @@ namespace GemCafe.EditorTools
             var bowlReceiver = bowlGo.AddComponent<BowlReceiver>();
             SetObjectRef(bowlReceiver, "bowlRect", bowlGo.GetComponent<RectTransform>());
             SetObjectRef(bowlReceiver, "uiCamera", null);
+            var bowlCg = bowlGo.AddComponent<CanvasGroup>();
 
             // 재료가 순서대로(1,2,3) 놓이는 고정 슬롯 3개
             var bowlSlots = new UnityEngine.Object[3];
@@ -501,6 +502,7 @@ namespace GemCafe.EditorTools
             var pestleGo = CreateUIObject("Pestle", craftingRoot.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(360f, 60f), new Vector2(110f, 260f), new Vector2(0.5f, 0f));
             var pestleImage = pestleGo.AddComponent<Image>();
             pestleImage.color = new Color(0.45f, 0.3f, 0.2f, 1f);
+            var pestleCg = pestleGo.AddComponent<CanvasGroup>();
             var pestleMixer = pestleGo.AddComponent<PestleMixer>();
             SetObjectRef(pestleMixer, "bowl", bowlReceiver);
             SetObjectRef(pestleMixer, "bowlRect", bowlGo.GetComponent<RectTransform>());
@@ -684,9 +686,13 @@ namespace GemCafe.EditorTools
             var orderRecallToggleImage = orderRecallToggleGo.AddComponent<Image>();
             orderRecallToggleImage.color = new Color(0.25f, 0.45f, 0.8f, 1f);
             var orderRecallToggleButton = orderRecallToggleGo.AddComponent<Button>();
+            var orderRecallToggleCg = orderRecallToggleGo.AddComponent<CanvasGroup>();
             var orderRecallToggleTextGo = CreateUIObject("Text", orderRecallToggleGo.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
             var orderRecallToggleText = orderRecallToggleTextGo.AddComponent<Text>();
             ApplyDefaultText(orderRecallToggleText, "UI 대화 다시보기", 26, TextAnchor.MiddleCenter, Color.white);
+
+            // Tray가 완전히 도착한 뒤 페이드인되는 대상들 (Tray/Controller 제외)
+            SetObjectRefArray(trayController, "revealTargets", new UnityEngine.Object[] { bowlCg, pestleCg, orderRecallToggleCg });
 
             SetObjectRef(orderRecallPopup, "root", orderRecallCg);
             SetObjectRef(orderRecallPopup, "toggleButton", orderRecallToggleButton);
