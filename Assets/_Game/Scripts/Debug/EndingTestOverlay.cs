@@ -8,11 +8,10 @@ namespace GemCafe.DebugTools
     /// <summary>
     /// 엔딩 연출을 빠르게 확인하기 위한 개발자용 테스트 오버레이.
     /// 에디터/개발 빌드에서만 컴파일되며 별도 씬 세팅 없이 자동 생성된다.
-    /// 단축키: F9 토글, 숫자키 1~4(또는 화면 버튼)로 각 엔딩을 즉시 재생한다.
+    /// 단축키: F9 토글, 숫자키 1~3(또는 화면 버튼)로 각 엔딩을 즉시 재생한다.
     ///   1: 진엔딩 A (금코인 3개)
-    ///   2: 노말 엔딩 B (코인 3개)
+    ///   2: 노말 엔딩 B (코인 1 ~ 3개)
     ///   3: 배드 엔딩 C (코인 0개)
-    ///   4: 배드 엔딩 (뱃삯 미달 · 코인 2개)
     /// </summary>
     public class EndingTestOverlay : MonoBehaviour
     {
@@ -68,15 +67,11 @@ namespace GemCafe.DebugTools
             }
             else if (Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Keypad2))
             {
-                Trigger(EndingKind.B, 3, 0);
+                Trigger(EndingKind.B, 2, 0);
             }
             else if (Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Keypad3))
             {
                 Trigger(EndingKind.C, 0, 0);
-            }
-            else if (Input.GetKeyDown(KeyCode.Alpha4) || Input.GetKeyDown(KeyCode.Keypad4))
-            {
-                Trigger(EndingKind.C, 2, 0);
             }
         }
 
@@ -111,19 +106,14 @@ namespace GemCafe.DebugTools
                 Trigger(EndingKind.A, 3, 3);
             }
 
-            if (GUILayout.Button("2. 노말 엔딩 B (코인 3)", _buttonStyle, GUILayout.Height(34f)))
+            if (GUILayout.Button("2. 노말 엔딩 B (코인 1~3)", _buttonStyle, GUILayout.Height(34f)))
             {
-                Trigger(EndingKind.B, 3, 0);
+                Trigger(EndingKind.B, 2, 0);
             }
 
             if (GUILayout.Button("3. 배드 엔딩 C (코인 0)", _buttonStyle, GUILayout.Height(34f)))
             {
                 Trigger(EndingKind.C, 0, 0);
-            }
-
-            if (GUILayout.Button("4. 배드 (뱃삯 미달 · 코인 2)", _buttonStyle, GUILayout.Height(34f)))
-            {
-                Trigger(EndingKind.C, 2, 0);
             }
 
             GUILayout.EndArea();
