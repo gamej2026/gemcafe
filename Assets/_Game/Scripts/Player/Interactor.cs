@@ -39,9 +39,15 @@ namespace GemCafe.Player
                 keyPromptUI.SetActive(_current != null);
             }
 
-            if (_current != null && Input.GetKeyDown(KeyCode.F))
+            if (Input.GetKeyDown(KeyCode.F))
             {
-                OnInteract?.Invoke(_current);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                Debug.Log($"[Interactor] F pressed. current={(_current != null ? _current.DisplayName : "null")}, radius={radius:0.00}, pos={transform.position}");
+#endif
+                if (_current != null)
+                {
+                    OnInteract?.Invoke(_current);
+                }
             }
         }
 

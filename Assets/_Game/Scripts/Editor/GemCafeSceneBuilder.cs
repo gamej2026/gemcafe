@@ -657,6 +657,7 @@ namespace GemCafe.EditorTools
             dolsoeSprite.color = new Color(0.4f, 0.7f, 1f, 1f);
             var dolsoeCollider = dolsoeGo.GetComponent<BoxCollider2D>();
             dolsoeCollider.isTrigger = true;
+            dolsoeCollider.size = Vector2.one;
             var dolsoeInteractable = dolsoeGo.GetComponent<Interactable>();
             SetString(dolsoeInteractable, "displayName", "돌쇠");
             SetDialogueLines(dolsoeInteractable, "dialogue", new[]
@@ -678,6 +679,7 @@ namespace GemCafe.EditorTools
             manimSprite.color = new Color(1f, 0.65f, 0.2f, 1f);
             var manimCollider = manimGo.GetComponent<BoxCollider2D>();
             manimCollider.isTrigger = true;
+            manimCollider.size = Vector2.one;
             var manimInteractable = manimGo.GetComponent<Interactable>();
             SetString(manimInteractable, "displayName", "마님");
             SetDialogueLines(manimInteractable, "dialogue", new[]

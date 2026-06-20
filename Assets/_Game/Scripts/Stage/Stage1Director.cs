@@ -18,6 +18,9 @@ namespace GemCafe.Stage
 
         private void HandleInteract(Interactable target)
         {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            Debug.Log($"[Stage1Director] HandleInteract target={(target != null ? target.DisplayName : "null")}, runner={(dialogueRunner != null ? (dialogueRunner.IsPlaying ? "playing" : "idle") : "null")}");
+#endif
             if (target == null) return;
             if (dialogueRunner == null || dialogueRunner.IsPlaying) return;
             bool isExit = target == exitInteractable;

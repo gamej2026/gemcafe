@@ -25,6 +25,13 @@ namespace GemCafe.Dialogue
                 return;
             }
 
+            // 대화 루트 GameObject가 비활성 상태면 활성화한다. 비활성 상태에서는
+            // CanvasGroup.alpha 만 바꿔도 화면에 보이지 않고 타이핑 코루틴도 시작되지 않는다.
+            if (root.gameObject.activeSelf != visible)
+            {
+                root.gameObject.SetActive(visible);
+            }
+
             root.alpha = visible ? 1f : 0f;
             root.interactable = visible;
             root.blocksRaycasts = visible;
