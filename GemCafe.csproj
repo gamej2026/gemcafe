@@ -90,6 +90,7 @@
     <Compile Include="Assets\_Game\Scripts\Dialogue\InteractableDialogueCsvLoader.cs" />
     <Compile Include="Assets\_Game\Scripts\Tutorial\TutorialContext.cs" />
     <Compile Include="Assets\_Game\Scripts\Data\IngredientCategory.cs" />
+    <Compile Include="Assets\_Game\Scripts\UI\CreditsPopup.cs" />
     <Compile Include="Assets\_Game\Scripts\UI\ResultToast.cs" />
     <Compile Include="Assets\_Game\Scripts\Stage\SpriteAlphaFlicker.cs" />
     <Compile Include="Assets\_Game\Scripts\Dialogue\BargeInBubble.cs" />
@@ -578,10 +579,6 @@
       <HintPath>E:\Unity\6000.3.18f1\Editor\Data\PlaybackEngines\WindowsStandaloneSupport\UnityEditor.WindowsStandalone.Extensions.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Mono.Cecil">
-      <HintPath>Library\PackageCache\com.unity.nuget.mono-cecil@ecb9724e46ff\Mono.Cecil.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Unity.Collections.LowLevel.ILSupport">
       <HintPath>Library\PackageCache\com.unity.collections@9796e5ee0d9e\Unity.Collections.LowLevel.ILSupport\Unity.Collections.LowLevel.ILSupport.dll</HintPath>
       <Private>False</Private>
@@ -596,6 +593,10 @@
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>Library\PackageCache\com.unity.nuget.newtonsoft-json@4dfd81071c64\Runtime\Newtonsoft.Json.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Mono.Cecil">
+      <HintPath>Library\PackageCache\com.unity.nuget.mono-cecil@ecb9724e46ff\Mono.Cecil.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System.Runtime.CompilerServices.Unsafe">

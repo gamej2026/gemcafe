@@ -20,6 +20,8 @@ namespace GemCafe.Crafting
         [SerializeField] private CanvasGroup dimOverlay;    // 화면을 어둡게 하는 오버레이
         [SerializeField] private GameObject startButtonRoot; // 시작 버튼 루트
         [SerializeField] private Button startButton;        // 시작 버튼
+        [SerializeField] private CanvasGroup bowlGroup;      // Bowl CanvasGroup — 미니게임 중 완전히 페이드 아웃
+        [SerializeField] private GameObject plateMinigame;   // PlateMix_MiniGame — 미니게임 중 활성화 + 디밍 제외(포커스 레이어)
 
         [Header("Tuning")]
         [SerializeField] private float zoomScale = 1.2f;
@@ -147,6 +149,15 @@ namespace GemCafe.Crafting
                 dimOverlay.gameObject.SetActive(false);
             }
 
+            // Bowl alpha는 여기서 강제로 1로 되돌리지 않는다.
+            // Bowl 가시성은 TrayController의 reveal(Tray Open 시 페이드인)이 소유한다.
+
+            if (plateMinigame != null)
+            {
+                SetFocusLayer(plateMinigame.transform as RectTransform, false);
+                plateMinigame.SetActive(false);
+            }
+
             SetFocusLayer(focusTarget, false);
             SetFocusLayer(mixUiGroup != null ? mixUiGroup.transform as RectTransform : null, false);
         }
@@ -172,6 +183,13 @@ namespace GemCafe.Crafting
             SetFocusLayer(focusTarget, true);
             SetFocusLayer(mixUiGroup != null ? mixUiGroup.transform as RectTransform : null, true);
 
+            // PlateMix_MiniGame: 활성화하고 디밍 위(포커스 레이어)에 올려 어두워지지 않게 한다.
+            if (plateMinigame != null)
+            {
+                plateMinigame.SetActive(true);
+                SetFocusLayer(plateMinigame.transform as RectTransform, true);
+            }
+
             if (dimOverlay != null)
             {
                 dimOverlay.gameObject.SetActive(true);
@@ -187,6 +205,7 @@ namespace GemCafe.Crafting
 
             float startDim = dimOverlay != null ? dimOverlay.alpha : 0f;
             float startMix = mixUiGroup != null ? mixUiGroup.alpha : 0f;
+            float startBowl = bowlGroup != null ? bowlGroup.alpha : 1f;
             Vector3 startScale = zoomRoot.localScale;
             Vector2 startPos = zoomRoot.anchoredPosition;
 
@@ -200,6 +219,7 @@ namespace GemCafe.Crafting
                 zoomRoot.anchoredPosition = Vector2.Lerp(startPos, _targetPos, k);
                 if (dimOverlay != null) dimOverlay.alpha = Mathf.Lerp(startDim, dimAlpha, k);
                 if (mixUiGroup != null) mixUiGroup.alpha = Mathf.Lerp(startMix, 1f, k);
+                if (bowlGroup != null) bowlGroup.alpha = Mathf.Lerp(startBowl, 0f, k);
                 yield return null;
             }
 
@@ -207,6 +227,7 @@ namespace GemCafe.Crafting
             zoomRoot.anchoredPosition = _targetPos;
             if (dimOverlay != null) dimOverlay.alpha = dimAlpha;
             if (mixUiGroup != null) mixUiGroup.alpha = 1f;
+            if (bowlGroup != null) bowlGroup.alpha = 0f;
 
             if (startButtonRoot != null)
             {
@@ -262,6 +283,14 @@ namespace GemCafe.Crafting
             if (mixUiGroup != null)
             {
                 mixUiGroup.alpha = 0f;
+            }
+            // Bowl은 여기서 다시 페이드인하지 않는다(0 유지).
+            // 다음날 첫 Tray가 슬라이드인할 때 TrayController의 reveal 페이드인으로 다시 나타난다.
+
+            if (plateMinigame != null)
+            {
+                SetFocusLayer(plateMinigame.transform as RectTransform, false);
+                plateMinigame.SetActive(false);
             }
 
             SetFocusLayer(focusTarget, false);
