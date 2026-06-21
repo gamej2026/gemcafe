@@ -60,7 +60,7 @@ namespace GemCafe.Core
 
             if (loadScene)
             {
-                Router.Load(SceneRouter.SceneStage1);
+                Router.Load(SceneRouter.SceneLobbyAndIntro);
             }
         }
 
@@ -115,7 +115,7 @@ namespace GemCafe.Core
             }
 
             StateMachine.TryTransition(GameState.GameOver);
-            Router.Load(SceneRouter.SceneLobby);
+            Router.Load(SceneRouter.SceneLobbyAndIntro);
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]

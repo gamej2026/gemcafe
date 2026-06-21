@@ -51,8 +51,7 @@ namespace GemCafe.EditorTools
         private const string NormalMaterialPath = "Assets/_Game/Art/Materials/NPCNormal.mat";
         private const string OutlineShaderName = "GemCafe/SpriteOutline";
         private const string CafeScenePath = "Assets/_Game/Scenes/Cafe.unity";
-        private const string LobbyScenePath = "Assets/_Game/Scenes/Lobby.unity";
-        private const string Stage1ScenePath = "Assets/_Game/Scenes/Stage1_Riverside.unity";
+        private const string LobbyAndIntroScenePath = "Assets/_Game/Scenes/LobbyAndIntro.unity";
         private const string CafeDialogScenePath = "Assets/_Game/Scenes/cafe_dialog.unity";
         private const string CafeTutorialScenePath = "Assets/_Game/Scenes/cafe_tutorial.unity";
         private const string EndingScenePath = "Assets/_Game/Scenes/Ending.unity";
@@ -1312,7 +1311,7 @@ namespace GemCafe.EditorTools
             SetObjectRef(lobbyMenu, "creditsPopup", creditsPopup);
 
             EnsureFolder(ScenesDir);
-            EditorSceneManager.SaveScene(scene, LobbyScenePath);
+            EditorSceneManager.SaveScene(scene, LobbyAndIntroScenePath);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
@@ -1487,7 +1486,7 @@ namespace GemCafe.EditorTools
             SetObjectRef(director, "exitInteractable", manimInteractable);
 
             EnsureFolder(ScenesDir);
-            EditorSceneManager.SaveScene(scene, Stage1ScenePath);
+            EditorSceneManager.SaveScene(scene, LobbyAndIntroScenePath);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
@@ -1834,13 +1833,11 @@ namespace GemCafe.EditorTools
                 }
             }
 
-            if (!paths.Contains(LobbyScenePath) && File.Exists(Path.GetFullPath(LobbyScenePath)))
+            if (!paths.Contains(LobbyAndIntroScenePath) && File.Exists(Path.GetFullPath(LobbyAndIntroScenePath)))
             {
-                existing.Insert(0, new EditorBuildSettingsScene(LobbyScenePath, true));
-                paths.Add(LobbyScenePath);
+                existing.Insert(0, new EditorBuildSettingsScene(LobbyAndIntroScenePath, true));
+                paths.Add(LobbyAndIntroScenePath);
             }
-
-            AddSceneIfExists(existing, paths, Stage1ScenePath);
             AddSceneIfExists(existing, paths, CafeDialogScenePath);
             AddSceneIfExists(existing, paths, CafeTutorialScenePath);
             AddSceneIfExists(existing, paths, CafeScenePath);

@@ -17,7 +17,7 @@ namespace GemCafe.Ending
         public string cgPath;       // CG 일러스트 (Resources 경로)
         public string bgmPath;      // BGM (Resources 경로)
         public string sfxPath;      // SFX (Resources 경로)
-        public string effect;       // 화면 효과 키워드 (none/fade/sepia/red_filter/blackout/flash)
+        public string effect;       // 화면 효과 키워드 (none/fade/sepia/red_filter/blackout/flash/fadein/animate)
         public bool partnerOnRight; // 화자 위치 (right=true, left=false)
 
         public bool HasText => !string.IsNullOrEmpty(text);

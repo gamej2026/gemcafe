@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using GemCafe.Core;
 using GemCafe.Dialogue;
 using UnityEngine;
@@ -35,6 +36,8 @@ namespace GemCafe.Ending
         private bool _finished;
         private int _lastAdvanceFrame = -1;
         private Coroutine _effectRoutine;
+        private Coroutine _backgroundRoutine;
+        private Image _fadeLayer;
 
         private void Start()
         {
@@ -122,8 +125,27 @@ namespace GemCafe.Ending
 
         private void ApplyBeat(EndingBeat beat)
         {
-            ApplyEffect(beat.effect);
-            ApplyBackground(beat.bgPath);
+            StopBackgroundRoutine();
+
+            if (beat.effect == "fadein")
+            {
+                // 화면 효과 fadeIn: 배경 이미지를 서서히 나타나게 한다. (배경 이미지 칸: "경로, 페이드시간")
+                ApplyEffect("none");
+                ApplyFadeInBackground(beat.bgPath);
+            }
+            else if (beat.effect == "animate")
+            {
+                // 화면 효과 animate: 연속된 번호의 배경 이미지를 차례로 페이드인하며 보여준다.
+                // (배경 이미지 칸: "경로시작~끝, 다음이미지 보이는시간, 다음이미지 페이드인시간")
+                ApplyEffect("none");
+                ApplyAnimateBackground(beat.bgPath);
+            }
+            else
+            {
+                ApplyEffect(beat.effect);
+                ApplyBackground(beat.bgPath);
+            }
+
             ApplyCg(beat.cgPath);
             ApplyAudio(beat.bgmPath, beat.sfxPath);
             ApplyDialogue(beat);
@@ -152,6 +174,224 @@ namespace GemCafe.Ending
             {
                 backgroundImage.sprite = null;
                 backgroundImage.color = PlaceholderBg;
+            }
+        }
+
+        // 화면 효과 fadeIn: 이전 배경은 그대로 두고, 새 배경 이미지를 위 레이어에서 알파 0 → 1 로
+        // 서서히 나타나게 한다. 페이드 인이 끝나면 새 이미지를 배경으로 확정하고 이전 이미지는 사라진다.
+        private void ApplyFadeInBackground(string raw)
+        {
+            if (backgroundImage == null)
+            {
+                return;
+            }
+
+            ParseFadeIn(raw, out string path, out float duration);
+
+            var sprite = string.IsNullOrEmpty(path) ? null : Resources.Load<Sprite>(path);
+            _backgroundRoutine = StartCoroutine(RunFadeIn(sprite, duration));
+        }
+
+        private IEnumerator RunFadeIn(Sprite sprite, float duration)
+        {
+            yield return FadeInLayerRoutine(sprite, duration);
+            _backgroundRoutine = null;
+        }
+
+        // 이전 배경(backgroundImage)은 유지한 채, 위 레이어(_fadeLayer)에서 새 이미지를 알파 0 → 1 로
+        // 페이드 인한다. 완료되면 새 이미지를 backgroundImage 로 확정하고 레이어를 숨겨 이전 이미지를 없앤다.
+        private IEnumerator FadeInLayerRoutine(Sprite sprite, float duration)
+        {
+            Color target = sprite != null ? Color.white : PlaceholderBg;
+
+            var layer = EnsureFadeLayer();
+            if (layer == null)
+            {
+                backgroundImage.sprite = sprite;
+                backgroundImage.color = target;
+                yield break;
+            }
+
+            // 새 이미지를 위 레이어에 올리고 투명(알파 0)에서 시작한다. 이전 이미지는 backgroundImage 에 그대로 보인다.
+            layer.gameObject.SetActive(true);
+            layer.sprite = sprite;
+            layer.color = new Color(target.r, target.g, target.b, 0f);
+
+            if (duration > 0f)
+            {
+                float elapsed = 0f;
+                while (elapsed < duration)
+                {
+                    elapsed += Time.deltaTime;
+                    float a = Mathf.Clamp01(elapsed / duration);
+                    layer.color = new Color(target.r, target.g, target.b, a);
+                    yield return null;
+                }
+            }
+
+            layer.color = target;
+
+            // 페이드 인 완료: 새 이미지를 배경으로 확정하고 이전 이미지를 사라지게 한다.
+            backgroundImage.sprite = sprite;
+            backgroundImage.color = target;
+            layer.gameObject.SetActive(false);
+            layer.sprite = null;
+        }
+
+        // backgroundImage 바로 위에 전체 화면 페이드용 레이어를 1회 생성한다.
+        private Image EnsureFadeLayer()
+        {
+            if (_fadeLayer != null)
+            {
+                return _fadeLayer;
+            }
+
+            if (backgroundImage == null)
+            {
+                return null;
+            }
+
+            var go = new GameObject("FadeInLayer", typeof(RectTransform));
+            var rt = go.GetComponent<RectTransform>();
+            rt.SetParent(backgroundImage.transform.parent, false);
+            rt.anchorMin = Vector2.zero;
+            rt.anchorMax = Vector2.one;
+            rt.offsetMin = Vector2.zero;
+            rt.offsetMax = Vector2.zero;
+            rt.SetSiblingIndex(backgroundImage.transform.GetSiblingIndex() + 1);
+
+            var img = go.AddComponent<Image>();
+            img.raycastTarget = false;
+            img.color = new Color(1f, 1f, 1f, 0f);
+            go.SetActive(false);
+
+            _fadeLayer = img;
+            return _fadeLayer;
+        }
+
+        // 화면 효과 animate: 연속된 번호의 배경 이미지를 차례로 페이드인하며 보여준다.
+        private void ApplyAnimateBackground(string raw)
+        {
+            if (backgroundImage == null)
+            {
+                return;
+            }
+
+            ParseAnimate(raw, out string prefix, out int start, out int end, out float stepDelay, out float fadeDuration);
+            _backgroundRoutine = StartCoroutine(AnimateBackgroundRoutine(prefix, start, end, stepDelay, fadeDuration));
+        }
+
+        private IEnumerator AnimateBackgroundRoutine(string prefix, int start, int end, float stepDelay, float fadeDuration)
+        {
+            int step = start <= end ? 1 : -1;
+            for (int n = start; ; n += step)
+            {
+                var sprite = Resources.Load<Sprite>(prefix + n.ToString(CultureInfo.InvariantCulture));
+                yield return FadeInLayerRoutine(sprite, fadeDuration);
+
+                if (n == end)
+                {
+                    break;
+                }
+
+                if (stepDelay > 0f)
+                {
+                    yield return new WaitForSeconds(stepDelay);
+                }
+            }
+
+            _backgroundRoutine = null;
+        }
+
+        private void StopBackgroundRoutine()
+        {
+            if (_backgroundRoutine != null)
+            {
+                StopCoroutine(_backgroundRoutine);
+                _backgroundRoutine = null;
+            }
+
+            // 진행 중이던 페이드를 즉시 확정하고 레이어를 정리한다.
+            if (_fadeLayer != null && _fadeLayer.gameObject.activeSelf)
+            {
+                if (backgroundImage != null)
+                {
+                    backgroundImage.sprite = _fadeLayer.sprite;
+                    backgroundImage.color = _fadeLayer.sprite != null ? Color.white : PlaceholderBg;
+                }
+
+                _fadeLayer.gameObject.SetActive(false);
+                _fadeLayer.sprite = null;
+            }
+        }
+
+        // "이미지경로, 페이드시간" 형식을 파싱한다. 예: "Endings/RealEnding5, 1.2"
+        private static void ParseFadeIn(string raw, out string path, out float duration)
+        {
+            path = string.Empty;
+            duration = 1f;
+
+            if (string.IsNullOrEmpty(raw))
+            {
+                return;
+            }
+
+            var parts = raw.Split(',');
+            path = parts[0].Trim();
+            if (parts.Length > 1 && float.TryParse(parts[1].Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out float d))
+            {
+                duration = d;
+            }
+        }
+
+        // "이미지경로시작번호~끝번호, 보이는시간, 페이드인시간" 형식을 파싱한다. 예: "Endings/RealEnding6~8,0.8,0.2"
+        private static void ParseAnimate(string raw, out string prefix, out int start, out int end, out float stepDelay, out float fadeDuration)
+        {
+            prefix = string.Empty;
+            start = 0;
+            end = 0;
+            stepDelay = 0.8f;
+            fadeDuration = 0.2f;
+
+            if (string.IsNullOrEmpty(raw))
+            {
+                return;
+            }
+
+            var parts = raw.Split(',');
+            var rangePart = parts[0].Trim();
+
+            string leftPath = rangePart;
+            int tilde = rangePart.IndexOf('~');
+            if (tilde >= 0)
+            {
+                leftPath = rangePart.Substring(0, tilde).Trim();
+                int.TryParse(rangePart.Substring(tilde + 1).Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out end);
+            }
+
+            // leftPath 끝의 숫자를 시작 번호로, 그 앞을 공통 경로(prefix)로 분리한다.
+            int idx = leftPath.Length;
+            while (idx > 0 && char.IsDigit(leftPath[idx - 1]))
+            {
+                idx--;
+            }
+
+            prefix = leftPath.Substring(0, idx);
+            int.TryParse(leftPath.Substring(idx), NumberStyles.Integer, CultureInfo.InvariantCulture, out start);
+
+            if (tilde < 0)
+            {
+                end = start;
+            }
+
+            if (parts.Length > 1 && float.TryParse(parts[1].Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out float sd))
+            {
+                stepDelay = sd;
+            }
+
+            if (parts.Length > 2 && float.TryParse(parts[2].Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out float fd))
+            {
+                fadeDuration = fd;
             }
         }
 
@@ -365,7 +605,7 @@ namespace GemCafe.Ending
                 }
             }
 
-            gm.Router?.Load(SceneRouter.SceneLobby);
+            gm.Router?.Load(SceneRouter.SceneLobbyAndIntro);
         }
     }
 }
