@@ -51,7 +51,7 @@ namespace GemCafe.UI
 
         private void Awake()
         {
-            _font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            _font = KoreanFontApplier.Font ?? Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
 
             if (toggleButton != null)
             {
@@ -154,7 +154,7 @@ namespace GemCafe.UI
 
             if (_font == null)
             {
-                _font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                _font = KoreanFontApplier.Font ?? Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             }
 
             for (int i = messageRoot.childCount - 1; i >= 0; i--)
