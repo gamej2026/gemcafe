@@ -345,7 +345,17 @@ namespace GemCafe.Crafting
             }
             else if (canvas != null)
             {
-                canvas.overrideSorting = false;
+                // 중첩 Canvas를 남겨둔 채 overrideSorting만 끄면, 다음 포커스에서 다시 켜도(false→true)
+                // 렌더 정렬이 갱신되지 않아 화면에 보이지 않는 Unity 이슈가 있다(1일차엔 Canvas가 새로
+                // 생성돼 정상, 2일차부터 재사용 시 발생). 포커스 종료 시 Canvas/GraphicRaycaster를 제거해
+                // 다음 포커스 때 항상 새 Canvas가 생성되도록 한다(= 1일차와 동일하게 정상 렌더).
+                var raycaster = rt.GetComponent<GraphicRaycaster>();
+                if (raycaster != null)
+                {
+                    Destroy(raycaster);
+                }
+
+                Destroy(canvas);
             }
         }
 
