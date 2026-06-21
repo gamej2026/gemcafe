@@ -536,27 +536,27 @@ namespace GemCafe.EditorTools
             mixHoldAreaImage.raycastTarget = true;
             var mixHoldArea = mixHoldAreaGo.AddComponent<HoldInputArea>();
 
-            var mixTrackGo = CreateUIObject("Mix_Track", mixRootGo.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(772f, -80f), new Vector2(700f, 160f), new Vector2(0.5f, 0.5f));
+            var mixTrackGo = CreateUIObject("Mix_Track", mixRootGo.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(860f, 0f), new Vector2(160f, 700f), new Vector2(0.5f, 0.5f));
             var mixTrackImage = mixTrackGo.AddComponent<Image>();
             mixTrackImage.color = new Color(0.2f, 0.2f, 0.2f, 0.75f);
 
-            var mixBarGo = CreateUIObject("Mix_Bar", mixTrackGo.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(220f, 120f), new Vector2(0.5f, 0.5f));
+            var mixBarGo = CreateUIObject("Mix_Bar", mixTrackGo.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(120f, 220f), new Vector2(0.5f, 0.5f));
             var mixBarImage = mixBarGo.AddComponent<Image>();
             mixBarImage.color = new Color(0.2f, 0.8f, 0.2f, 0.85f);
 
-            var mixLeafGo = CreateUIObject("Mix_Leaf", mixTrackGo.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(120f, 0f), new Vector2(80f, 80f), new Vector2(0.5f, 0.5f));
+            var mixLeafGo = CreateUIObject("Mix_Leaf", mixTrackGo.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 120f), new Vector2(80f, 80f), new Vector2(0.5f, 0.5f));
             var mixLeafImage = mixLeafGo.AddComponent<Image>();
             mixLeafImage.color = new Color(0.95f, 0.95f, 0.2f, 1f);
 
             var filledSprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
 
-            var mixProgressGo = CreateUIObject("Mix_ProgressFill", mixRootGo.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(772f, -190f), new Vector2(700f, 60f), new Vector2(0.5f, 0.5f));
+            var mixProgressGo = CreateUIObject("Mix_ProgressFill", mixRootGo.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(700f, 0f), new Vector2(60f, 700f), new Vector2(0.5f, 0.5f));
             var mixProgressFill = mixProgressGo.AddComponent<Image>();
             mixProgressFill.color = new Color(0.3f, 0.8f, 1f, 1f);
             mixProgressFill.sprite = filledSprite;
             mixProgressFill.type = Image.Type.Filled;
-            mixProgressFill.fillMethod = Image.FillMethod.Horizontal;
-            mixProgressFill.fillOrigin = (int)Image.OriginHorizontal.Left;
+            mixProgressFill.fillMethod = Image.FillMethod.Vertical;
+            mixProgressFill.fillOrigin = (int)Image.OriginVertical.Bottom;
             mixProgressFill.fillAmount = 0.4f;
 
             var mixMinigame = mixRootGo.AddComponent<MixMinigame>();
