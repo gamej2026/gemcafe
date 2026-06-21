@@ -7,6 +7,9 @@ namespace GemCafe.Dialogue
 {
     public class DialogueView : MonoBehaviour
     {
+        // 나레이션(이 화자)은 네임태그를 표시하지 않는다.
+        private const string NarrationSpeaker = "나레이션";
+
         [SerializeField] private CanvasGroup root;
         [SerializeField] private Text speakerNameText;
         [SerializeField] private Text bodyText;
@@ -50,7 +53,14 @@ namespace GemCafe.Dialogue
 
             if (speakerNameText != null)
             {
-                speakerNameText.text = speakerName ?? string.Empty;
+                // 나레이션이거나 화자가 비어 있으면 네임태그를 숨긴다.
+                string trimmedSpeaker = speakerName != null ? speakerName.Trim() : string.Empty;
+                bool hideName = trimmedSpeaker.Length == 0 || trimmedSpeaker == NarrationSpeaker;
+                speakerNameText.text = hideName ? string.Empty : speakerName;
+                if (speakerNameText.gameObject.activeSelf == hideName)
+                {
+                    speakerNameText.gameObject.SetActive(!hideName);
+                }
             }
 
             if (typingCps <= 0f)
