@@ -11,12 +11,9 @@ namespace GemCafe.Tutorial
 {
     public class CafeTutorialDirector : MonoBehaviour
     {
-        [Tooltip("Additive濡? 諛곌꼍?뿉 ?쓣?슱 ?떎?젣 移댄럹 ?뵮 ?씠由?.")]
         [SerializeField] private string cafeSceneName = "Cafe";
-        [Tooltip("?뒠?넗由ъ뼹 ????궗 CSV?쓽 Resources 寃쎈줈(?솗?옣?옄 ?젣?쇅).")]
         [SerializeField] private string csvResourcePath = "Cafe/cafe_tutorial";
         [SerializeField] private Sprite _popupBgSprite;
-        [Tooltip("諛곌꼍(Cafe)?쓣 ?뼱?몼寃? 媛?由щ뒗 ?젙?룄. 1?뿉 媛?源뚯슱?닔濡? ?뼱?몼?떎.")]
         [Range(0f, 1f)] [SerializeField] private float dimAlpha = 0.72f;
 
         private static readonly HashSet<string> CraftHighlights = new HashSet<string>
@@ -47,7 +44,7 @@ namespace GemCafe.Tutorial
         private GameObject _spawnedInstance;
         private string _spawnedKey = string.Empty;
 
-        private const string DefaultHint = "?겢由? / ?뒪?럹?씠?뒪濡? 怨꾩냽 ?뼳";
+        private const string DefaultHint = "클릭 / 스페이스로 계속";
 
         private void Awake()
         {
@@ -245,7 +242,7 @@ namespace GemCafe.Tutorial
             var prefab = Resources.Load<GameObject>(desired);
             if (prefab == null)
             {
-                Debug.LogWarning($"CafeTutorialDirector: ?뒪?룿 ?봽由ы뙶 '{desired}' 瑜? 李얠쓣 ?닔 ?뾾?뒿?땲?떎.");
+                Debug.LogWarning($"CafeTutorialDirector: 스폰 프리팹을 찾을 수 없습니다: {desired}");
                 yield break;
             }
 
@@ -300,7 +297,7 @@ namespace GemCafe.Tutorial
             }
 
             SetInteractiveMode(true);
-            SetHint("?궗諛쒖뿉 ?옱猷? 3媛쒕?? 紐⑤몢 ?떞?븘二쇱꽭?슂.");
+            SetHint("사발에 재료 3개를 모두 담아주세요.");
 
             while (bowl != null && bowl.Contents.Count < 3)
             {
@@ -334,7 +331,7 @@ namespace GemCafe.Tutorial
             System.Action onDone = () => finished = true;
 
             SetInteractiveMode(true);
-            SetHint("吏곸젒 ?빐蹂댁꽭?슂!  (嫄대꼫?쎇湲?: ?뒪?럹?씠?뒪)");
+            SetHint("직접 해보세요! (건너뛰기: 스페이스)");
 
             if (mix != null)
             {
@@ -516,7 +513,7 @@ namespace GemCafe.Tutorial
 
             var canvas = canvasGo.GetComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            canvas.sortingOrder = 1000; // Cafe UI ?쐞, SceneRouter ?럹?씠?뜑 ?븘?옒.
+            canvas.sortingOrder = 1000;
 
             var scaler = canvasGo.GetComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
@@ -575,7 +572,7 @@ namespace GemCafe.Tutorial
             bodyRect.offsetMax = new Vector2(-28f, -72f);
 
             var hintText = CreateText("Hint", panelRect, 24, TextAnchor.LowerRight, new Color(1f, 1f, 1f, 0.7f));
-            hintText.text = "?겢由? / ?뒪?럹?씠?뒪濡? 怨꾩냽 \u25B6";
+            hintText.text = "클릭 / 스페이스로 계속";
             var hintRect = hintText.rectTransform;
             hintRect.anchorMin = new Vector2(0f, 0f);
             hintRect.anchorMax = new Vector2(1f, 0f);

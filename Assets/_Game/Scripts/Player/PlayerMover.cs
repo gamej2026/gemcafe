@@ -9,7 +9,7 @@ namespace GemCafe.Player
         [SerializeField] private Animator animator;
         [SerializeField] private float fallbackMoveSpeed = 5f;
 
-        [Tooltip("二쇱씤怨듭씠 ?씠?룞?븷 ?닔 ?엳?뒗 X醫뚰몴 ?븳怨?. 짹媛? 踰붿쐞瑜? 踰쀬뼱?굹吏? 紐삵븯寃? 踰쎌쿂?읆 留됰뒗?떎.")]
+        [Tooltip("플레이어가 이동할 수 있는 X 좌표 한계입니다.")]
         [SerializeField] private float horizontalLimit = 25f;
 
         private static readonly int IsWalkingHash = Animator.StringToHash("IsWalking");

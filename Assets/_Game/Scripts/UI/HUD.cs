@@ -38,8 +38,6 @@ namespace GemCafe.UI
             var gm = GameManager.Instance;
             if (gm == null || gm.Lives == null)
             {
-                // GameManager媛? ?븘吏? 珥덇린?솕?릺吏? ?븡?븯?쑝硫? ?븘?씠肄섏쓣 ?걚吏? ?븡怨?
-                // Start ?떆?젏?뿉 ?떎?떆 媛깆떊?븳?떎. (early OnEnable濡? ?씤?븳 ?삤?봽 諛⑹??)
                 return;
             }
 

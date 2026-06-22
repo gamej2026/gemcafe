@@ -33,7 +33,6 @@ namespace GemCafe.Stage
             dialogueRunner.Play(target.Dialogue, () => { if (isExit) TriggerCafeEntry(); }, partnerOnRight);
         }
 
-        // ????솕 ?긽??? NPC媛? ?뵆?젅?씠?뼱(Interactor) 湲곗?? ?삤瑜몄そ?뿉 ?엳?뒗吏? ?뙋?떒?븳?떎.
         private bool IsTargetOnRight(Interactable target)
         {
             if (interactor == null || target == null) return true;

@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿    using System.Collections;
 using System.Collections.Generic;
 using GemCafe.Core;
 using GemCafe.Crafting;
@@ -28,9 +28,9 @@ namespace GemCafe.Customer
         [SerializeField] private List<CustomerSO> allCustomers;
         [SerializeField] private int fareReward = 10;
         [SerializeField] private bool forceServiceStateOnStart;
-        [TextArea] [SerializeField] private string greatReactionLine = "留뚯”?뒪?윭?썙";
-        [TextArea] [SerializeField] private string successReactionLine = "?굹?걯吏? ?븡?븘";
-        [TextArea] [SerializeField] private string failReactionLine = "?떎留앹뒪?읇援?";
+        [TextArea] [SerializeField] private string greatReactionLine = "만족스러워";
+        [TextArea] [SerializeField] private string successReactionLine = "나쁘지 않아";
+        [TextArea] [SerializeField] private string failReactionLine = "실망스럽군";
 
         private Queue<CustomerSO> _queue = new Queue<CustomerSO>();
         private CustomerSO _currentCustomer;
@@ -64,8 +64,6 @@ namespace GemCafe.Customer
 
         private void Start()
         {
-            // ?뒠?넗由ъ뼹 以묒뿉?뒗 Cafe 媛? Additive 諛곌꼍?쑝濡쒕쭔 ?뼚 ?엳?쑝誘?濡?
-            // ?떎?젣 ?꽌鍮꾩뒪瑜? ?옄?룞 ?떆?옉?븯吏? ?븡?뒗?떎(?넀?떂/????옣 ?뾾?쓬).
             if (TutorialContext.IsActive)
             {
                 return;
@@ -168,7 +166,6 @@ namespace GemCafe.Customer
 
         private void SaveProgress()
         {
-            // ?뒠?넗由ъ뼹 吏꾪뻾 寃곌낵?뒗 ?젅??? ????옣?븯吏? ?븡?뒗?떎(?븞?쟾留?).
             if (TutorialContext.IsActive)
             {
                 return;
@@ -269,7 +266,6 @@ namespace GemCafe.Customer
                 return;
             }
 
-            // 誘몃땲寃뚯엫 吏꾩엯 ?쟾 ????솕: cafe_MainDialog_Source ?쓽 '?씪諛?' 遺꾧린 ?궗?슜(?뾾?쑝硫? 湲곗〈 二쇰Ц ????궗).
             if (PlayMainDialog(CafeMainDialogTable.BranchNormal, OnOrderDialogueDone))
             {
                 return;
@@ -362,7 +358,6 @@ namespace GemCafe.Customer
         {
             if (dialogue != null && _currentCustomer != null)
             {
-                // 誘몃땲寃뚯엫 寃곌낵 ????솕: 寃곌낵?뿉 ?뵲瑜? 遺꾧린(????꽦怨?/?꽦怨?/?떎?뙣) ?궗?슜(?뾾?쑝硫? 湲곗〈 ?븳 以? 諛섏쓳).
                 if (PlayMainDialog(BranchForResult(result), FadeOutCustomerThenNext))
                 {
                     return;
@@ -376,10 +371,6 @@ namespace GemCafe.Customer
             FadeOutCustomerThenNext();
         }
 
-        // cafe_MainDialog_Source ?쓽 (?쁽?옱 ?궇吏?, 遺꾧린) ????궗 臾띠쓬?쓣 ?옱?깮?븳?떎.
-        // ?넀?떂?씠 留먰븯?뒗 以꾩뿉?꽌?뒗 ?빐?떦 以꾩쓽 媛먯젙 ?뒪?봽?씪?씠?듃濡? ?넀?떂 ?씠誘몄??瑜? 援먯껜?븳?떎.
-        // ?솕?옄 珥덉긽?솕/諛곌꼍 ?뵒諛? ?뾾?씠 ????궗 ?뀓?뒪?듃 + ?넀?떂 ?씠誘몄??留? 蹂댁뿬以??떎.
-        // ?옱?깮?븷 ????궗媛? ?엳?쑝硫? true, ?뾾?쑝硫?(?뤃諛? ?븘?슂) false 瑜? 諛섑솚?븳?떎.
         private bool PlayMainDialog(string branch, System.Action onComplete)
         {
             if (mainDialogTable == null || dialogue == null)
@@ -435,7 +426,7 @@ namespace GemCafe.Customer
 
         private DialogueLine BuildReactionLine(DrinkResult result)
         {
-            string speaker = "?넀?떂";
+            string speaker = "손님";
             Sprite portrait = null;
 
             if (_currentCustomer != null && _currentCustomer.orderDialogue != null && _currentCustomer.orderDialogue.Length > 0)
@@ -474,15 +465,15 @@ namespace GemCafe.Customer
 
             if (result == DrinkResult.GreatSuccess)
             {
-                return !string.IsNullOrEmpty(greatReactionLine) ? greatReactionLine : "留뚯”?뒪?윭?썙";
+                return !string.IsNullOrEmpty(greatReactionLine) ? greatReactionLine : "만족스러워";
             }
 
             if (result == DrinkResult.Success)
             {
-                return !string.IsNullOrEmpty(successReactionLine) ? successReactionLine : "?굹?걯吏? ?븡?븘";
+                return !string.IsNullOrEmpty(successReactionLine) ? successReactionLine : "나쁘지 않아";
             }
 
-            return !string.IsNullOrEmpty(failReactionLine) ? failReactionLine : "?떎留앹뒪?읇援?";
+            return !string.IsNullOrEmpty(failReactionLine) ? failReactionLine : "실망스럽군";
         }
 
         private void FadeOutCustomerThenNext()
@@ -498,7 +489,6 @@ namespace GemCafe.Customer
 
         private void EndDay()
         {
-            // ?뒠?넗由ъ뼹 以묒뿉?뒗 ?븯猷? 醫낅즺/?뿏?뵫/????옣 濡쒖쭅?쓣 ???吏? ?븡?뒗?떎.
             if (TutorialContext.IsActive)
             {
                 return;
@@ -545,7 +535,6 @@ namespace GemCafe.Customer
                 return EndingKind.B;
             }
 
-            // 肄붿씤?씠 3媛? 誘몃쭔(0~2)?씠硫? 諭껋궚?쓣 紐? 踰뚯뼱 諛곕뱶?뿏?뵫?쑝濡? 遺꾧린.
             return EndingKind.C;
         }
 
