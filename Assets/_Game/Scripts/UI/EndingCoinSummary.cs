@@ -29,7 +29,7 @@ namespace GemCafe.UI
                 {
                     if (coinSlots[i] != null)
                     {
-                        var hasCoin = coinsByDay != null && i < coinsByDay.Count;
+                        var hasCoin = coinsByDay != null && i < coinsByDay.Count && coinsByDay[i] != CoinType.None;
                         var isVisible = hasCoin;
                         coinSlots[i].enabled = isVisible;
                         if (isVisible)

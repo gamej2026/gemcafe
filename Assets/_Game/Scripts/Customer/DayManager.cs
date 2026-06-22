@@ -131,24 +131,39 @@ namespace GemCafe.Customer
         private void RebuildCoinSlots()
         {
             _coins.Clear();
+            for (int i = 0; i < MaxCoinSlots; i++)
+            {
+                _coins.Add(CoinType.None);
+            }
+
+            // Continue start uses aggregate counts only, so restored slots are best-effort.
             var normals = Mathf.Max(0, TotalCoins - GreatCoins);
             var golds = Mathf.Max(0, GreatCoins);
-            for (int i = 0; i < normals && _coins.Count < MaxCoinSlots; i++)
+            int idx = 0;
+            for (int i = 0; i < normals && idx < MaxCoinSlots; i++, idx++)
             {
-                _coins.Add(CoinType.Normal);
+                _coins[idx] = CoinType.Normal;
             }
-            for (int i = 0; i < golds && _coins.Count < MaxCoinSlots; i++)
+            for (int i = 0; i < golds && idx < MaxCoinSlots; i++, idx++)
             {
-                _coins.Add(CoinType.Gold);
+                _coins[idx] = CoinType.Gold;
             }
         }
 
-        private void AddCoinSlot(CoinType type)
+        private void SetCoinForCurrentDay(CoinType type)
         {
-            if (_coins.Count < MaxCoinSlots)
+            var dayIndex = CurrentDay - 1;
+            if (dayIndex < 0 || dayIndex >= MaxCoinSlots)
             {
-                _coins.Add(type);
+                return;
             }
+
+            while (_coins.Count < MaxCoinSlots)
+            {
+                _coins.Add(CoinType.None);
+            }
+
+            _coins[dayIndex] = type;
         }
 
         private void SaveProgress()
@@ -315,12 +330,16 @@ namespace GemCafe.Customer
             {
                 TotalCoins++;
                 GreatCoins++;
-                AddCoinSlot(CoinType.Gold);
+                SetCoinForCurrentDay(CoinType.Gold);
             }
             else if (result == DrinkResult.Success)
             {
                 TotalCoins++;
-                AddCoinSlot(CoinType.Normal);
+                SetCoinForCurrentDay(CoinType.Normal);
+            }
+            else
+            {
+                SetCoinForCurrentDay(CoinType.None);
             }
 
             _lastResult = result;
