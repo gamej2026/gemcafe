@@ -33,7 +33,7 @@ namespace GemCafe.Stage
             dialogueRunner.Play(target.Dialogue, () => { if (isExit) TriggerCafeEntry(); }, partnerOnRight);
         }
 
-        // ëŒ€í™” ìƒëŒ€ NPCê°€ í”Œë ˆì´ì–´(Interactor) ê¸°ì¤€ ì˜¤ë¥¸ìª½ì— ìˆëŠ”ì§€ íŒë‹¨í•œë‹¤.
+        // ????™” ?ƒ??? NPCê°? ?”Œ? ˆ?´?–´(Interactor) ê¸°ì?? ?˜¤ë¥¸ìª½?— ?ˆ?Š”ì§? ?Œ?‹¨?•œ?‹¤.
         private bool IsTargetOnRight(Interactable target)
         {
             if (interactor == null || target == null) return true;
@@ -49,6 +49,7 @@ namespace GemCafe.Stage
             if (gm.StateMachine.Current != GameState.IntroStage1)
                 gm.StateMachine.Restore(GameState.IntroStage1);
             gm.StateMachine.TryTransition(GameState.CafeIntro);
+            TouchControls.SetMoveButtonsVisible(false);
             gm.Router.Load(SceneRouter.SceneCafeDialog);
         }
     }

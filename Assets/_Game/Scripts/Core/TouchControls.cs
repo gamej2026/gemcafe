@@ -1,49 +1,79 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using System.Collections;
 
 namespace GemCafe.Core
 {
     /// <summary>
-    /// 紐⑤컮?씪/?꽣移? ?솚寃?(WebGL 紐⑤컮?씪 釉뚮씪?슦??? ?룷?븿)?뿉?꽌 寃뚯엫?쓣 吏꾪뻾?븷 ?닔 ?엳?룄濡?
-    /// ?솕硫? ?쐞?뿉 醫?/?슦 ?씠?룞 踰꾪듉怨? ?긽?샇?옉?슜 踰꾪듉?쓣 ?윴????엫?쑝濡? ?쓣?슫?떎.
-    /// ?뵮(.unity)?쓣 吏곸젒 ?렪吏묓븯吏? ?븡?룄濡? <see cref="KoreanFontApplier"/>??? ?룞?씪?븯寃?
-    /// RuntimeInitializeOnLoadMethod濡? ?삤踰꾨젅?씠 Canvas??? 踰꾪듉?쓣 肄붾뱶濡? ?깮?꽦?븳?떎.
-    ///
-    /// ?궎蹂대뱶/留덉슦?뒪 ?엯?젰??? 洹몃??濡? ?쑀吏??릺硫? ?씠 ?삤踰꾨젅?씠?뒗 洹? ?쐞?뿉 ?뜑?빐吏꾨떎.
-    /// - ?씠?룞: <see cref="Horizontal"/> 媛믪쓣 PlayerMover媛? ?궎蹂대뱶 異뺢낵 ?빀?궛?븳?떎.
-    /// - ?긽?샇?옉?슜: <see cref="ConsumeInteract"/>瑜? Interactor媛? F?궎??? OR濡? 臾띕뒗?떎.
+    /// 모바일/터치 환경(WebGL 모바일 브라우저 포함)에서 화면 오버레이 입력을 제공한다.
+    /// 좌/우 이동 버튼 입력은 Horizontal 값으로 합산되고, 상호작용 버튼은 1프레임 트리거로 소비된다.
     /// </summary>
     public static class TouchControls
     {
-        /// <summary>?뿉?뵒?꽣/PC?뿉?꽌?룄 媛뺤젣濡? ?삤踰꾨젅?씠瑜? ?몴?떆?븯?젮硫? true濡? ?몦?떎(?뀒?뒪?듃?슜).</summary>
-        private const bool ForceEnable = false;
-
         private static float _horizontal;
         private static bool _interactDown;
         private static Driver _driver;
         private static bool _moveButtonsVisible;
 
-        /// <summary>?꽣移? ?씠?룞 ?엯?젰. -1(?쇊履?) ~ +1(?삤瑜몄そ). 踰꾪듉?쓣 ?늻瑜닿퀬 ?엳?뒗 ?룞?븞 ?쑀吏??맂?떎.</summary>
+#if UNITY_EDITOR
+        private static bool _forceEnableInEditor;
+        private static bool _showMoveButtonsOnStartInEditor;
+#endif
+
+        /// <summary>터치 이동 입력. -1(왼쪽) ~ +1(오른쪽).</summary>
         public static float Horizontal => _horizontal;
 
-        /// <summary>?삤踰꾨젅?씠媛? ?쁽?옱 ?솢?꽦(?뒪?룿?맖)?씤吏? ?뿬遺?.</summary>
+        /// <summary>오버레이가 현재 생성되어 동작 중인지 여부.</summary>
         public static bool IsActive => _driver != null;
 
-        /// <summary>醫?/?슦 ?씠?룞 踰꾪듉 ?몴?떆 ?뿬遺?瑜? 媛깆떊?븳?떎.</summary>
+#if UNITY_EDITOR
+        public static void ConfigureEditorOverrides(bool forceEnableInEditor, bool showMoveButtonsOnStart)
+        {
+            _forceEnableInEditor = forceEnableInEditor;
+            _showMoveButtonsOnStartInEditor = showMoveButtonsOnStart;
+
+            if (!Application.isPlaying)
+            {
+                return;
+            }
+
+            if (showMoveButtonsOnStart)
+            {
+                _moveButtonsVisible = true;
+            }
+
+            EnsureBootstrapped();
+            if (_driver != null)
+            {
+                _driver.SetMoveButtonsVisible(_moveButtonsVisible);
+            }
+        }
+
+        public static void ClearEditorOverrides()
+        {
+            _forceEnableInEditor = false;
+            _showMoveButtonsOnStartInEditor = false;
+        }
+#endif
+
+        /// <summary>좌/우 이동 버튼 표시 여부를 갱신한다.</summary>
         public static void SetMoveButtonsVisible(bool visible)
         {
             _moveButtonsVisible = visible;
+            EnsureBootstrapped();
+
             if (_driver != null)
             {
                 _driver.SetMoveButtonsVisible(visible);
             }
         }
 
-        /// <summary>醫?/?슦 ?씠?룞 踰꾪듉?쓣 ?옞?떆 ?몴?떆?븳 ?뮘 ?옄?룞?쑝濡? ?닲湲대떎.</summary>
+        /// <summary>좌/우 이동 버튼을 잠시 표시한 뒤 자동으로 숨긴다.</summary>
         public static void ShowMoveButtonsTemporarily(float seconds)
         {
+            EnsureBootstrapped();
+
             if (_driver == null)
             {
                 _moveButtonsVisible = seconds > 0f;
@@ -54,11 +84,12 @@ namespace GemCafe.Core
         }
 
         /// <summary>
-        /// ?긽?샇?옉?슜 踰꾪듉?씠 ?씠踰? ?봽?젅?엫?뿉 ?닃?졇?쑝硫? true瑜? 諛섑솚?븯怨? ?뵆?옒洹몃?? ?냼鍮꾪븳?떎.
-        /// ?궎蹂대뱶 F?궎??? ?룞?씪?븯寃? 1?봽?젅?엫 ?듃由ш굅濡? ?룞?옉?븳?떎.
+        /// 상호작용 버튼이 이번 프레임에 눌렸으면 true를 반환하고 플래그를 소비한다.
         /// </summary>
         public static bool ConsumeInteract()
         {
+            EnsureBootstrapped();
+
             if (!_interactDown)
             {
                 return false;
@@ -68,12 +99,11 @@ namespace GemCafe.Core
             return true;
         }
 
-        /// <summary>
-        /// 洹쇱쿂?뿉 ?긽?샇?옉?슜 媛??뒫?븳 ????긽?씠 ?엳?뒗吏??뿉 ?뵲?씪 ?긽?샇?옉?슜 踰꾪듉 ?몴?떆 ?뿬遺?瑜? 媛깆떊?븳?떎.
-        /// (Interactor媛? keyPromptUI瑜? ?넗湲??븯?뒗 ?떆?젏?뿉 ?븿猿? ?샇異쒗븳?떎.)
-        /// </summary>
+        /// <summary>상호작용 가능 여부에 따라 상호작용 버튼 표시를 갱신한다.</summary>
         public static void SetInteractAvailable(bool available)
         {
+            EnsureBootstrapped();
+
             if (_driver != null)
             {
                 _driver.SetInteractAvailable(available);
@@ -83,7 +113,12 @@ namespace GemCafe.Core
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void Bootstrap()
         {
-            if (!ShouldEnable())
+            EnsureBootstrapped();
+        }
+
+        private static void EnsureBootstrapped()
+        {
+            if (!Application.isPlaying)
             {
                 return;
             }
@@ -93,21 +128,50 @@ namespace GemCafe.Core
                 return;
             }
 
+            if (!ShouldEnable())
+            {
+                return;
+            }
+
             var go = new GameObject("[TouchControls]");
             Object.DontDestroyOnLoad(go);
             _driver = go.AddComponent<Driver>();
             _driver.Build();
+
+#if UNITY_EDITOR
+            if (_showMoveButtonsOnStartInEditor)
+            {
+                _moveButtonsVisible = true;
+            }
+#endif
+
             _driver.SetMoveButtonsVisible(_moveButtonsVisible);
+        }
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics()
+        {
+            _horizontal = 0f;
+            _interactDown = false;
+            _driver = null;
+            _moveButtonsVisible = false;
+#if UNITY_EDITOR
+            _forceEnableInEditor = false;
+            _showMoveButtonsOnStartInEditor = false;
+#endif
         }
 
         private static bool ShouldEnable()
         {
-            if (ForceEnable)
+#if UNITY_EDITOR
+            if (_forceEnableInEditor)
             {
                 return true;
             }
+#endif
 
-            return Application.isMobilePlatform || Input.touchSupported;
+            // 일부 플랫폼/브라우저에서는 터치 지원 값이 늦게 반영될 수 있어 touchCount도 함께 본다.
+            return Application.isMobilePlatform || Input.touchSupported || Input.touchCount > 0;
         }
 
         private static void SetHorizontal(float value)
@@ -121,8 +185,8 @@ namespace GemCafe.Core
         }
 
         /// <summary>
-        /// ?삤踰꾨젅?씠 Canvas??? 踰꾪듉?쓣 ?깮?꽦/愿?由ы븯?뒗 ?윴????엫 ?뱶?씪?씠踰?.
-        /// ????솕 以묒뿉?뒗 ?씠?룞/?긽?샇?옉?슜 ?엯?젰?씠 ?옞湲곕??濡? ?삤踰꾨젅?씠瑜? ?닲湲대떎.
+        /// 오버레이 Canvas와 버튼을 생성/관리하는 런타임 드라이버.
+        /// 대화 중에는 오버레이를 숨기고, 종료 시 다시 복원한다.
         /// </summary>
         private sealed class Driver : MonoBehaviour
         {
@@ -131,6 +195,8 @@ namespace GemCafe.Core
             private GameObject _moveRightButton;
             private GameObject _root;
             private Coroutine _hideMoveButtonsRoutine;
+            private int _activeMovePressCount;
+            private bool _pendingHideAfterRelease;
 
             public void Build()
             {
@@ -156,7 +222,7 @@ namespace GemCafe.Core
                     new Color(0.15f, 0.15f, 0.18f, 0.55f), HoldButton.Mode.MoveLeft);
                 _moveRightButton = CreateButton("MoveRight", ">", new Vector2(0f, 0f), new Vector2(330f, 60f),
                     new Color(0.15f, 0.15f, 0.18f, 0.55f), HoldButton.Mode.MoveRight);
-                _interactButton = CreateButton("Interact", "?뻾?룞", new Vector2(1f, 0f), new Vector2(-60f, 60f),
+                _interactButton = CreateButton("Interact", "행동", new Vector2(1f, 0f), new Vector2(-60f, 60f),
                     new Color(0.85f, 0.55f, 0.15f, 0.7f), HoldButton.Mode.Interact);
 
                 if (_interactButton != null)
@@ -202,6 +268,8 @@ namespace GemCafe.Core
                     _hideMoveButtonsRoutine = null;
                 }
 
+                _pendingHideAfterRelease = false;
+
                 if (seconds <= 0f)
                 {
                     SetMoveButtonsVisible(false);
@@ -212,10 +280,34 @@ namespace GemCafe.Core
                 _hideMoveButtonsRoutine = StartCoroutine(HideMoveButtonsAfterDelay(seconds));
             }
 
+            public void NotifyMoveButtonPress(bool pressed)
+            {
+                if (pressed)
+                {
+                    _activeMovePressCount++;
+                    return;
+                }
+
+                _activeMovePressCount = Mathf.Max(0, _activeMovePressCount - 1);
+                if (_activeMovePressCount == 0 && _pendingHideAfterRelease)
+                {
+                    _pendingHideAfterRelease = false;
+                    SetMoveButtonsVisible(false);
+                }
+            }
+
             private IEnumerator HideMoveButtonsAfterDelay(float seconds)
             {
                 yield return new WaitForSeconds(seconds);
                 _hideMoveButtonsRoutine = null;
+
+                if (_activeMovePressCount > 0)
+                {
+                    // 누르고 있는 동안 강제로 숨기면 버튼이 사라진 것처럼 보이므로 손을 뗄 때까지 지연한다.
+                    _pendingHideAfterRelease = true;
+                    yield break;
+                }
+
                 SetMoveButtonsVisible(false);
             }
 
@@ -267,7 +359,7 @@ namespace GemCafe.Core
                 image.color = background;
 
                 var hold = go.AddComponent<HoldButton>();
-                hold.mode = mode;
+                hold.Initialize(mode, this);
 
                 CreateLabel(go.transform, label);
                 return go;
@@ -309,7 +401,7 @@ namespace GemCafe.Core
         }
 
         /// <summary>
-        /// ?늻瑜대뒗 ?룞?븞 ?씠?룞 ?엯?젰?쓣 ?쑀吏??븯嫄곕굹, ?늻瑜대뒗 ?닚媛? ?긽?샇?옉?슜?쓣 ?듃由ш굅?븯?뒗 踰꾪듉.
+        /// 누르고 있는 동안 이동 입력을 유지하거나, 누르는 순간 상호작용을 트리거하는 버튼.
         /// </summary>
         private sealed class HoldButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         {
@@ -320,17 +412,34 @@ namespace GemCafe.Core
                 Interact
             }
 
-            public Mode mode;
+            private Mode _mode;
+            private Driver _driver;
+            private bool _pressed;
+
+            public void Initialize(Mode mode, Driver driver)
+            {
+                _mode = mode;
+                _driver = driver;
+            }
 
             public void OnPointerDown(PointerEventData eventData)
             {
-                switch (mode)
+                if (_pressed)
+                {
+                    return;
+                }
+
+                _pressed = true;
+
+                switch (_mode)
                 {
                     case Mode.MoveLeft:
                         SetHorizontal(-1f);
+                        _driver?.NotifyMoveButtonPress(true);
                         break;
                     case Mode.MoveRight:
                         SetHorizontal(1f);
+                        _driver?.NotifyMoveButtonPress(true);
                         break;
                     case Mode.Interact:
                         TriggerInteract();
@@ -340,13 +449,41 @@ namespace GemCafe.Core
 
             public void OnPointerUp(PointerEventData eventData)
             {
-                if (mode == Mode.MoveLeft && Mathf.Approximately(Horizontal, -1f))
+                Release();
+            }
+
+            private void OnDisable()
+            {
+                // 비활성화로 PointerUp을 못 받는 경우 입력이 고착되지 않도록 정리한다.
+                Release();
+            }
+
+            private void Release()
+            {
+                if (!_pressed)
                 {
-                    SetHorizontal(0f);
+                    return;
                 }
-                else if (mode == Mode.MoveRight && Mathf.Approximately(Horizontal, 1f))
+
+                _pressed = false;
+
+                if (_mode == Mode.MoveLeft)
                 {
-                    SetHorizontal(0f);
+                    if (Mathf.Approximately(Horizontal, -1f))
+                    {
+                        SetHorizontal(0f);
+                    }
+
+                    _driver?.NotifyMoveButtonPress(false);
+                }
+                else if (_mode == Mode.MoveRight)
+                {
+                    if (Mathf.Approximately(Horizontal, 1f))
+                    {
+                        SetHorizontal(0f);
+                    }
+
+                    _driver?.NotifyMoveButtonPress(false);
                 }
             }
         }

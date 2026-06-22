@@ -27,9 +27,6 @@ namespace GemCafe.UI
         [Tooltip("lobbyFadeOutImage 가 사라지는 데 걸리는 시간(초).")]
         [SerializeField] private float fadeOutDuration = 1f;
 
-        [Tooltip("모바일 좌/우 이동 버튼을 게임 시작 직후 잠깐 보여줄 시간(초).")]
-        [SerializeField] private float mobileMoveButtonsDuration = 2f;
-
         private bool _starting;
 
         private void Awake()
@@ -62,6 +59,9 @@ namespace GemCafe.UI
 
         private void Start()
         {
+            // 로비 화면이 보이는 동안에는 터치 이동 버튼을 숨긴다.
+            TouchControls.SetMoveButtonsVisible(false);
+
             // 로비에서는 카메라가 주인공을 따라가지 않도록 비활성화한다.
             if (cameraFollow != null)
             {
@@ -123,7 +123,7 @@ namespace GemCafe.UI
                 cameraFollow.enabled = true;
             }
 
-            TouchControls.ShowMoveButtonsTemporarily(mobileMoveButtonsDuration);
+            TouchControls.SetMoveButtonsVisible(true);
 
             StartCoroutine(StartGameRoutine());
         }
