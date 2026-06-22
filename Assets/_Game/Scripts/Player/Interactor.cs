@@ -36,7 +36,7 @@ namespace GemCafe.Player
 
             if (keyPromptUI != null)
             {
-                keyPromptUI.SetActive(_current != null);
+                keyPromptUI.SetActive(_current != null && !TouchControls.IsActive);
             }
 
             TouchControls.SetInteractAvailable(_current != null);

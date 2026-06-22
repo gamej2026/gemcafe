@@ -31,7 +31,9 @@ namespace GemCafe.Crafting
                 return;
             }
 
-            var dt = Time.deltaTime;
+            // 모바일 첫 프레임 hitch에서 Time.deltaTime이 급증하면 한 프레임에 성공/실패가 확정될 수 있다.
+            // 물리적으로 가능한 입력 반응 범위로 제한해 시작 직후 즉시 종료를 방지한다.
+            var dt = Mathf.Min(Time.deltaTime, 0.05f);
             _time += dt;
 
             UpdateBar(dt);
@@ -77,8 +79,8 @@ namespace GemCafe.Crafting
         }
 
         /// <summary>
-        /// 誘몃땲寃뚯엫?쓣 ?떆?옉?븯吏? ?븡怨? UI 鍮꾩＜?뼹留? 珥덇린 ?긽?깭濡? ?젙?젹?븳?떎.
-        /// ?룷而ㅼ뒪 ?뿰異쒖뿉?꽌 誘몃━蹂닿린濡? UI瑜? 蹂댁뿬以? ?븣 ?궗?슜?븳?떎. (alpha?뒗 嫄대뱶由ъ?? ?븡?쓬)
+        /// 미니게임을 시작하지 않고 UI 비주얼만 초기 상태로 정렬한다.
+        /// 포커스 연출에서 미리보기로 UI를 보여줄 때 사용한다. (alpha는 건드리지 않음)
         /// </summary>
         public void PrepareVisuals()
         {
@@ -118,7 +120,7 @@ namespace GemCafe.Crafting
             var riseAccel = config.barRiseAccel;
             var gravity = config.barGravity;
             var maxSpeed = Mathf.Abs(config.barMaxSpeed);
-            var isHolding = IsTouchingByAnyInput();
+            var isHolding = holdArea != null ? holdArea.IsHolding : IsTouchingByAnyInput();
 
             if (_lastTouchState != isHolding)
             {
@@ -142,8 +144,8 @@ namespace GemCafe.Crafting
 
         private static bool IsTouchingByAnyInput()
         {
-            // 캔버스 이벤트 의존 없이, 어떤 입력(키/마우스/터치)이든 누르고 있으면 터치로 간주한다.
-            return Input.anyKey || Input.GetMouseButton(0) || Input.touchCount > 0;
+            // fallback: HoldInputArea 참조가 없는 경우에만 직접 입력 상태를 읽는다.
+            return Input.GetMouseButton(0) || Input.touchCount > 0;
         }
 
         private void UpdateLeaf()
@@ -211,7 +213,7 @@ namespace GemCafe.Crafting
             }
 
             IsRunning = false;
-            // UI?뒗 利됱떆 ?닲湲곗?? ?븡?뒗?떎. ?룷而ㅼ뒪 ?뿰異?(MixFocusController)?씠 泥쒖쿇?엳 ?럹?씠?뱶 ?븘?썐?븳?떎.
+            // UI는 즉시 숨기지 않는다. MixFocusController가 마무리 연출에서 페이드 아웃한다.
 
             if (holdArea != null)
             {
