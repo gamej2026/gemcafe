@@ -53,6 +53,8 @@ namespace GemCafe.Crafting
         private CanvasGroup _pressGroup;
         private Image _pressImage;
 
+        private Text _holdLabel;
+
         private bool _visible;
         private bool _highlight;
         private bool _holding;
@@ -220,6 +222,28 @@ namespace GemCafe.Crafting
             shadow.effectColor = new Color(0f, 0f, 0f, 0.65f);
             shadow.effectDistance = new Vector2(2f, -2f);
 
+            var holdLabelRect = NewRect("HoldLabel", _promptRoot);
+            holdLabelRect.anchorMin = new Vector2(0.5f, 0.5f);
+            holdLabelRect.anchorMax = new Vector2(0.5f, 0.5f);
+            holdLabelRect.pivot = new Vector2(0.5f, 0.5f);
+            holdLabelRect.anchoredPosition = new Vector2(0f, -100f);
+            holdLabelRect.sizeDelta = new Vector2(400f, 80f);
+            _holdLabel = holdLabelRect.gameObject.AddComponent<Text>();
+            _holdLabel.text = "Hold";
+            _holdLabel.alignment = TextAnchor.MiddleCenter;
+            _holdLabel.fontSize = 58;
+            _holdLabel.fontStyle = FontStyle.Bold;
+            _holdLabel.horizontalOverflow = HorizontalWrapMode.Overflow;
+            _holdLabel.verticalOverflow = VerticalWrapMode.Overflow;
+            _holdLabel.raycastTarget = false;
+            _holdLabel.color = Color.white;
+            _holdLabel.font = KoreanFontApplier.Font != null
+                ? KoreanFontApplier.Font
+                : Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            var holdShadow = _holdLabel.gameObject.AddComponent<Shadow>();
+            holdShadow.effectColor = new Color(0f, 0f, 0f, 0.65f);
+            holdShadow.effectDistance = new Vector2(2f, -2f);
+
             // 누름 지점 피드백
             _pressRing = NewRect("Press", _root);
             _pressRing.anchorMin = _pressRing.anchorMax = new Vector2(0.5f, 0.5f);
@@ -287,6 +311,10 @@ namespace GemCafe.Crafting
             if (_label != null)
             {
                 _label.color = _highlight ? HighlightColor : Color.white;
+            }
+            if (_holdLabel != null)
+            {
+                _holdLabel.color = _highlight ? HighlightColor : Color.white;
             }
 
             // 누름 지점 피드백

@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using GemCafe.Core;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,21 +8,20 @@ namespace GemCafe.UI
 {
     public class EndingCoinSummary : MonoBehaviour
     {
+        [SerializeField] private Sprite goldCoin;
+        [SerializeField] private Sprite silverCoin;
         [SerializeField] private CanvasGroup root;
         [SerializeField] private Image[] coinSlots;
         [SerializeField] private GameObject[] greatBadges;
         [SerializeField] private Text messageText;
         [SerializeField] private Button nextButton;
-        [SerializeField] private string message = "3ì¼ê°„ ëª¨ì€ ëˆ... ë§ˆë‹˜ê³¼ ì¸ì‚¬ë¥¼ ë‚˜ëˆ„ì";
+        [SerializeField] private string message = "3ÀÏ°£ ¸ğÀº µ·... ¸¶´Ô°ú ÀÎ»ç¸¦ ³ª´©ÀÚ";
 
         private Action _onNext;
 
-        public void Show(int totalCoins, int greatCoins, Action onNext)
+        public void Show(IReadOnlyList<CoinType> coinsByDay, Action onNext)
         {
             _onNext = onNext;
-
-            var coinCount = Mathf.Max(0, totalCoins);
-            var greatCount = Mathf.Max(0, greatCoins);
 
             if (coinSlots != null)
             {
@@ -28,7 +29,13 @@ namespace GemCafe.UI
                 {
                     if (coinSlots[i] != null)
                     {
-                        coinSlots[i].enabled = i < coinCount;
+                        var hasCoin = coinsByDay != null && i < coinsByDay.Count;
+                        var isVisible = hasCoin;
+                        coinSlots[i].enabled = isVisible;
+                        if (isVisible)
+                        {
+                            coinSlots[i].sprite = coinsByDay[i] == CoinType.Gold ? goldCoin : silverCoin;
+                        }
                     }
                 }
             }
@@ -39,7 +46,8 @@ namespace GemCafe.UI
                 {
                     if (greatBadges[i] != null)
                     {
-                        greatBadges[i].SetActive(i < greatCount);
+                        var isGreatDay = coinsByDay != null && i < coinsByDay.Count && coinsByDay[i] == CoinType.Gold;
+                        greatBadges[i].SetActive(isGreatDay);
                     }
                 }
             }
