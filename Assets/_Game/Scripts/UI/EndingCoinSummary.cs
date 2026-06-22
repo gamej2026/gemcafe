@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using GemCafe.Core;
 using UnityEngine;
@@ -15,7 +15,7 @@ namespace GemCafe.UI
         [SerializeField] private GameObject[] greatBadges;
         [SerializeField] private Text messageText;
         [SerializeField] private Button nextButton;
-        [SerializeField] private string message = "3ÀÏ°£ ¸ğÀº µ·... ¸¶´Ô°ú ÀÎ»ç¸¦ ³ª´©ÀÚ";
+        [SerializeField] private string message = "3ì¼ê°„ ëª¨ì€ ëˆ... ë§ˆë‹˜ê³¼ ì¸ì‚¬ë¥¼ ë‚˜ëˆ„ì";
 
         private Action _onNext;
 

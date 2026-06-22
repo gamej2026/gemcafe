@@ -1,4 +1,4 @@
-namespace GemCafe.Core
+﻿namespace GemCafe.Core
 {
     [System.Serializable]
     public class SaveData

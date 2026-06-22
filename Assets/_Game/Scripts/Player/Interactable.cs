@@ -1,4 +1,4 @@
-using GemCafe.Data;
+﻿using GemCafe.Data;
 using UnityEngine;
 
 namespace GemCafe.Player

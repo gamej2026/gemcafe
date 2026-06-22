@@ -1,4 +1,4 @@
-using GemCafe.Core;
+﻿using GemCafe.Core;
 using GemCafe.Customer;
 using GemCafe.Data;
 using UnityEngine;

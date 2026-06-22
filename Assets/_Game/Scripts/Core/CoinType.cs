@@ -1,4 +1,4 @@
-namespace GemCafe.Core
+﻿namespace GemCafe.Core
 {
     public enum CoinType
     {

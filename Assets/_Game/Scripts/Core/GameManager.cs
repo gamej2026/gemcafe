@@ -1,4 +1,4 @@
-using GemCafe.Customer;
+﻿using GemCafe.Customer;
 using UnityEngine;
 
 namespace GemCafe.Core

@@ -1,4 +1,4 @@
-//
+﻿//
 // Kino/Bloom v2 - Bloom filter for Unity
 //
 // Copyright (C) 2015, 2016 Keijiro Takahashi

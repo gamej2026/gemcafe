@@ -1,4 +1,4 @@
-using GemCafe.Core;
+ï»¿using GemCafe.Core;
 using GemCafe.Player;
 using GemCafe.Dialogue;
 using UnityEngine;
@@ -33,7 +33,7 @@ namespace GemCafe.Stage
             dialogueRunner.Play(target.Dialogue, () => { if (isExit) TriggerCafeEntry(); }, partnerOnRight);
         }
 
-        // ????™” ?ƒ??? NPCê°? ?”Œ? ˆ?´?–´(Interactor) ê¸°ì?? ?˜¤ë¥¸ìª½?— ?ˆ?Š”ì§? ?Œ?‹¨?•œ?‹¤.
+        // ????ì†• ?ê¸½??? NPCåª›? ?ëµ†?ì …?ì” ?ë¼±(Interactor) æ¹²ê³—?? ?ì‚¤ç‘œëª„ã?ë¿‰ ?ì—³?ë’—ï§? ?ë™‹?ë–’?ë¸³?ë–.
         private bool IsTargetOnRight(Interactable target)
         {
             if (interactor == null || target == null) return true;

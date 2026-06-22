@@ -1,4 +1,4 @@
-namespace GemCafe.UI
+﻿namespace GemCafe.UI
 {
     public enum PopupType
     {

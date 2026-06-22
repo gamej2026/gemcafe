@@ -1,4 +1,4 @@
-using GemCafe.Core;
+﻿using GemCafe.Core;
 using GemCafe.Ending;
 using UnityEditor;
 using UnityEngine;
