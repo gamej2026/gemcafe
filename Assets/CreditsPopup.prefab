@@ -332,7 +332,7 @@ MonoBehaviour:
   creditsText: "\uB098\uB8E8\uB3C4\uC6D0 (Naru Dowon)\nA Game by Team \uC82C\uCE74\uD398
     (ZemCafe)\n\n\uAE30\uD68D (Game Design)\n\uC624\uC740\uC601\n\uC774\uD558\uC724\n\n\uC544\uD2B8
     (Art & Animation)\n\uBC30\uC815\uD6C8\n\uAE40\uC720\uC9C4\n\uAD8C\uC900\uC131\n\uAE40\uD604\uC9C0\n\n\uD504\uB85C\uADF8\uB798\uBC0D
-    (Programming)\n\uC774\uD558\uC724\n\uBC15\uCC2C\uC131\n\uC120\uC778\uC7AC\n\n\nThanks
+    (Programming)\n\uC120\uC778\uC7AC\n\uC774\uD558\uC724\n\uBC15\uCC2C\uC120\n\n\nThanks
     to\nChatGPT\nGemini\nClaude\n\n\nSpecial Thanks to\n\nZEMPIE"
   emptyMessage: "\uD06C\uB808\uB527 \uB0B4\uC6A9\uC774 \uC5C6\uC2B5\uB2C8\uB2E4."
 --- !u!225 &8780102961061489198
