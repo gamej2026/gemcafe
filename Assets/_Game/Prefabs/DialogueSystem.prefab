@@ -55,8 +55,8 @@ MonoBehaviour:
   rightPortrait: {fileID: 7662978597600805689}
   backgroundDim: {fileID: 5651399991543070402}
   dialogueRect: {fileID: 0}
-  leftStandingPosition: {x: 380, y: 260}
-  rightStandingPosition: {x: -380, y: 260}
+  leftStandingPosition: {x: -337, y: -216.8}
+  rightStandingPosition: {x: 337, y: -216.8}
   alignPortraitAboveDialogue: 0
   portraitBottomMargin: 20
   dimAlpha: 0.3
@@ -588,11 +588,11 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 30
+    m_FontSize: 46
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 10
-    m_MaxSize: 40
+    m_MinSize: 4
+    m_MaxSize: 46
     m_Alignment: 0
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -788,7 +788,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 380, y: 260}
+  m_AnchoredPosition: {x: -337, y: -216.8}
   m_SizeDelta: {x: 220, y: 300}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!222 &2865239794221109169
@@ -863,7 +863,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -380, y: 260}
+  m_AnchoredPosition: {x: 337, y: -216.8}
   m_SizeDelta: {x: 220, y: 300}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!222 &210710936351907364
