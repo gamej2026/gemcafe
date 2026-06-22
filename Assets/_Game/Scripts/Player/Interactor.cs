@@ -39,7 +39,9 @@ namespace GemCafe.Player
                 keyPromptUI.SetActive(_current != null);
             }
 
-            if (Input.GetKeyDown(KeyCode.F))
+            TouchControls.SetInteractAvailable(_current != null);
+
+            if (Input.GetKeyDown(KeyCode.F) || TouchControls.ConsumeInteract())
             {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
                 Debug.Log($"[Interactor] F pressed. current={(_current != null ? _current.DisplayName : "null")}, radius={radius:0.00}, pos={transform.position}");
@@ -96,6 +98,8 @@ namespace GemCafe.Player
             {
                 keyPromptUI.SetActive(false);
             }
+
+            TouchControls.SetInteractAvailable(false);
         }
 
         private void OnDrawGizmosSelected()

@@ -9,7 +9,7 @@ namespace GemCafe.Player
         [SerializeField] private Animator animator;
         [SerializeField] private float fallbackMoveSpeed = 5f;
 
-        [Tooltip("ì£¼ì¸ê³µì´ ì´ë™í•  ìˆ˜ ìˆëŠ” Xì¢Œí‘œ í•œê³„. Â±ê°’ ë²”ìœ„ë¥¼ ë²—ì–´ë‚˜ì§€ ëª»í•˜ê²Œ ë²½ì²˜ëŸ¼ ë§‰ëŠ”ë‹¤.")]
+        [Tooltip("ì£¼ì¸ê³µì´ ?´?™?•  ?ˆ˜ ?ˆ?Š” Xì¢Œí‘œ ?•œê³?. Â±ê°? ë²”ìœ„ë¥? ë²—ì–´?‚˜ì§? ëª»í•˜ê²? ë²½ì²˜?Ÿ¼ ë§‰ëŠ”?‹¤.")]
         [SerializeField] private float horizontalLimit = 25f;
 
         private static readonly int IsWalkingHash = Animator.StringToHash("IsWalking");
@@ -45,7 +45,7 @@ namespace GemCafe.Player
             }
 
             var speed = GameManager.Instance != null ? GameManager.Instance.Config.moveSpeed : fallbackMoveSpeed;
-            var x = Input.GetAxisRaw("Horizontal");
+            var x = Mathf.Clamp(Input.GetAxisRaw("Horizontal") + TouchControls.Horizontal, -1f, 1f);
 
             transform.Translate(x * speed * Time.deltaTime, 0f, 0f);
 
