@@ -51,6 +51,14 @@ namespace GemCafe.Crafting
                 UpdateSpriteIndex();
             }
 
+            if (holdArea != null)
+            {
+                var number = _index + 1;
+                var lo = Mathf.Min(successMin, successMax);
+                var hi = Mathf.Max(successMin, successMax);
+                holdArea.SetHintHighlight(isHolding && number >= lo && number <= hi, MinigameTouchAccent.PourRelease);
+            }
+
             // 홀드 후 손을 뗼 때(마우스를 뗼 때) 즉시 판정한다.
             if (_hasHeld && _wasHolding && !isHolding)
             {
@@ -88,6 +96,11 @@ namespace GemCafe.Crafting
 
             SetVisible(true);
             IsRunning = true;
+
+            if (holdArea != null)
+            {
+                holdArea.ShowHint(MinigameTouchPrompt.PourHold);
+            }
         }
 
         public void Cancel()
@@ -96,6 +109,11 @@ namespace GemCafe.Crafting
             _onSuccess = null;
             _onFail = null;
             SetVisible(false);
+
+            if (holdArea != null)
+            {
+                holdArea.HideHint();
+            }
         }
 
         /// <summary>
@@ -204,6 +222,11 @@ namespace GemCafe.Crafting
             IsRunning = false;
             // 화면을 즉시 숨기지 않는다. PourFocusController가 마무리 연출 후
             // 천천히 페이드아웃하도록 둔다.
+
+            if (holdArea != null)
+            {
+                holdArea.HideHint();
+            }
 
             var successCb = _onSuccess;
             var failCb = _onFail;
