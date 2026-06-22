@@ -32,6 +32,7 @@ namespace GemCafe.Crafting
         private int _index;
         private bool _hasHeld;
         private bool _wasHolding;
+        private bool _inputArmed;
 
         public bool IsRunning { get; private set; }
 
@@ -46,6 +47,24 @@ namespace GemCafe.Crafting
             var dt = Mathf.Min(Time.deltaTime, 0.05f);
 
             var isHolding = holdArea != null && holdArea.IsHolding;
+
+            // 웹뷰/모바일에서는 시작 버튼을 누른 입력이 다음 UI로 이어질 수 있다.
+            // 시작 직후에는 해당 눌림이 완전히 해제될 때까지 미니게임 입력을 무시한다.
+            if (!_inputArmed)
+            {
+                if (!isHolding)
+                {
+                    _inputArmed = true;
+                    _wasHolding = false;
+                }
+
+                if (holdArea != null)
+                {
+                    holdArea.SetHintHighlight(false, MinigameTouchAccent.PourRelease);
+                }
+
+                return;
+            }
 
             if (isHolding)
             {
@@ -80,7 +99,8 @@ namespace GemCafe.Crafting
             _holdTime = 0f;
             _index = -1;
             _hasHeld = false;
-            _wasHolding = holdArea != null && holdArea.IsHolding;
+            _wasHolding = false;
+            _inputArmed = holdArea == null || !holdArea.IsHolding;
 
             // 기존 타깃 밴드(채우기 방식 UI)는 스프라이트 교체 방식에서는 사용하지 않는다.
             if (targetBandRect != null)
@@ -130,6 +150,7 @@ namespace GemCafe.Crafting
             _index = -1;
             _hasHeld = false;
             _wasHolding = false;
+            _inputArmed = false;
 
             if (targetBandRect != null)
             {
