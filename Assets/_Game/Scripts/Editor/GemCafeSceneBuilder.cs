@@ -387,7 +387,7 @@ namespace GemCafe.EditorTools
 
             var bodyTextGo = CreateUIObject("Body", dialogueRoot.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(20f, 20f), new Vector2(-180f, -80f), new Vector2(0f, 0f));
             var bodyText = bodyTextGo.AddComponent<Text>();
-            ApplyDefaultText(bodyText, string.Empty, 30, TextAnchor.UpperLeft, Color.white);
+            ApplyDefaultText(bodyText, string.Empty, 46, TextAnchor.UpperLeft, Color.white);
 
             var nextButtonGo = CreateUIObject("NextButton", dialogueRoot.transform, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-20f, 20f), new Vector2(140f, 54f), new Vector2(1f, 0f));
             var nextButtonImage = nextButtonGo.AddComponent<Image>();
@@ -1439,7 +1439,7 @@ namespace GemCafe.EditorTools
 
             var bodyTextGo = CreateUIObject("Body", dialogueRoot.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(20f, 20f), new Vector2(-180f, -80f), new Vector2(0f, 0f));
             var bodyText = bodyTextGo.AddComponent<Text>();
-            ApplyDefaultText(bodyText, string.Empty, 30, TextAnchor.UpperLeft, Color.white);
+            ApplyDefaultText(bodyText, string.Empty, 46, TextAnchor.UpperLeft, Color.white);
 
             var nextButtonGo = CreateUIObject("NextButton", dialogueRoot.transform, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-20f, 20f), new Vector2(140f, 54f), new Vector2(1f, 0f));
             var nextButtonImage = nextButtonGo.AddComponent<Image>();
@@ -1585,7 +1585,7 @@ namespace GemCafe.EditorTools
 
             var bodyTextGo = CreateUIObject("Body", dialogueRoot.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(20f, 20f), new Vector2(-180f, -80f), new Vector2(0f, 0f));
             var bodyText = bodyTextGo.AddComponent<Text>();
-            ApplyDefaultText(bodyText, string.Empty, 30, TextAnchor.UpperLeft, Color.white);
+            ApplyDefaultText(bodyText, string.Empty, 46, TextAnchor.UpperLeft, Color.white);
 
             var nextButtonGo = CreateUIObject("NextButton", dialogueRoot.transform, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-20f, 20f), new Vector2(140f, 54f), new Vector2(1f, 0f));
             var nextButtonImage = nextButtonGo.AddComponent<Image>();
@@ -1694,7 +1694,7 @@ namespace GemCafe.EditorTools
 
             var bodyTextGo = CreateUIObject("Body", dialogueRoot.transform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(20f, 20f), new Vector2(-180f, -80f), new Vector2(0f, 0f));
             var bodyText = bodyTextGo.AddComponent<Text>();
-            ApplyDefaultText(bodyText, string.Empty, 30, TextAnchor.UpperLeft, Color.white);
+            ApplyDefaultText(bodyText, string.Empty, 46, TextAnchor.UpperLeft, Color.white);
 
             var nextButtonGo = CreateUIObject("NextButton", dialogueRoot.transform, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-20f, 20f), new Vector2(140f, 54f), new Vector2(1f, 0f));
             var nextButtonImage = nextButtonGo.AddComponent<Image>();
